@@ -1,0 +1,47 @@
+name: poultry_pal_plus_app
+description: "A mobile app for poultry farmers to manage their flocks, track egg production, and monitor chicken health."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  intl: ^0.19.0
+  http: ^0.13.4
+  email_validator: ^2.0.1
+  cookie_jar: ^3.0.1
+  dio: ^5.0.0
+  dio_cookie_manager: ^2.1.4
+  flutter_session_manager: ^1.0.3
+  flutter_native_splash: ^2.0.1
+  flutter_secure_storage: ^9.2.2
+  fl_chart: ^0.69.0
+  path_provider: ^2.0.0
+  open_file: ^3.5.10
+  lottie: ^3.0.0
+  shimmer: ^3.0.0
+  flutter_animate: ^4.3.0
+  flutter_staggered_animations: ^1.1.1
+  dropdown_button2: ^2.3.9
+  shared_preferences: ^2.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/lottie/
+
+flutter_native_splash:
+  color: "#FFFFFF"        # Background color for the splash screen (white in this case)
+  image: assets/icon.png  # Path to your app icon image
+  android: true
+  ios: true
+  fullscreen: true

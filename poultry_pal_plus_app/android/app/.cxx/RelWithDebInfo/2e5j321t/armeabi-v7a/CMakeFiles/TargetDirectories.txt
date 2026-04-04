@@ -1,0 +1,2 @@
+/home/christoph/Documents/Development/poultry_pal_app/android/app/.cxx/RelWithDebInfo/2e5j321t/armeabi-v7a/CMakeFiles/edit_cache.dir
+/home/christoph/Documents/Development/poultry_pal_app/android/app/.cxx/RelWithDebInfo/2e5j321t/armeabi-v7a/CMakeFiles/rebuild_cache.dir

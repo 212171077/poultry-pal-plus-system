@@ -1,0 +1,241 @@
+{
+  "_id": {
+    "$oid": "670bbe7aad666a49dff2fc62"
+  },
+  "farmName": "Khozani Golden Farm",
+  "address": {},
+  "coops": [
+    {
+      "_id": "5cdb6eb8-19e3-40ef-9049-6fe16c3457fa",
+      "coopName": "Coop 1",
+      "coopType": "BROILER",
+      "numberOfChickens": 1000,
+      "createdDate": {
+        "$date": "2024-10-17T22:07:41.421Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-17T22:06:58.877Z"
+      }
+    },
+    {
+      "_id": "eabdadd2-2e6a-4370-a5cf-ad011c902003",
+      "coopName": "Coop 2",
+      "coopType": "LAYERS",
+      "numberOfChickens": 1600,
+      "createdDate": {
+        "$date": "2024-10-17T22:08:24.617Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-17T22:06:58.877Z"
+      }
+    },
+    {
+      "_id": "1bd11475-f5b6-4624-9bfe-f09a6d084b9d",
+      "coopName": "Coop 3",
+      "coopType": "LAYERS",
+      "numberOfChickens": 6,
+      "createdDate": {
+        "$date": "2024-10-27T15:26:23.034Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-24T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "35e9dd77-8e62-46d9-aa0c-88baefa624bc",
+      "coopName": "Coop 2",
+      "coopType": "BROILER",
+      "numberOfChickens": 58,
+      "createdDate": {
+        "$date": "2024-10-29T17:18:03.581Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-24T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "65046fd7-44f8-40fe-bb7e-40b35e11cb00",
+      "coopName": "Coop 4",
+      "coopType": "BROILER",
+      "numberOfChickens": 56,
+      "createdDate": {
+        "$date": "2024-10-29T17:22:38.627Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-24T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "19cf832a-240f-4bf6-ae27-7ee02919598d",
+      "coopName": "Coop 5",
+      "coopType": "BROILER",
+      "numberOfChickens": 56,
+      "createdDate": {
+        "$date": "2024-10-29T17:25:12.742Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-24T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "98dbac5d-3fd5-49a2-a3dd-bc85a3f16c0b",
+      "coopName": "Coop 6",
+      "coopType": "BROILER",
+      "numberOfChickens": 56,
+      "createdDate": {
+        "$date": "2024-10-29T17:29:50.992Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-24T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "c72f93ec-bbf1-44d1-b237-21e83a280bca",
+      "coopName": "Coop 7",
+      "coopType": "BROILER",
+      "numberOfChickens": 56,
+      "createdDate": {
+        "$date": "2024-10-29T17:31:12.212Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-24T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "de81fa2c-90f2-438b-9199-9b45ad25eec2",
+      "coopName": "Coop 8",
+      "coopType": "BROILER",
+      "numberOfChickens": 56,
+      "createdDate": {
+        "$date": "2024-10-29T17:33:28.538Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-24T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "fb33e46b-9c5f-49dc-8fb9-211051bb53f1",
+      "coopName": "Coop 9",
+      "coopType": "LAYERS",
+      "numberOfChickens": 33658,
+      "createdDate": {
+        "$date": "2024-10-29T17:35:46.982Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-30T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "bf498977-9036-45f7-8ee2-fc3d3cb457e7",
+      "coopName": "Coop 10",
+      "coopType": "LAYERS",
+      "numberOfChickens": 33658,
+      "createdDate": {
+        "$date": "2024-10-29T17:36:57.074Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-30T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "02c6d2d6-5215-4ffb-b022-025ea8f3790e",
+      "coopName": "Coop 11",
+      "coopType": "BROILER",
+      "numberOfChickens": 589,
+      "createdDate": {
+        "$date": "2024-10-29T17:40:31.128Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-31T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "11924681-d903-4227-9f89-f6fd84d614a3",
+      "coopName": "Coop 12",
+      "coopType": "BROILER",
+      "numberOfChickens": 589,
+      "createdDate": {
+        "$date": "2024-10-29T17:42:51.923Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-31T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "e461e6a9-6e71-410e-8efb-7f7738851c8d",
+      "coopName": "Coop 13",
+      "coopType": "BROILER",
+      "numberOfChickens": 589,
+      "createdDate": {
+        "$date": "2024-10-29T17:43:40.979Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-31T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "b7b3b86a-a417-4972-a405-e14402fe2165",
+      "coopName": "Coop 14",
+      "coopType": "LAYERS",
+      "numberOfChickens": 654,
+      "createdDate": {
+        "$date": "2024-10-29T17:48:07.865Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-31T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "6fd1b180-9ab2-4c3d-8d91-9f0687bb0f0a",
+      "coopName": "Coop 15",
+      "coopType": "LAYERS",
+      "numberOfChickens": 369,
+      "createdDate": {
+        "$date": "2024-10-29T17:49:39.092Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-16T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "e289738b-fcc7-4680-9259-5f770baa82c2",
+      "coopName": "Coop 16",
+      "coopType": "LAYERS",
+      "numberOfChickens": 659,
+      "createdDate": {
+        "$date": "2024-10-29T18:04:46.109Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-31T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "daefdac3-4937-42d8-b402-111e0660fa42",
+      "coopName": "Coop 17",
+      "coopType": "LAYERS",
+      "numberOfChickens": 562,
+      "createdDate": {
+        "$date": "2024-10-29T18:19:54.573Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-31T00:00:00.000Z"
+      }
+    },
+    {
+      "_id": "d2aefdac3-4937-42d8-b402-111e0660a42",
+      "coopName": "Coop 19",
+      "coopType": "LAYERS",
+      "numberOfChickens": 589,
+      "createdDate": {
+        "$date": "2024-10-29T18:22:36.946Z"
+      },
+      "chickenArrivalDate": {
+        "$date": "2024-10-31T00:00:00.000Z"
+      }
+    }
+  ],
+  "createdDate": {
+    "$date": "2024-10-13T12:35:06.684Z"
+  },
+  "_class": "co.za.hlaluko.dynamics.poultry.pal.model.entity.Farm"
+}

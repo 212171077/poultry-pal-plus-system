@@ -1,0 +1,134 @@
+Prompt 1: Full Monorepo Analysis
+======================================================
+
+Analyze the entire Poultry Pal Plus monorepo (poultry-pal-service Spring Boot backend + poultry_pal_plus_app Flutter mobile app).
+Perform a comprehensive code review covering:
+
+**Backend (Spring Boot):**
+1. Architecture: Does it follow Controller → Service → Repository → Domain correctly?
+2. Are DTOs properly separated from entities? Are entities ever leaked in API responses?
+3. Exception handling: Is there centralized exception handling or are exceptions handled ad hoc?
+4. Security: Review @PreAuthorize annotations for consistency, check if sensitive data is ever exposed
+5. Performance: Identify N+1 query risks, missing pagination, unoptimized queries
+6. Code smells: Typos (e.g., "excption" package), TODO items left unresolved, dead code
+7. Missing validation (@Valid usage, input sanitization)
+8. Test coverage gaps (check which controllers/services lack tests)
+9. API response consistency: Does every endpoint return { success, message, data }?
+10. Hardcoded values, missing environment-based configuration
+
+**Frontend (Flutter):**
+1. Architecture: Is business logic leaking into UI widgets? (Check screens/ files)
+2. State management: Is there a proper state management solution or is setState used everywhere?
+3. Service layer: Is there only one monolithic service file? Should it be split?
+4. Null safety: Are nulls handled safely throughout?
+5. Widget size: Are any widgets too large? (e.g., coop_list_item.dart is 4225 lines)
+6. Hardcoded API URLs in the service file
+7. Error handling consistency across all API calls
+8. Missing separation of concerns (models, services, state, UI)
+9. No dependency injection pattern
+10. Missing offline/caching support despite targeting low-connectivity users
+
+**Cross-cutting:**
+1. API contract alignment between backend DTOs and Flutter models
+2. Missing features mentioned in copilot-instructions.md but not implemented
+3. Security: Credentials stored in SharedPreferences (password in plain text?)
+
+For each issue found, provide:
+- File and line reference
+- Severity (Critical / High / Medium / Low)
+- Recommended fix
+- A Copilot prompt I can use to implement the fix
+
+Prompt 2: Code Improvement Suggestions
+===========================================================================
+
+Review the Poultry Pal Plus monorepo and suggest specific code improvements. For EACH suggestion, provide a ready-to-use Copilot prompt that I can paste to implement it.
+
+**Backend improvements needed:**
+
+1. "Refactor the exception handling in poultry-pal-service. Currently there's only NotFoundException in the 'excption' (typo) package. Create a centralized @ControllerAdvice GlobalExceptionHandler that handles all exceptions consistently and returns the standard { success, message, data } response format. Also fix the 'excption' package name typo to 'exception'. Provide the GlobalExceptionHandler class, custom exception classes (BadRequestException, UnauthorizedException, ConflictException), and update all services to use them."
+
+2. "The FarmController.java has 20+ endpoints all in one controller. Refactor it by splitting into separate controllers following Single Responsibility: CoopController, MortalityController, SalesController, ExpenseController, ReminderController, ReportController, UserManagementController, and SettingsController. Move the corresponding @RequestMapping, service methods, and keep the same endpoint paths. Update all imports."
+
+3. "Add comprehensive unit tests and integration tests for all the endpoints marked with TODO in FarmController.java: downloadReport, downloadScheduleReport, sendReportViaEmail, updateUserSetting, findUserSettings, growingPhaseTransition, recordEggPackaging, addResponsibleUser, updateReminder. Use JUnit 5, Mockito, and REST Assured. Follow existing test patterns in the project."
+
+4. "Create a proper API versioning strategy for poultry-pal-service. Add /api/v1/ prefix to all endpoints. Create a migration guide. Update the Flutter service layer to use the new versioned endpoints."
+
+5. "Add pagination support to all list-returning endpoints in FarmController (findAllUsers, findInactiveUsers). Use Spring Data's Pageable with PageRequest. Return paginated responses with totalElements, totalPages, currentPage, and content. Update the Flutter app to support paginated loading with infinite scroll."
+
+**Frontend improvements needed:**
+
+6. "The Flutter app has no state management solution - it uses setState everywhere and passes data through widget constructors. Introduce Riverpod as the state management solution. Create providers for: AuthState, FarmState, CoopState, SettingsState. Refactor HomeScreen, FarmDashboard, CoopListItem, SettingsScreen, and RemindersScreen to use these providers instead of passing Farm/User objects through constructors. Keep the existing service layer but wrap it with providers."
+
+7. "The poultry_pal_service.dart file is 1332 lines with all API calls in one class. Split it into separate service classes following feature-based architecture: AuthService, FarmService, CoopService, SalesService, ExpenseService, MortalityService, ReminderService, ReportService, SettingsService. Each service should use a shared DioClient base class that handles common configuration (base URL, cookies, error handling). Move hardcoded URLs to a config file with environment support (dev/staging/prod)."
+
+8. "The coop_list_item.dart is 4225 lines - a massive widget file. Refactor it into smaller, focused widgets: CoopCard, CoopHeader, CoopDetailsPanel, SalesSection, MortalitySection, ExpensesSection, EggPackagingSection, CoopActionButtons, AddSaleBottomSheet, AddMortalityBottomSheet, AddExpenseBottomSheet. Each widget should be in its own file under lib/screens/coop/ or lib/features/coop/widgets/. Extract all bottom sheets into separate files."
+
+9. "Add offline-first support to the Flutter app using local database caching. The app targets users with unreliable internet. Implement: (1) SQLite/Drift local database mirroring the main data models (Farm, Coop, Sales, Expenses, Mortality, Reminders), (2) A sync service that queues changes when offline and syncs when connectivity returns, (3) A connectivity monitor using connectivity_plus package, (4) Show offline indicators in the UI, (5) Conflict resolution for stale data. Follow the existing architecture patterns."
+
+10. "The Flutter app hardcodes API base URLs with commented-out alternatives in poultry_pal_service.dart. Create a proper environment configuration system: (1) Create an AppConfig class with baseUrl, (2) Use flutter_dotenv or --dart-define for environment switching, (3) Support dev (10.0.2.2), local network (192.168.x.x), and production URLs, (4) Update the service layer to use AppConfig.baseUrl."
+
+
+Prompt 3: New Feature Suggestions
+===========================================================================
+
+Based on the existing Poultry Pal Plus codebase (Spring Boot + Flutter poultry farm management app), suggest additional functionalities that would add high value for poultry farmers. For EACH feature, provide a ready-to-use Copilot prompt to implement it.
+
+Consider the current features: coop management, mortality tracking, sales recording, expense tracking, egg packaging, reminders (vaccine/feed/medicine schedules), farm reports, email reports, user roles, and settings.
+
+Suggest features in these categories:
+
+**Category 1: Farm Intelligence & Analytics**
+Prompt: "Add a Farm Intelligence dashboard feature to Poultry Pal Plus. Backend: Create a new AnalyticsService and AnalyticsController with endpoints: GET /api/farm/analytics/mortality-trends/{farmId} (mortality rate trends over weeks/months per coop), GET /api/farm/analytics/profitability/{farmId} (revenue vs expenses per coop with profit margins), GET /api/farm/analytics/feed-conversion-ratio/{farmId}/{coopId} (FCR calculation based on feed expenses and chicken weight/sales), GET /api/farm/analytics/production-forecast/{farmId} (egg production forecasting based on historical data for layers), GET /api/farm/analytics/cost-per-bird/{farmId}/{coopId}. Flutter: Create an AnalyticsScreen with interactive fl_chart visualizations showing line charts for trends, bar charts for comparisons, and summary KPI cards. Add it as a new tab or sub-page of the Dashboard."
+
+Prompt: "Add a Weekly/Monthly Automated Summary feature. Backend: Create a ScheduledSummaryService that generates period summaries including: total eggs produced, total sales revenue, total expenses, net profit/loss, mortality count and rate, top expense categories, best/worst performing coops. Store summaries in a new FarmSummary entity. Create a scheduled task to auto-generate and email these summaries. Flutter: Create a SummaryHistoryScreen showing past summaries as expandable cards with key metrics and mini charts."
+
+**Category 2: Inventory & Feed Management**
+Prompt: "Add a Feed Inventory Management feature. Backend: Create FeedInventory entity with fields: id, farmId, feedType, brand, quantity (kg), unitPrice, purchaseDate, expiryDate, supplier, reorderLevel. Create FeedInventoryRepository, FeedInventoryService, FeedInventoryController with CRUD endpoints plus GET /api/farm/feed-inventory/low-stock/{farmId} for alerts. Add automatic reorder reminders when stock falls below reorderLevel. Flutter: Create FeedInventoryScreen with a list of feed items, stock level indicators (color-coded), add/edit forms, and low-stock alerts on the home screen."
+
+Prompt: "Add a Medicine & Vaccine Inventory tracker. Backend: Create MedicineInventory entity tracking: medicineName, type (antibiotic/vitamin/vaccine), quantity, dosage instructions, expiryDate, supplier, batchNumber. Add endpoints for CRUD and expiry alerts. Flutter: Create MedicineInventoryScreen with expiry countdown badges, usage history per coop, and automatic reminders when medicine is about to expire."
+
+**Category 3: Sales & Financial Management**
+Prompt: "Add a Customer Management and Invoice feature. Backend: Create Customer entity (name, phone, email, address, notes) and Invoice entity (customerId, items, totalAmount, paymentStatus, dueDate, invoiceNumber). Create CustomerController and InvoiceController with full CRUD. Add PDF invoice generation using iText or JasperReports. Flutter: Create CustomerListScreen, CustomerDetailScreen, InvoiceListScreen, CreateInvoiceScreen. Add customer selection when recording sales. Generate and share PDF invoices from the app."
+
+Prompt: "Add a Financial Reports & Profit/Loss Statement feature. Backend: Create a FinancialReportService that calculates: gross revenue (chicken sales + egg sales), total expenses (feed + medicine + utilities + other), net profit/loss per coop and farm-wide, break-even analysis, ROI per batch. Create endpoints to fetch reports by date range. Flutter: Create FinancialReportScreen with date range picker, summary cards, pie charts for expense breakdown, and bar charts for monthly profit/loss comparison. Allow PDF export."
+
+**Category 4: Operational Efficiency**
+Prompt: "Add a Daily Task Checklist feature for farm workers. Backend: Create DailyTask entity with fields: id, farmId, coopId, assignedUserId, taskType (FEEDING, WATERING, EGG_COLLECTION, CLEANING, HEALTH_CHECK, MEDICATION), status (PENDING, COMPLETED, SKIPPED), scheduledDate, completedDate, notes. Create endpoints: POST /api/farm/tasks/generate-daily (auto-generates daily tasks based on coops and schedules), PUT /api/farm/tasks/{taskId}/complete, GET /api/farm/tasks/today/{farmId}. Flutter: Create DailyTasksScreen with a checklist UI, swipe-to-complete gesture, progress bar showing % completed for the day, and optional photo attachment for health checks."
+
+Prompt: "Add a Batch Lifecycle Tracker. Backend: Create BatchLifecycle entity tracking the full journey: arrival date, initial count, growth phases with transition dates, total feed consumed, total medication administered, mortality at each phase, final sale date, total revenue, total cost, net profit. Create a timeline endpoint GET /api/farm/batch-lifecycle/{farmId}/{coopId}. Flutter: Create BatchTimelineScreen showing a visual timeline/stepper widget with each lifecycle stage, key metrics at each stage, and a final batch performance summary card."
+
+**Category 5: Communication & Collaboration**
+Prompt: "Add an In-App Notification Center. Backend: Create Notification entity (userId, farmId, title, message, type, read, createdAt). Create NotificationService that generates notifications for: low stock alerts, upcoming vaccinations, mortality spikes, payment due dates, task assignments. Add a WebSocket or polling endpoint for real-time updates. Flutter: Create NotificationCenterScreen with a bell icon badge on the app bar showing unread count, grouped notifications by date, mark-as-read functionality, and tap-to-navigate to relevant screens."
+
+Prompt: "Add a Farm Activity Log / Audit Trail. Backend: Create ActivityLog entity recording all actions: userId, farmId, action (COOP_CREATED, SALE_RECORDED, MORTALITY_ADDED, etc.), details (JSON), timestamp. Use Spring AOP or interceptors to automatically log activities. Create endpoint GET /api/farm/activity-log/{farmId} with date range filtering and pagination. Flutter: Create ActivityLogScreen showing a chronological feed of farm activities with user avatars, action icons, and filterable by action type and user."
+
+Prompt 4: UI/UX Improvements
+===========================================================================
+
+Improve the UI/UX of the Poultry Pal Plus Flutter app. The current app uses a brown/green theme with basic Material widgets. The target users are farmers with limited technical experience, so the UI must be intuitive, visually clear, and accessible. For EACH improvement, provide a ready-to-use Copilot prompt.
+
+**1. Design System & Theme:**
+Prompt: "Create a comprehensive design system for the Poultry Pal Plus Flutter app. Replace the basic ThemeData in main.dart with a full AppTheme class that defines: (1) A modern color scheme - keep the earthy brown/green palette but make it more polished with specific shades for backgrounds, surfaces, cards, text, success/error/warning states. (2) Typography scale using Google Fonts (use 'Poppins' for headings and 'Inter' for body text) with defined text styles: displayLarge, titleLarge, titleMedium, bodyLarge, bodyMedium, labelMedium, caption. (3) Consistent spacing constants (xs:4, sm:8, md:16, lg:24, xl:32). (4) Reusable component themes: CardTheme with consistent elevation/border radius, ElevatedButtonTheme, InputDecorationTheme, AppBarTheme, BottomNavigationBarTheme. (5) Support for light and dark mode. Update main.dart to use the new AppTheme."
+
+**2. Home Screen & Navigation:**
+Prompt: "Redesign the HomeScreen navigation and app bar. Current issues: the app bar is 190px tall taking too much space, the bottom nav uses raw IconButtons without labels visible. Improvements: (1) Replace the custom 190px app bar with a collapsible SliverAppBar that shows farm name and user info when expanded, collapses to just the title on scroll. (2) Replace the bottom BottomAppBar with a proper NavigationBar (Material 3) with labeled icons, animated selection indicator, and the FAB integrated cleanly. (3) Add a greeting message based on time of day ('Good morning, Christoph'). (4) Add a quick-stats row below the app bar showing: total coops, total chickens, today's egg count, pending reminders - as small colored cards. Keep the existing 5 tabs: Reminders, Dashboard, My Coops, Profile, Settings."
+
+**3. Dashboard Redesign:**
+Prompt: "Redesign the FarmDashboard screen for better data visualization and usability. Current state: basic cards with text. New design: (1) Add a summary header with 4 KPI cards in a 2x2 grid: Total Revenue (green), Total Expenses (red), Net Profit (blue), Mortality Rate (orange) - each with an icon, value, and percentage change indicator. (2) Replace the coop cards with a more visual design: add a circular progress indicator showing coop health score, use color-coded chips for coop type (Broiler=amber, Layers=teal), show mini sparkline charts for recent sales/expenses trends inline. (3) Add a 'Quick Actions' floating section with common tasks: Record Sale, Log Mortality, Add Expense, Check Reminders. (4) Use Shimmer loading placeholders while data loads instead of CircularProgressIndicator. (5) Add pull-to-refresh functionality."
+
+**4. Coop Detail & List Improvements:**
+Prompt: "Redesign the CoopListItem widget for better UX. Current state: 4225-line file with everything embedded. New design: (1) Coop cards should show a colored status badge (Active=green dot, Inactive=grey dot). (2) Show key metrics on the collapsed card: chicken count, age, mortality %, and a small trend arrow. (3) When expanded, organize data into tabs (Overview, Sales, Expenses, Mortality, Egg Packaging) instead of one long scrollable list. (4) Use a TabBar inside the expanded card with horizontal swipe between sections. (5) Bottom sheets for adding sales/mortality/expenses should have modern design: frosted glass header, proper form field spacing, success animations using Lottie. (6) Add swipe actions on the coop card: swipe right for quick-add-sale, swipe left for quick-add-mortality. (7) Add an empty state illustration when no sales/expenses/mortality recorded."
+
+**5. Forms & Input UX:**
+Prompt: "Improve all form inputs and bottom sheets in the Flutter app for better farmer-friendly UX. (1) Replace the CupertinoSegmentedControl for coop type/growing phase with large tappable cards showing an icon + label (e.g., a chicken icon for Broiler, an egg icon for Layers). (2) Add input formatting: currency fields should auto-format with thousand separators, quantity fields should have +/- stepper buttons. (3) Add inline validation with real-time feedback (green checkmarks when valid). (4) All bottom sheets should have a progress indicator when submitting (replace the full-screen Lottie loading dialog with an inline loading state on the submit button). (5) Add haptic feedback on successful submissions. (6) Number inputs should show a numeric keyboard by default. Update Common.buildTextField and all bottom sheet forms."
+
+**6. Empty States & Onboarding:**
+Prompt: "Add illustrated empty states and a first-time onboarding flow. (1) Create custom EmptyState widget with Lottie animation + descriptive text + CTA button for: no coops ('Start by adding your first coop'), no sales ('Record your first sale'), no reminders ('Set up vaccination schedules'), empty dashboard ('Add coops to see your farm analytics'). (2) Create a 3-page onboarding screen shown on first launch: Page 1 - 'Manage Your Coops' (illustration + brief text), Page 2 - 'Track Sales & Expenses' (illustration + brief text), Page 3 - 'Stay On Schedule' (illustration about reminders + 'Get Started' button). Use PageView with dot indicators and skip button. Store onboarding completion in SharedPreferences."
+
+**7. Accessibility & Offline UX:**
+Prompt: "Improve accessibility and offline UX indicators in the Flutter app. (1) Add semantic labels to all icons and buttons for screen readers. (2) Ensure all tap targets are at least 48x48 pixels (farmer-friendly large touch targets). (3) Add a connectivity banner at the top of the screen (like Gmail) that shows 'No internet connection' with a yellow/red bar when offline and auto-hides when back online using connectivity_plus package. (4) Increase base font sizes - minimum 14sp for body text, 12sp for captions. (5) Add high contrast mode option in Settings. (6) Ensure all color combinations meet WCAG AA contrast ratio."
+
+**8. Login & Registration Polish:**
+Prompt: "Polish the Login and Registration screens. (1) Add a hero animation with the app logo that transitions from splash screen to login screen. (2) Add social login button placeholders (Google, Apple) with 'or continue with email' divider for future implementation. (3) Add password strength indicator on registration (weak/medium/strong with color bar). (4) Add 'Show password' toggle eye icon in password fields. (5) Add loading state on login button (replace text with circular progress, disable button while loading). (6) Add subtle background animation or gradient shift. (7) Show inline error messages below fields instead of snackbars for validation errors. (8) Add biometric login option (fingerprint/face) using local_auth package for returning users."
+

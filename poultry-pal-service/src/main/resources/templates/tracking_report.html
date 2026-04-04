@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+    <link rel="stylesheet" href="/css/tracking_report.css"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f5f0;
+            color: #3d3d3d;
+        }
+
+        .header {
+            background-color: #5c3d2e;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .header img {
+            height: 30px;
+            margin-right: 15px;
+            vertical-align: middle;
+            border: 2px solid #82b366;
+            border-radius: 10px;
+            padding: 5px;
+            background-color: #ffffff;
+        }
+
+        .header h1 {
+            display: inline;
+            font-size: 20px;
+            margin: 0;
+            vertical-align: middle;
+        }
+
+        .content {
+            padding: 6px;
+        }
+
+        .farm-details, .coop-details {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .farm-details h2, .coop-details h2 {
+            color: #5c3d2e;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #82b366;
+            padding-bottom: 5px;
+            font-size: 18px;
+        }
+
+        .farm-details p, .coop-details p {
+            margin: 5px 0;
+            line-height: 1.6;
+            font-size: 12px;
+        }
+
+        .coop-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .coop-table th, .coop-table td {
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .coop-table th {
+            background-color: #82b366;
+            color: white;
+            font-weight: bold;
+            width: 30%;
+        }
+
+        .coop-table td {
+            background-color: #ffffff;
+        }
+
+        .coop-table .row {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .coop-table .row th, .coop-table .row td {
+            display: block;
+            width: 100%;
+        }
+
+        .coop-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .coop-table tr:hover {
+            background-color: #e2e2e2;
+        }
+
+
+        .coop-details {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .coop-details h2 {
+            color: #5c3d2e;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #82b366;
+            padding-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .coop-details h3 {
+            margin-top: 10px;
+            font-size: 16px;
+            color: #5c3d2e;
+        }
+
+        .coop-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 11px;
+        }
+
+        .coop-table th, .coop-table td {
+            border: 1px solid #ddd;
+            padding: 5px 8px;
+            text-align: left;
+        }
+
+        .coop-table th {
+            background-color: #82b366;
+            color: white;
+            font-weight: bold;
+            width: 30%;
+        }
+
+        .coop-table td {
+            background-color: #ffffff;
+        }
+
+        .coop-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .coop-table tr:hover {
+            background-color: #f2f2f2;
+        }
+
+        .farm-summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .farm-summary-table td {
+            padding: 0px;
+            text-align: center;
+        }
+
+
+        .farm-summary-table td {
+            padding: 2px;
+            text-align: center;
+            vertical-align: top;
+        }
+
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #7a7a7a;
+            padding: 10px;
+            background-color: #f9f5f0;
+            border-top: 1px solid #ddd;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .footer-content {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .barcode {
+            height: 20px;
+            display: block;
+        }
+
+        .starter-row td {
+            background-color: #eaf2f8;
+            color: #3d3d3d !important;
+        }
+
+        .grower-row td {
+            background-color: #fbeee6;
+            color: #3d3d3d !important;
+        }
+
+        .finisher-row td {
+            background-color: #eafaf1;
+            color: #3d3d3d !important;
+        }
+
+        .pre-layer-row td {
+            background-color: #eafaf1;
+            color: #3d3d3d !important;
+        }
+
+        .layer-row td {
+            background-color: #eaf2f8;
+            color: #3d3d3d !important;
+        }
+
+
+
+    </style>
+    <title>Farm Report</title>
+</head>
+<body>
+<!-- Header with Logo -->
+<div class="header">
+    <img th:src="${logoBase64}" alt="Poultry Pall Logo"/>
+    <h1 th:text="${farmName}"></h1>
+</div>
+
+<div class="content">
+    <div class="coop-details">
+        <h2 th:text="${scheduleName}"></h2>
+        <table class="coop-table">
+            <thead>
+            <tr>
+                <th style="width: 5%;">Day</th>
+                <th style="width: 15%;">Date</th>
+                <th style="width: 15%;">Mortality</th>
+                <th style="width: 15%;">Feed</th>
+                <th>Medication</th>
+                <th style="width: 5%;">Done?</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row : ${trackingRows}"
+                th:class="${row.feed == 'Starter' ? 'starter-row' :
+           (row.feed == 'Grower' ? 'grower-row' :
+           (row.feed == 'Pre-Layer' ? 'pre-layer-row' :
+           (row.feed == 'Layer' ? 'layer-row' :
+           (row.feed == 'Finisher' ? 'finisher-row' : ''))))}">
+                <td th:text="${row.day}"></td>
+                <td th:text="${row.date}"></td>
+                <td th:text="${row.mortality}"></td>
+                <td th:text="${row.feed}"></td>
+                <td th:text="${row.medication}"></td>
+                <td></td>
+            </tr>
+
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+
+</body>
+</html>

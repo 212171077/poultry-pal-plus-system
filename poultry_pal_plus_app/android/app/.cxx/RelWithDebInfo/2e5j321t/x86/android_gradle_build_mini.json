@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/home/christoph/snap/flutter/common/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/home/christoph/Android/Sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/home/christoph/Documents/Development/poultry_pal_app/android/app/.cxx/RelWithDebInfo/2e5j321t/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/home/christoph/Android/Sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/home/christoph/Documents/Development/poultry_pal_app/android/app/.cxx/RelWithDebInfo/2e5j321t/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

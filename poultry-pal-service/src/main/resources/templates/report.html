@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f5f0;
+            color: #3d3d3d;
+        }
+
+        .header {
+            background-color: #5c3d2e;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .header img {
+            height: 30px;
+            margin-right: 15px;
+            vertical-align: middle;
+            border: 2px solid #82b366;
+            border-radius: 10px;
+            padding: 5px;
+            background-color: #ffffff;
+        }
+
+        .header h1 {
+            display: inline;
+            font-size: 20px;
+            margin: 0;
+            vertical-align: middle;
+        }
+
+        .content {
+            padding: 6px;
+        }
+
+        .farm-details, .coop-details {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .farm-details h2, .coop-details h2 {
+            color: #5c3d2e;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #82b366;
+            padding-bottom: 5px;
+            font-size: 18px;
+        }
+
+        .farm-details p, .coop-details p {
+            margin: 5px 0;
+            line-height: 1.6;
+            font-size: 12px;
+        }
+
+        .coop-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .coop-table th, .coop-table td {
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .coop-table th {
+            background-color: #82b366;
+            color: white;
+            font-weight: bold;
+            width: 30%;
+        }
+
+        .coop-table td {
+            background-color: #ffffff;
+        }
+
+        .coop-table .row {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .coop-table .row th, .coop-table .row td {
+            display: block;
+            width: 100%;
+        }
+
+        .coop-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .coop-table tr:hover {
+            background-color: #e2e2e2;
+        }
+
+
+        .coop-details {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.coop-details h2 {
+    color: #5c3d2e;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #82b366;
+    padding-bottom: 5px;
+    font-size: 17px;
+}
+
+.coop-details h3 {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #5c3d2e;
+}
+
+.coop-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.coop-table th, .coop-table td {
+    border: 1px solid #ddd;
+    padding: 5px 8px;
+    text-align: left;
+}
+
+.coop-table th {
+    background-color: #82b366;
+    color: white;
+    font-weight: bold;
+    width: 30%;
+}
+
+.coop-table td {
+    background-color: #ffffff;
+}
+
+.coop-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.coop-table tr:hover {
+    background-color: #f2f2f2;
+}
+
+.farm-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.farm-summary-table td {
+    padding: 0px;
+    text-align: center;
+}
+
+.card p {
+    font-size: 7px;
+    font-weight: bold;
+    color: #82b366;
+}
+
+.card .value {
+    font-size: 12px;
+    font-weight: bold;
+    color: #3d3d3d;
+}
+
+.card .icon {
+    font-size: 25px;
+    margin-bottom: 3px;
+    color: #82b366;
+}
+
+.farm-summary-table td {
+    padding: 2px;
+    text-align: center;
+    vertical-align: top;
+}
+
+.card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    background-color: #ffffff;
+    padding: 10px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Default shadow */
+    text-align: center;
+    width: 80%;
+    border: 1px solid #ddd;
+    margin: 3px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transform: translateY(-5px);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card .icon {
+    font-size: 30px;
+    margin-bottom: 3px;
+    color: inherit;
+}
+
+.card h3 {
+    margin-bottom: 3px;
+    font-size: 16px;
+    font-weight: bold;
+    color: inherit;
+}
+
+.card p.value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #3d3d3d;
+}
+
+.card.chickens {
+    color: #ff9800; /* Orange for Total Chickens */
+    box-shadow: 0px 4px 6px rgba(255, 152, 0, 0.5);
+}
+
+.card.sales {
+    color: #4caf50; /* Green for Total Sales */
+    box-shadow: 0px 4px 6px rgba(76, 175, 80, 0.5);
+}
+
+.card.expenses {
+    color: #f44336; /* Red for Total Expenses */
+    box-shadow: 0px 4px 6px rgba(244, 67, 54, 0.5);
+}
+
+.card.mortalities {
+    color: #9e9e9e; /* Gray for Mortalities */
+    box-shadow: 0px 4px 6px rgba(158, 158, 158, 0.5);
+}
+
+.farm-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+.farm-summary-table td {
+    padding: 10px;
+    text-align: center;
+    vertical-align: top;
+    width: 50%; /* Equal card width */
+}
+
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #7a7a7a;
+            padding: 10px;
+            background-color: #f9f5f0;
+            border-top: 1px solid #ddd;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .footer-content {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .barcode {
+            height: 20px;
+            display: block;
+        }
+
+
+    </style>
+    <title>Farm Report</title>
+</head>
+<body>
+<!-- Header with Logo -->
+<div class="header">
+    <img th:src="${logoBase64}" alt="Poultry Pall Logo"/>
+    <h1 th:text="${farmName} + ' Report'"></h1>
+</div>
+
+<!-- Farm Details Section -->
+<div class="content">
+    <div class="farm-details">
+        <h2>Farm Details</h2>
+        <p><strong>Farm Name:</strong> <span th:text="${farmName}"></span></p>
+        <p><strong>Owner:</strong> <span th:text="${ownerName}"></span> <span th:text="${ownerSurname}"></span></p>
+        <p><strong>Email:</strong> <span th:text="${ownerEmail}"></span></p>
+        <p><strong>Phone:</strong> <span th:text="${ownerPhone}"></span></p>
+    </div>
+    <!-- Farm Summary Table with Cards -->
+    <div class="farm-summary">
+        <div class="farm-details">
+            <h2>Farm Summary</h2>
+            <table class="farm-summary-table">
+                <tr>
+                    <td>
+                        <div class="card chickens">
+                            <div class="icon"><i class="fas fa-list"></i></div>
+                            <h3>Total Chickens</h3>
+                            <p class="value" th:text="${totalChickens}">1000</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="card mortalities">
+                            <div class="icon"><i class="fa fa-exclamation-triangle"></i></div>
+                            <h3>Total Mortalities</h3>
+                            <p class="value" th:text="${totalMortalities}">5%</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="card sales">
+                            <div class="icon"><i class="fas fa-dollar-sign"></i></div>
+                            <h3>Total Sales</h3>
+                            <p class="value" th:text="${totalSales}">R 50,000</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="card expenses">
+                            <div class="icon"><i class="fas fa-dollar-sign" aria-hidden="true"></i></div>
+                            <h3>Total Expenses</h3>
+                            <p class="value" th:text="${totalExpenses}">R 30,000</p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- Coop Details Section -->
+    <div class="coop-details">
+        <h2>Coop Details</h2>
+        <!-- Coop details for each coop -->
+        <div th:each="coop : ${coops}">
+            <h3 th:text="${coop.name}"></h3>
+            <table class="coop-table">
+                <tr>
+                    <th>Coop Type</th>
+                    <td th:text="${coop.type}"></td>
+                </tr>
+                <tr>
+                    <th>Total Chickens</th>
+                    <td th:text="${coop.totalChickens}"></td>
+                </tr>
+                <tr>
+                    <th>Age</th>
+                    <td th:text="${coop.age}"></td>
+                </tr>
+                <tr>
+                    <th>Mortality</th>
+                    <td th:text="${coop.mortality}"></td>
+                </tr>
+                <tr>
+                    <th>Available Chickens</th>
+                    <td th:text="${coop.availableChickens}"></td>
+                </tr>
+                <tr>
+                    <th>Sales</th>
+                    <td th:text="${coop.sales}"></td>
+                </tr>
+                <tr>
+                    <th>Profit</th>
+                    <td th:text="${coop.profit}"></td>
+                </tr>
+                <tr>
+                    <th>Expenses</th>
+                    <td th:text="${coop.expenses}"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Footer Section -->
+<!--<div class="footer">
+    <div class="footer-content">
+        <img th:src="${barcodeBase64}" alt="Barcode" class="barcode"/>
+        <p>Poultry Pall &#169; 2024. All rights reserved.</p>
+    </div>
+</div>-->
+
+</body>
+</html>
