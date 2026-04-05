@@ -109,8 +109,8 @@ class _ExpandableCoopCardState
                 border: Border.all(color: Colors.black12, width: 0.3),
                 gradient: LinearGradient(
                     colors: isExpanded
-                        ? [AppColors.surfaceVariantLight, AppColors.primaryLight]
-                        : [Colors.white, Colors.white],
+                        ? [AppColors.surfaceVariant(context), AppColors.primaryLight]
+                        : [AppColors.surface(context), AppColors.surface(context)],
                 ),
                 boxShadow: [
                     BoxShadow(
@@ -234,16 +234,16 @@ class _ExpandableCoopCardState
                                                     style: TextStyle(
                                                         fontSize: 16,
                                                         fontWeight: FontWeight.bold,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                     ),
                                                     overflow: TextOverflow.ellipsis,
                                                 ),
                                                 const SizedBox(height: 2),
                                                                 Text(
                                                                     "${widget.coop.coopType.toLowerCase().capitalize()} (${widget.coop.growthPhase.value})",
-                                                                    style: const TextStyle(
+                                                                    style: TextStyle(
                                                                         fontSize: 12,
-                                                                        color: AppColors.textSecondaryLight,
+                                                                        color: AppColors.textSecondary(context),
                                                                     ),
                                                     overflow: TextOverflow.ellipsis,
                                                 ),
@@ -286,7 +286,7 @@ class _ExpandableCoopCardState
                         child: Container(
                             padding: const EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
-                                color: AppColors.surfaceLight,
+                                color: AppColors.surface(context),
                                 borderRadius: BorderRadius.circular(16.0),
                                 border: Border.all(color: Colors.black12, width: 0.3),
                             ),
@@ -360,8 +360,8 @@ class _ExpandableCoopCardState
                                                             onPressed: isSending ? null : handleSend,
                                                             style: ElevatedButton.styleFrom(
                                                                 elevation: 2,
-                                                                backgroundColor: AppColors.surfaceLight, // White background
-                                                                foregroundColor: Theme.of(context).primaryColor, // Icon & text color
+                                                                backgroundColor: AppColors.surface(context), // White background
+                                                                foregroundColor: AppColors.adaptivePrimary(context), // Icon & text color
                                                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                                                 shape: RoundedRectangleBorder(
                                                                     borderRadius: BorderRadius.circular(8),
@@ -391,7 +391,7 @@ class _ExpandableCoopCardState
                                                                                 : Icon(
                                                                                     Icons.email_outlined,
                                                                                     size: 18,
-                                                                                    color: Theme.of(context).primaryColor,
+                                                                                    color: AppColors.adaptivePrimary(context),
                                                                                 ),
                                                                     ),
                                                                     const SizedBox(width: 6),
@@ -403,7 +403,7 @@ class _ExpandableCoopCardState
                                                                                 : 'Send Schedule',
                                                                         style: TextStyle(
                                                                             fontSize: 13,
-                                                                            color: Theme.of(context).primaryColor,
+                                                                            color: AppColors.adaptivePrimary(context),
                                                                         ),
                                                                     ),
                                                                 ],
@@ -438,7 +438,7 @@ class _ExpandableCoopCardState
                                                                 style: TextStyle(
                                                                     fontSize: 14,
                                                                     fontWeight: FontWeight.bold,
-                                                                    color: Theme.of(context).primaryColor),
+                                                                    color: AppColors.adaptivePrimary(context)),
                                                             ),
                                                             IconButton(
                                                                 icon: const Icon(Icons.info_outline,
@@ -510,7 +510,7 @@ class _ExpandableCoopCardState
                                                                                     .value,
                                                                                 style: TextStyle(
                                                                                     fontSize: 11,
-                                                                                    color: AppColors.textSecondaryLight,
+                                                                                    color: AppColors.textSecondary(context),
                                                                                     fontWeight: FontWeight.bold,
                                                                                 ),
                                                                             ),
@@ -563,22 +563,20 @@ class _ExpandableCoopCardState
                                             widget.coop,
                                             widget.farm,
                                             widget.user,
-                                            AppColors.errorLight,
                                             AppColors.error,
                                             onCoopUpdated),
                                     ],
                                     if (upcomingReminders.isNotEmpty) ...[
                                         SizedBox(height: overdueTasks.isNotEmpty ? 20 : 0),
                                         _buildSectionTitle(
-                                            context, 'Upcoming Reminders', AppColors.info),
+                                            context, 'Upcoming Reminders', AppColors.primary),
                                         _buildTaskList(
                                             context,
                                             upcomingReminders,
                                             widget.coop,
                                             widget.farm,
                                             widget.user,
-                                            AppColors.infoLight,
-                                            AppColors.info,
+                                            AppColors.primary,
                                             onCoopUpdated,
                                         ),
                                     ],
@@ -630,7 +628,6 @@ class _ExpandableCoopCardState
         Coop coop,
         Farm farm,
         User user,
-        Color backgroundColor,
         Color iconColor,
         VoidCallback onCoopUpdated) {
         return Column(
@@ -640,10 +637,14 @@ class _ExpandableCoopCardState
 
                     return Card(
                         margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0.0),
-                        color: backgroundColor,
-                        elevation: 3,
+                        color: AppColors.surface(context),
+                        elevation: 0,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(
+                                color: iconColor.withValues(alpha: 0.45),
+                                width: 1,
+                            ),
                         ),
                         child: Padding(
                             padding:
@@ -674,7 +675,7 @@ class _ExpandableCoopCardState
                                                     'Due Date: ${details?['dueDate'] ?? 'Unknown Date'}',
                                                     style: TextStyle(
                                                         fontSize: 12,
-                                                        color: AppColors.textSecondaryLight,
+                                                        color: AppColors.textSecondary(context),
                                                     ),
                                                     maxLines: 1,
                                                     overflow: TextOverflow.ellipsis,
@@ -802,22 +803,20 @@ class _ExpandableCoopCardState
                                 const Text(
                                     'Action: ',
                                     style: TextStyle(
-                                        fontWeight: FontWeight.w600, color: AppColors.textPrimaryLight),
+                                        fontWeight: FontWeight.w600),
                                 ),
                                 Text(
                                     action,
-                                    style: TextStyle(color: AppColors.textSecondaryLight),
                                     overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 15),
                                 const Text(
                                     'Reminder: ',
                                     style: TextStyle(
-                                        fontWeight: FontWeight.w600, color: AppColors.textPrimaryLight),
+                                        fontWeight: FontWeight.w600),
                                 ),
                                 Text(
                                     task['type'] + ": " + _getTaskName(task) ?? 'Unknown',
-                                    style: TextStyle(color: AppColors.textSecondaryLight),
                                     overflow: TextOverflow.visible,
                                 ),
 
@@ -826,7 +825,7 @@ class _ExpandableCoopCardState
                                 const Text(
                                     'Add Comment (Optional):',
                                     style: TextStyle(
-                                        fontWeight: FontWeight.w600, color: AppColors.textPrimaryLight),
+                                        fontWeight: FontWeight.w600),
                                 ),
                                 const SizedBox(height: 5),
                                 TextField(
@@ -834,11 +833,11 @@ class _ExpandableCoopCardState
                                     maxLines: 2,
                                     decoration: InputDecoration(
                                         hintText: 'Add your comment...',
-                                        hintStyle: TextStyle(color: AppColors.textTertiaryLight, fontSize: 14),
+                                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14),
                                         border: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(8),
                                         ),
-                                        fillColor: AppColors.surfaceVariantLight,
+                                        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                                         filled: true,
                                     ),
                                 ),
@@ -874,7 +873,7 @@ class _ExpandableCoopCardState
                                 Navigator.of(context).pop();
                             },
                             style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).primaryColor,
+                                backgroundColor: AppColors.adaptivePrimary(context),
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10)),
                             ),
@@ -934,16 +933,16 @@ class _ExpandableCoopCardState
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                        Common.buildReadout('Current Growing Phase', currentPhase),
+                                        Common.buildReadout('Current Growing Phase', currentPhase, context: context),
                                         const SizedBox(height: 10),
-                                        Common.buildReadout('New Growing Phase', newPhase),
+                                        Common.buildReadout('New Growing Phase', newPhase, context: context),
                                         const SizedBox(height: 10),
                                         if (list.isNotEmpty)
                                         Text(
                                             'Select Coop for Transition:',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                color: AppColors.textSecondaryLight,
+                                                color: AppColors.textSecondary(context),
                                                 fontSize: 12,
                                             ),
                                         ),
@@ -967,39 +966,41 @@ class _ExpandableCoopCardState
                                                         setState(() {
                                                                 selectedCoopId = value;
                                                                 if (value != null) {
-                                                                    useCurrentCoop = false; // Clear the checkbox
+                                                                    useCurrentCoop = false;
                                                                     showValidationError = false;
                                                                 }
                                                             });
                                                     },
+                                                    context: context,
                                                     hintText: 'Select a coop',
                                                 ),
                                             )
                                             : Common.buildReadout2(
-                                                'No suitable coop is available for the phase transition. '
-                                                'You can add a new coop on the home page and return here to complete the transition. '
-                                                'Alternatively, re-use the current coop for this transition.',
-                                                AppColors.info,
-                                            ),
+                                                 'No suitable coop is available for the phase transition. '
+                                                 'You can add a new coop on the home page and return here to complete the transition. '
+                                                 'Alternatively, re-use the current coop for this transition.',
+                                                 AppColors.info,
+                                                 context: context,
+                                             ),
                                         const SizedBox(height: 10),
                                         Container(
                                             margin: const EdgeInsets.symmetric(vertical: 6),
                                             padding: const EdgeInsets.all(12),
                                             decoration: BoxDecoration(
-                                                color: AppColors.surfaceVariantLight,
-                                                borderRadius: BorderRadius.circular(8),
-                                                boxShadow: [
-                                                    BoxShadow(
-                                                        color: Colors.black.withOpacity(0.5),
-                                                        blurRadius: 2,
-                                                        offset: const Offset(0, 1),
-                                                    ),
-                                                ],
-                                                border: Border.all(
-                                                    color: showValidationError && !useCurrentCoop
-                                                        ? AppColors.error
-                                                        : Colors.transparent,
-                                                ),
+                                                 color: AppColors.surfaceVariant(context),
+                                                 borderRadius: BorderRadius.circular(8),
+                                                 boxShadow: [
+                                                     BoxShadow(
+                                                         color: Colors.black.withValues(alpha: 0.15),
+                                                         blurRadius: 2,
+                                                         offset: const Offset(0, 1),
+                                                     ),
+                                                 ],
+                                                 border: Border.all(
+                                                     color: showValidationError && !useCurrentCoop
+                                                         ? AppColors.error
+                                                         : Colors.transparent,
+                                                 ),
                                             ),
                                             child: Row(
                                                 children: [
@@ -1023,7 +1024,7 @@ class _ExpandableCoopCardState
                                                                 fontSize: 12,
                                                                 color: useCurrentCoop
                                                                     ? AppColors.success
-                                                                    : AppColors.textSecondaryLight,
+                                                                    : AppColors.textSecondary(context),
                                                                 fontWeight: FontWeight.bold,
                                                             ),
                                                             overflow: TextOverflow.clip,
@@ -1080,7 +1081,7 @@ class _ExpandableCoopCardState
                                         onCoopUpdated();
                                     },
                                     style: ElevatedButton.styleFrom(
-                                        backgroundColor: Theme.of(context).primaryColor,
+                                        backgroundColor: AppColors.adaptivePrimary(context),
                                         shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(10),
                                         ),
@@ -1173,7 +1174,7 @@ class _ExpandableCoopCardState
                         style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
+                            color: AppColors.adaptivePrimary(context),
                         ),
                     ),
                     content: SingleChildScrollView(
@@ -1196,7 +1197,7 @@ class _ExpandableCoopCardState
                                                             text: '${entry.value}',
                                                             style: TextStyle(
                                                                 fontWeight: FontWeight.normal,
-                                                                color: AppColors.textSecondaryLight,
+                                                                color: AppColors.textSecondary(context),
                                                                 fontSize: 16,
                                                             ),
                                                         ),
@@ -1215,7 +1216,7 @@ class _ExpandableCoopCardState
                             onPressed: () => Navigator.of(context).pop(),
                             child: Text(
                                 'Close',
-                                style: TextStyle(color: Theme.of(context).primaryColor),
+                                style: TextStyle(color: AppColors.adaptivePrimary(context)),
                             ),
                         ),
                     ],
@@ -1234,7 +1235,7 @@ void _showPhaseTransitionInfoPopup(BuildContext context) {
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
+                    color: AppColors.adaptivePrimary(context),
                 ),
             ),
             content: SizedBox(

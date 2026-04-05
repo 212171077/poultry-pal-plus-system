@@ -74,21 +74,21 @@ class ExpenseTypeDropdown extends StatelessWidget {
                         labelStyle: const TextStyle(fontSize: 14),
                         prefixIcon: Padding(
                             padding: const EdgeInsets.only(left: 12),
-                            child: Icon(Icons.category_outlined, color: Theme.of(context).primaryColor),
+                            child: Icon(Icons.category_outlined, color: AppColors.adaptivePrimary(context)),
                         ),
                         prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
                         contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Theme.of(context).primaryColor.withAlpha(128)),
+                            borderSide: BorderSide(color: AppColors.adaptivePrimary(context).withAlpha(128)),
                         ),
                         enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Theme.of(context).primaryColor.withAlpha(128)),
+                            borderSide: BorderSide(color: AppColors.adaptivePrimary(context).withAlpha(128)),
                         ),
                         focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
+                            borderSide: BorderSide(color: AppColors.adaptivePrimary(context), width: 2),
                         ),
                         errorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -104,7 +104,7 @@ class ExpenseTypeDropdown extends StatelessWidget {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
                             color: Theme.of(context).cardColor,
-                            border: Border.all(color: Theme.of(context).primaryColor.withAlpha(80)),
+                            border: Border.all(color: AppColors.adaptivePrimary(context).withAlpha(80)),
                             boxShadow: [
                                 BoxShadow(
                                     color: Colors.black.withOpacity(0.05),

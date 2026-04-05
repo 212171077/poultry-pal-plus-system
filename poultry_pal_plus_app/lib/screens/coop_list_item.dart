@@ -51,13 +51,13 @@ class _CoopListItemState extends State<CoopListItem> {
             margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16.0),
-                border: Border.all(color: Colors.black12, width: 0.3),
+                border: Border.all(color: AppColors.border(context), width: 0.3),
                 gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: _isExpanded
-                        ? [AppColors.surfaceVariantLight, AppColors.primary]
-                        : [Colors.white, Colors.white],
+                        ? [AppColors.surfaceVariant(context), AppColors.primary]
+                        : [AppColors.surface(context), AppColors.surface(context)],
                 ),
                 boxShadow: [
                     BoxShadow(
@@ -128,14 +128,14 @@ class _CoopListItemState extends State<CoopListItem> {
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
-                                color: Theme.of(context).primaryColor,
+                                color: AppColors.adaptivePrimary(context),
                             ),
                         ),
                         subtitle: Text(
                             "${widget.coop.coopType.toLowerCase().capitalize()} (${widget.coop.growthPhase.value})",
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 12,
-                                color: AppColors.textSecondaryLight,
+                                color: AppColors.textSecondary(context),
                             ),
                             overflow: TextOverflow.ellipsis,
                         ),
@@ -252,8 +252,8 @@ class _CoopListItemState extends State<CoopListItem> {
             child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     elevation: 2,
-                    backgroundColor: AppColors.surfaceLight, // White background
-                    foregroundColor: Theme.of(context).primaryColor, // Icon & text color
+                    backgroundColor: AppColors.surface(context), // White background
+                    foregroundColor: AppColors.adaptivePrimary(context), // Icon & text color
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -270,15 +270,15 @@ class _CoopListItemState extends State<CoopListItem> {
                             Icon(
                                 icon,
                                 size: 18,
-                                color: isActive ? color : AppColors.textTertiaryLight,
+                                color: isActive ? color : AppColors.textTertiary(context),
                             ),
-                            const SizedBox(height: 1),
+                             SizedBox(height: 1),
                             Text(
                                 label,
                                 textAlign: TextAlign.center,
                                 overflow: TextOverflow.ellipsis, // handles long labels
                                 style: TextStyle(
-                                    color: isActive ? Theme.of(context).primaryColor : AppColors.textTertiaryLight,
+                                    color: isActive ? AppColors.adaptivePrimary(context) : AppColors.textTertiary(context),
                                     fontSize: 8,
                                     fontWeight: FontWeight.w400,
                                 ),
@@ -309,15 +309,15 @@ class _CoopListItemState extends State<CoopListItem> {
                         Icon(
                             icon,
                             size: 18,
-                            color: isActive ? color : AppColors.textTertiaryLight,
+                            color: isActive ? color : AppColors.textTertiary(context),
                         ),
-                        const SizedBox(height: 1),
+                         SizedBox(height: 1),
                         Text(
                             label,
                             textAlign: TextAlign.center,
                             overflow: TextOverflow.ellipsis, // handles long labels
                             style: TextStyle(
-                                color: isActive ? Theme.of(context).primaryColor : AppColors.textTertiaryLight,
+                                color: isActive ? AppColors.adaptivePrimary(context) : AppColors.textTertiary(context),
                                 fontSize: 8,
                                 fontWeight: FontWeight.w400,
                             ),
@@ -325,11 +325,11 @@ class _CoopListItemState extends State<CoopListItem> {
                     ],
                 ),
             ),
-            backgroundColor: AppColors.surfaceLight,
+            backgroundColor: AppColors.surface(context),
             side: BorderSide(
                 color: isActive
                     ? AppColors.success.withValues(alpha: 0.2)
-                    : AppColors.textTertiaryLight.withValues(alpha: 0.4),
+                    : AppColors.textTertiary(context).withValues(alpha: 0.4),
             ),
             elevation: 0,
             pressElevation: 0,
@@ -357,11 +357,11 @@ class _CoopListItemState extends State<CoopListItem> {
 
     Widget _buildExpandedSectionContent() {
         return Container(
-            padding: const EdgeInsets.all(16.0),
+            padding:  EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-                color: AppColors.surfaceLight,
+                color: AppColors.surface(context),
                 borderRadius: BorderRadius.circular(16.0),
-                border: Border.all(color: Colors.black12, width: 0.3),
+                border: Border.all(color: AppColors.border(context), width: 0.3),
             ),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,8 +391,8 @@ class _CoopListItemState extends State<CoopListItem> {
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(15),
                                     ),
-                                    offset: const Offset(0, 50),
-                                    color: AppColors.surfaceLight,
+                                    offset:  Offset(0, 50),
+                                    color: AppColors.surface(context),
                                     elevation: 8,
                                     itemBuilder: (BuildContext context) =>
                                     <PopupMenuEntry<String>>[
@@ -503,13 +503,13 @@ class _CoopListItemState extends State<CoopListItem> {
                         );
                     },
                     child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                        padding:  EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                         decoration: BoxDecoration(
-                            color: AppColors.textTertiaryLight.withOpacity(0.15),
+                            color: AppColors.textTertiary(context).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(12.0),
                             boxShadow: [
                                 BoxShadow(
-                                    color: AppColors.textTertiaryLight.withOpacity(0.2),
+                                    color: AppColors.textTertiary(context).withOpacity(0.2),
                                     spreadRadius: 1,
                                     blurRadius: 5,
                                     offset: const Offset(0, 2),
@@ -612,7 +612,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                 borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor.withOpacity(0.3),
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.3),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -628,7 +628,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                             style: TextStyle(
                                                                 fontSize: 20,
                                                                 fontWeight: FontWeight.w700,
-                                                                color: Theme.of(context).primaryColor,
+                                                                color: AppColors.adaptivePrimary(context),
                                                                 letterSpacing: 0.5,
                                                             ),
                                                         ),
@@ -638,7 +638,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     Positioned(
                                                         right: 0,
                                                         child: IconButton(
-                                                            icon: const Icon(Icons.close, color: AppColors.textTertiaryLight),
+                                                            icon: Icon(Icons.close, color: AppColors.textTertiary(context)),
                                                             onPressed: () {
                                                                 Navigator.of(context).pop(); // closes the bottom sheet
                                                             },
@@ -677,14 +677,14 @@ class _CoopListItemState extends State<CoopListItem> {
                                                         // Money Icon
                                                         Container(
                                                             padding: const EdgeInsets.all(12),
-                                                            decoration: const BoxDecoration(
+                                                            decoration:  BoxDecoration(
                                                                 color: Colors.white24,
                                                                 shape: BoxShape.circle,
                                                             ),
-                                                            child: const Icon(
+                                                            child:  Icon(
                                                                 Icons.attach_money,
                                                                 size: 32,
-                                                                color: AppColors.surfaceLight,
+                                                                color: AppColors.surface(context),
                                                             ),
                                                         ),
                                                         const SizedBox(width: 16),
@@ -706,13 +706,13 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                 // Animated total amount
                                                                 TweenAnimationBuilder<double>(
                                                                     tween: Tween<double>(begin: 0, end: totalSaleAmount),
-                                                                    duration: const Duration(seconds: 1),
+                                                                    duration:  Duration(seconds: 1),
                                                                     builder: (context, value, child) {
                                                                         return Text(
                                                                             'R${value.toStringAsFixed(2)}',
-                                                                            style: const TextStyle(
+                                                                            style: TextStyle(
                                                                                 fontSize: 24,
-                                                                                color: AppColors.surfaceLight,
+                                                                                color: AppColors.surface(context),
                                                                                 fontWeight: FontWeight.bold,
                                                                             ),
                                                                         );
@@ -762,7 +762,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                             Text('Total: R${sale.totalSaleAmount}',
                                                                                 style: Theme.of(context).textTheme.bodySmall),
                                                                             Text('Date: $saleDate',
-                                                                                style: TextStyle(fontSize: 10.0, color: AppColors.textSecondaryLight)),
+                                                                                style: TextStyle(fontSize: 10.0, color: AppColors.textSecondary(context))),
                                                                         ],
                                                                     ),
                                                                     trailing: Row(
@@ -803,13 +803,13 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     )
                                                     : Center(
                                                         child: Padding(
-                                                            padding: const EdgeInsets.all(20.0),
+                                                            padding:  EdgeInsets.all(20.0),
                                                             child: Text(
                                                                 'No sales recorded yet.',
                                                                 style: Theme.of(context)
                                                                     .textTheme
                                                                     .bodyMedium
-                                                                    ?.copyWith(color: AppColors.textSecondaryLight),
+                                                                    ?.copyWith(color: AppColors.textSecondary(context)),
                                                             ),
                                                         ),
                                                     ),
@@ -847,13 +847,13 @@ class _CoopListItemState extends State<CoopListItem> {
                             context, mortalities, userId, farmId, coopId, onCoopDeleted);
                     },
                     child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                        padding:  EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                         decoration: BoxDecoration(
-                            color: AppColors.textTertiaryLight.withOpacity(0.15),
+                            color: AppColors.textTertiary(context).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(12.0),
                             boxShadow: [
                                 BoxShadow(
-                                    color: AppColors.textTertiaryLight.withOpacity(0.2),
+                                    color: AppColors.textTertiary(context).withOpacity(0.2),
                                     spreadRadius: 1,
                                     blurRadius: 5,
                                     offset: const Offset(0, 2),
@@ -952,7 +952,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                 const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor.withOpacity(0.3),
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.3),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -967,7 +967,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                             style: TextStyle(
                                                                 fontSize: 20,
                                                                 fontWeight: FontWeight.w700,
-                                                                color: Theme.of(context).primaryColor,
+                                                                color: AppColors.adaptivePrimary(context),
                                                                 letterSpacing: 0.5,
                                                             ),
                                                         ),
@@ -975,7 +975,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     Positioned(
                                                         right: 0,
                                                         child: IconButton(
-                                                            icon: const Icon(Icons.close, color: AppColors.textTertiaryLight),
+                                                            icon: Icon(Icons.close, color: AppColors.textTertiary(context)),
                                                             onPressed: () => Navigator.of(context).pop(),
                                                         ),
                                                     ),
@@ -1009,14 +1009,14 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     children: [
                                                         Container(
                                                             padding: const EdgeInsets.all(12),
-                                                            decoration: const BoxDecoration(
+                                                            decoration:  BoxDecoration(
                                                                 color: Colors.white24,
                                                                 shape: BoxShape.circle,
                                                             ),
-                                                            child: const Icon(
+                                                            child:  Icon(
                                                                 Icons.block,
                                                                 size: 32,
-                                                                color: AppColors.surfaceLight,
+                                                                color: AppColors.surface(context),
                                                             ),
                                                         ),
                                                         const SizedBox(width: 16),
@@ -1035,13 +1035,13 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                 TweenAnimationBuilder<double>(
                                                                     tween: Tween<double>(
                                                                         begin: 0, end: totalMortalities.toDouble()),
-                                                                    duration: const Duration(seconds: 1),
+                                                                    duration:  Duration(seconds: 1),
                                                                     builder: (context, value, child) {
                                                                         return Text(
                                                                             value.toStringAsFixed(0),
-                                                                            style: const TextStyle(
+                                                                            style: TextStyle(
                                                                                 fontSize: 24,
-                                                                                color: AppColors.surfaceLight,
+                                                                                color: AppColors.surface(context),
                                                                                 fontWeight: FontWeight.bold,
                                                                             ),
                                                                         );
@@ -1098,7 +1098,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                             Text('Date Occurred: $dateOccurred',
                                                                                 style: TextStyle(
                                                                                     fontSize: 10.0,
-                                                                                    color: AppColors.textSecondaryLight)),
+                                                                                    color: AppColors.textSecondary(context))),
                                                                         ],
                                                                     ),
                                                                     trailing: IconButton(
@@ -1129,13 +1129,13 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     )
                                                     : Center(
                                                         child: Padding(
-                                                            padding: const EdgeInsets.all(20.0),
+                                                            padding:  EdgeInsets.all(20.0),
                                                             child: Text(
                                                                 'No mortality recorded yet.',
                                                                 style: Theme.of(context)
                                                                     .textTheme
                                                                     .bodyMedium
-                                                                    ?.copyWith(color: AppColors.textSecondaryLight),
+                                                                    ?.copyWith(color: AppColors.textSecondary(context)),
                                                             ),
                                                         ),
                                                     ),
@@ -1177,13 +1177,13 @@ class _CoopListItemState extends State<CoopListItem> {
                         );
                     },
                     child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                        padding:  EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                         decoration: BoxDecoration(
-                            color: AppColors.textTertiaryLight.withOpacity(0.15),
+                            color: AppColors.textTertiary(context).withOpacity(0.15),
                             borderRadius: BorderRadius.circular(12.0),
                             boxShadow: [
                                 BoxShadow(
-                                    color: AppColors.textTertiaryLight.withOpacity(0.2),
+                                    color: AppColors.textTertiary(context).withOpacity(0.2),
                                     spreadRadius: 1,
                                     blurRadius: 5,
                                     offset: const Offset(0, 2),
@@ -1280,7 +1280,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                 borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor.withOpacity(0.3),
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.3),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -1295,7 +1295,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                             style: TextStyle(
                                                                 fontSize: 20,
                                                                 fontWeight: FontWeight.w700,
-                                                                color: Theme.of(context).primaryColor,
+                                                                color: AppColors.adaptivePrimary(context),
                                                                 letterSpacing: 0.5,
                                                             ),
                                                         ),
@@ -1303,7 +1303,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     Positioned(
                                                         right: 0,
                                                         child: IconButton(
-                                                            icon: const Icon(Icons.close, color: AppColors.textTertiaryLight),
+                                                            icon: Icon(Icons.close, color: AppColors.textTertiary(context)),
                                                             onPressed: () => Navigator.of(context).pop(),
                                                         ),
                                                     ),
@@ -1337,14 +1337,14 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     children: [
                                                         Container(
                                                             padding: const EdgeInsets.all(12),
-                                                            decoration: const BoxDecoration(
+                                                            decoration:  BoxDecoration(
                                                                 color: Colors.white24,
                                                                 shape: BoxShape.circle,
                                                             ),
-                                                            child: const Icon(
+                                                            child:  Icon(
                                                                 Icons.monetization_on,
                                                                 size: 32,
-                                                                color: AppColors.surfaceLight,
+                                                                color: AppColors.surface(context),
                                                             ),
                                                         ),
                                                         const SizedBox(width: 16),
@@ -1362,13 +1362,13 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                 const SizedBox(height: 4),
                                                                 TweenAnimationBuilder<double>(
                                                                     tween: Tween<double>(begin: 0, end: totalExpenses),
-                                                                    duration: const Duration(seconds: 1),
+                                                                    duration:  Duration(seconds: 1),
                                                                     builder: (context, value, child) {
                                                                         return Text(
                                                                             'R${value.toStringAsFixed(2)}',
-                                                                            style: const TextStyle(
+                                                                            style: TextStyle(
                                                                                 fontSize: 24,
-                                                                                color: AppColors.surfaceLight,
+                                                                                color: AppColors.surface(context),
                                                                                 fontWeight: FontWeight.bold,
                                                                             ),
                                                                         );
@@ -1423,12 +1423,12 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                             Text('Expense Date: $expenseDate',
                                                                                 style: TextStyle(
                                                                                     fontSize: 10.0,
-                                                                                    color: AppColors.textSecondaryLight)),
+                                                                                    color: AppColors.textSecondary(context))),
                                                                             if (expense.additionalInfo.trim().isNotEmpty)
                                                                             Text(
                                                                                 'Additional Info: ${expense.additionalInfo}',
                                                                                 style: TextStyle(
-                                                                                    fontSize: 10.0, color: AppColors.textSecondaryLight),
+                                                                                    fontSize: 10.0, color: AppColors.textSecondary(context)),
                                                                             ),
                                                                         ],
                                                                     ),
@@ -1460,13 +1460,13 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     )
                                                     : Center(
                                                         child: Padding(
-                                                            padding: const EdgeInsets.all(20.0),
+                                                            padding:  EdgeInsets.all(20.0),
                                                             child: Text(
                                                                 'No expenses recorded yet.',
                                                                 style: Theme.of(context)
                                                                     .textTheme
                                                                     .bodyMedium
-                                                                    ?.copyWith(color: AppColors.textSecondaryLight),
+                                                                    ?.copyWith(color: AppColors.textSecondary(context)),
                                                             ),
                                                         ),
                                                     ),
@@ -1506,13 +1506,13 @@ class _CoopListItemState extends State<CoopListItem> {
                 );
             },
             child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                padding:  EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                 decoration: BoxDecoration(
-                    color: AppColors.textTertiaryLight.withOpacity(0.15),
+                    color: AppColors.textTertiary(context).withOpacity(0.15),
                     borderRadius: BorderRadius.circular(12.0),
                     boxShadow: [
                         BoxShadow(
-                            color: AppColors.textTertiaryLight.withOpacity(0.2),
+                            color: AppColors.textTertiary(context).withOpacity(0.2),
                             spreadRadius: 1,
                             blurRadius: 5,
                             offset: const Offset(0, 2),
@@ -1536,14 +1536,14 @@ class _CoopListItemState extends State<CoopListItem> {
                             children: [
                                 // Badge with min size
                                 Container(
-                                    constraints: const BoxConstraints(
+                                    constraints:  BoxConstraints(
                                         minWidth: 60,
                                         minHeight: 28,
                                     ),
                                     alignment: Alignment.center,
-                                    padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                                    padding:  EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
                                     decoration: BoxDecoration(
-                                        color: AppColors.surfaceVariantLight,
+                                        color: AppColors.surfaceVariant(context),
                                         borderRadius: BorderRadius.circular(12.0),
                                     ),
                                     child: Text(
@@ -1607,7 +1607,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                 borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor.withOpacity(0.3),
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.3),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -1622,14 +1622,14 @@ class _CoopListItemState extends State<CoopListItem> {
                                                             style: TextStyle(
                                                                 fontSize: 20,
                                                                 fontWeight: FontWeight.w700,
-                                                                color: Theme.of(context).primaryColor,
+                                                                color: AppColors.adaptivePrimary(context),
                                                             ),
                                                         ),
                                                     ),
                                                     Positioned(
                                                         right: 0,
                                                         child: IconButton(
-                                                            icon: const Icon(Icons.close, color: AppColors.textTertiaryLight),
+                                                            icon: Icon(Icons.close, color: AppColors.textTertiary(context)),
                                                             onPressed: () {
                                                                 Navigator.of(context).pop();
                                                             },
@@ -1666,14 +1666,14 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     children: [
                                                         Container(
                                                             padding: const EdgeInsets.all(12),
-                                                            decoration: const BoxDecoration(
+                                                            decoration:  BoxDecoration(
                                                                 color: Colors.white24,
                                                                 shape: BoxShape.circle,
                                                             ),
-                                                            child: const Icon(
+                                                            child:  Icon(
                                                                 Icons.egg,
                                                                 size: 32,
-                                                                color: AppColors.surfaceLight,
+                                                                color: AppColors.surface(context),
                                                             ),
                                                         ),
                                                         const SizedBox(width: 16),
@@ -1691,13 +1691,13 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                 const SizedBox(height: 4),
                                                                 TweenAnimationBuilder<double>(
                                                                     tween: Tween<double>(begin: 0, end: totalEggs.toDouble()),
-                                                                    duration: const Duration(seconds: 1),
+                                                                    duration:  Duration(seconds: 1),
                                                                     builder: (context, value, child) {
                                                                         return Text(
                                                                             value.toStringAsFixed(0),
-                                                                            style: const TextStyle(
+                                                                            style: TextStyle(
                                                                                 fontSize: 24,
-                                                                                color: AppColors.surfaceLight,
+                                                                                color: AppColors.surface(context),
                                                                                 fontWeight: FontWeight.bold,
                                                                             ),
                                                                         );
@@ -1833,11 +1833,11 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     )
                                                     : Center(
                                                         child: Padding(
-                                                            padding: const EdgeInsets.all(20.0),
+                                                            padding:  EdgeInsets.all(20.0),
                                                             child: Text(
                                                                 'No egg packaging records yet.',
                                                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                    color: AppColors.textSecondaryLight,
+                                                                    color: AppColors.textSecondary(context),
                                                                 ),
                                                             ),
                                                         ),
@@ -1870,7 +1870,7 @@ class _CoopListItemState extends State<CoopListItem> {
                     actions: <Widget>[
                         TextButton(
                             style: TextButton.styleFrom(
-                                foregroundColor: Theme.of(context).primaryColor,
+                                foregroundColor: AppColors.adaptivePrimary(context),
                                 textStyle: const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             onPressed: () {
@@ -1942,13 +1942,13 @@ class _CoopListItemState extends State<CoopListItem> {
                     title: Row(
                         children: [
                             Icon(Icons.receipt_long,
-                                color: Theme.of(context).primaryColor, size: 25),
+                                color: AppColors.adaptivePrimary(context), size: 25),
                             const SizedBox(width: 8.0),
                             Text('Sale Details',
                                 style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).primaryColor)),
+                                    color: AppColors.adaptivePrimary(context))),
                         ],
                     ),
                     content: SingleChildScrollView(
@@ -1989,7 +1989,7 @@ class _CoopListItemState extends State<CoopListItem> {
                             onPressed: () => Navigator.of(context).pop(),
                             child: Text(
                                 'Close',
-                                style: TextStyle(color: Theme.of(context).primaryColor),
+                                style: TextStyle(color: AppColors.adaptivePrimary(context)),
                             ),
                         ),
                     ],
@@ -2005,7 +2005,7 @@ class _CoopListItemState extends State<CoopListItem> {
             child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                    Icon(icon, size: 20.0, color: Theme.of(context).primaryColor),
+                    Icon(icon, size: 20.0, color: AppColors.adaptivePrimary(context)),
                     const SizedBox(width: 8.0),
                     Expanded(
                         child: RichText(
@@ -2095,7 +2095,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                 const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -2107,7 +2107,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight: FontWeight.w700,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                         letterSpacing: 0.5,
                                                     ),
                                                 ),
@@ -2188,7 +2188,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                         Expanded(
                                                                             child: ElevatedButton(
                                                                                 style: ElevatedButton.styleFrom(
-                                                                                    backgroundColor: Theme.of(context).primaryColor,
+                                                                                    backgroundColor: AppColors.adaptivePrimary(context),
                                                                                     elevation: 3,
                                                                                     shape: RoundedRectangleBorder(
                                                                                         borderRadius: BorderRadius.circular(12),
@@ -2199,10 +2199,10 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                                     Navigator.of(context).pop();
                                                                                     _showAddNewBatchBottomSheet(coop, farmId, onCoopUpdated);
                                                                                 },
-                                                                                child: const Text(
+                                                                                child:  Text(
                                                                                     'Confirm',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surfaceLight,
+                                                                                        color: AppColors.surface(context),
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -2283,7 +2283,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                 const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -2295,7 +2295,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight: FontWeight.w700,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                         letterSpacing: 0.5,
                                                     ),
                                                 ),
@@ -2392,7 +2392,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                         Expanded(
                                                                             child: ElevatedButton(
                                                                                 style: ElevatedButton.styleFrom(
-                                                                                    backgroundColor: Theme.of(context).primaryColor,
+                                                                                    backgroundColor: AppColors.adaptivePrimary(context),
                                                                                     elevation: 3,
                                                                                     shape: RoundedRectangleBorder(
                                                                                         borderRadius: BorderRadius.circular(12),
@@ -2444,14 +2444,14 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                                             context,
                                                                                             lottiePath: 'assets/lottie/error.json',
                                                                                             message: response.message,
-                                                                                            autoCloseAfter: const Duration(seconds: 5),
+                                                                                            autoCloseAfter:  Duration(seconds: 5),
                                                                                         );
                                                                                     }
                                                                                 },
-                                                                                child: const Text(
+                                                                                child:  Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surfaceLight,
+                                                                                        color: AppColors.surface(context),
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -2517,7 +2517,7 @@ class _CoopListItemState extends State<CoopListItem> {
             padding: const EdgeInsets.only(bottom: 2.0),
             child: Row(
                 children: [
-                    Icon(icon, size: 20, color: Theme.of(context).primaryColor),
+                    Icon(icon, size: 20, color: AppColors.adaptivePrimary(context)),
                     const SizedBox(width: 8),
                     Text(
                         '$label: ',
@@ -2543,14 +2543,14 @@ class _CoopListItemState extends State<CoopListItem> {
                         style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
+                            color: AppColors.adaptivePrimary(context),
                         ),
                     ),
                     content: Text(content),
                     actions: <Widget>[
                         TextButton(
                             style: TextButton.styleFrom(
-                                foregroundColor: Theme.of(context).primaryColor,
+                                foregroundColor: AppColors.adaptivePrimary(context),
                                 textStyle: const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             onPressed: () {
@@ -2631,7 +2631,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                 const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -2643,7 +2643,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight: FontWeight.w700,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                         letterSpacing: 0.5,
                                                     ),
                                                 ),
@@ -2734,7 +2734,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                         Expanded(
                                                                             child: ElevatedButton(
                                                                                 style: ElevatedButton.styleFrom(
-                                                                                    backgroundColor: Theme.of(context).primaryColor,
+                                                                                    backgroundColor: AppColors.adaptivePrimary(context),
                                                                                     elevation: 3,
                                                                                     shape: RoundedRectangleBorder(
                                                                                         borderRadius: BorderRadius.circular(12),
@@ -2785,14 +2785,14 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                                             context,
                                                                                             lottiePath: 'assets/lottie/error.json',
                                                                                             message: response.message,
-                                                                                            autoCloseAfter: const Duration(seconds: 5),
+                                                                                            autoCloseAfter:  Duration(seconds: 5),
                                                                                         );
                                                                                     }
                                                                                 },
-                                                                                child: const Text(
+                                                                                child:  Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surfaceLight,
+                                                                                        color: AppColors.surface(context),
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -2877,7 +2877,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                 const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -2889,7 +2889,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight: FontWeight.w700,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                         letterSpacing: 0.5,
                                                     ),
                                                 ),
@@ -3020,7 +3020,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                         Expanded(
                                                                             child: ElevatedButton(
                                                                                 style: ElevatedButton.styleFrom(
-                                                                                    backgroundColor: Theme.of(context).primaryColor,
+                                                                                    backgroundColor: AppColors.adaptivePrimary(context),
                                                                                     elevation: 3,
                                                                                     shape: RoundedRectangleBorder(
                                                                                         borderRadius: BorderRadius.circular(12),
@@ -3075,14 +3075,14 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                                             context,
                                                                                             lottiePath: 'assets/lottie/error.json',
                                                                                             message: response.message,
-                                                                                            autoCloseAfter: const Duration(seconds: 5),
+                                                                                            autoCloseAfter:  Duration(seconds: 5),
                                                                                         );
                                                                                     }
                                                                                 },
-                                                                                child: const Text(
+                                                                                child:  Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surfaceLight,
+                                                                                        color: AppColors.surface(context),
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -3169,7 +3169,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                 const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -3181,7 +3181,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight: FontWeight.w700,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                         letterSpacing: 0.5,
                                                     ),
                                                 ),
@@ -3307,7 +3307,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                         Expanded(
                                                                             child: ElevatedButton(
                                                                                 style: ElevatedButton.styleFrom(
-                                                                                    backgroundColor: Theme.of(context).primaryColor,
+                                                                                    backgroundColor: AppColors.adaptivePrimary(context),
                                                                                     elevation: 3,
                                                                                     shape: RoundedRectangleBorder(
                                                                                         borderRadius: BorderRadius.circular(12),
@@ -3362,14 +3362,14 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                                             context,
                                                                                             lottiePath: 'assets/lottie/error.json',
                                                                                             message: response.message,
-                                                                                            autoCloseAfter: const Duration(seconds: 5),
+                                                                                            autoCloseAfter:  Duration(seconds: 5),
                                                                                         );
                                                                                     }
                                                                                 },
-                                                                                child: const Text(
+                                                                                child:  Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surfaceLight,
+                                                                                        color: AppColors.surface(context),
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -3454,7 +3454,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                 const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -3466,7 +3466,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight: FontWeight.w700,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                         letterSpacing: 0.5,
                                                     ),
                                                 ),
@@ -3565,7 +3565,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                         Expanded(
                                                                             child: ElevatedButton(
                                                                                 style: ElevatedButton.styleFrom(
-                                                                                    backgroundColor: Theme.of(context).primaryColor,
+                                                                                    backgroundColor: AppColors.adaptivePrimary(context),
                                                                                     elevation: 3,
                                                                                     shape: RoundedRectangleBorder(
                                                                                         borderRadius: BorderRadius.circular(12),
@@ -3616,14 +3616,14 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                                             context,
                                                                                             lottiePath: 'assets/lottie/error.json',
                                                                                             message: response.message,
-                                                                                            autoCloseAfter: const Duration(seconds: 5),
+                                                                                            autoCloseAfter:  Duration(seconds: 5),
                                                                                         );
                                                                                     }
                                                                                 },
-                                                                                child: const Text(
+                                                                                child:  Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surfaceLight,
+                                                                                        color: AppColors.surface(context),
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -3707,7 +3707,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                 const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -3719,7 +3719,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight: FontWeight.w700,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                         letterSpacing: 0.5,
                                                     ),
                                                 ),
@@ -3822,7 +3822,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                         Expanded(
                                                                             child: ElevatedButton(
                                                                                 style: ElevatedButton.styleFrom(
-                                                                                    backgroundColor: Theme.of(context).primaryColor,
+                                                                                    backgroundColor: AppColors.adaptivePrimary(context),
                                                                                     elevation: 3,
                                                                                     shape: RoundedRectangleBorder(
                                                                                         borderRadius: BorderRadius.circular(12),
@@ -3873,14 +3873,14 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                                             context,
                                                                                             lottiePath: 'assets/lottie/error.json',
                                                                                             message: response.message,
-                                                                                            autoCloseAfter: const Duration(seconds: 5),
+                                                                                            autoCloseAfter:  Duration(seconds: 5),
                                                                                         );
                                                                                     }
                                                                                 },
-                                                                                child: const Text(
+                                                                                child:  Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surfaceLight,
+                                                                                        color: AppColors.surface(context),
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -3965,7 +3965,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                 const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -3977,7 +3977,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                     style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight: FontWeight.w700,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                         letterSpacing: 0.5,
                                                     ),
                                                 ),
@@ -4076,7 +4076,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                         Expanded(
                                                                             child: ElevatedButton(
                                                                                 style: ElevatedButton.styleFrom(
-                                                                                    backgroundColor: Theme.of(context).primaryColor,
+                                                                                    backgroundColor: AppColors.adaptivePrimary(context),
                                                                                     elevation: 3,
                                                                                     shape: RoundedRectangleBorder(
                                                                                         borderRadius: BorderRadius.circular(12),
@@ -4129,14 +4129,14 @@ class _CoopListItemState extends State<CoopListItem> {
                                                                                             context,
                                                                                             lottiePath: 'assets/lottie/error.json',
                                                                                             message: response.message,
-                                                                                            autoCloseAfter: const Duration(seconds: 5),
+                                                                                            autoCloseAfter:  Duration(seconds: 5),
                                                                                         );
                                                                                     }
                                                                                 },
-                                                                                child: const Text(
+                                                                                child:  Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surfaceLight,
+                                                                                        color: AppColors.surface(context),
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),

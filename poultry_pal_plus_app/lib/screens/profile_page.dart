@@ -39,6 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
             context: context,
             isScrollControlled: true,
             useRootNavigator: true,
+            backgroundColor: AppColors.surface(context),
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
@@ -59,12 +60,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                         Container(
                                             padding: const EdgeInsets.symmetric(vertical: 16),
                                             decoration: BoxDecoration(
-                                                color: Theme.of(context).scaffoldBackgroundColor,
+                                                color: AppColors.surface(context),
                                                 borderRadius:
                                                 const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -76,7 +77,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight: FontWeight.w700,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                         letterSpacing: 0.5,
                                                     ),
                                                 ),
@@ -154,7 +155,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                         Expanded(
                                                                             child: ElevatedButton(
                                                                                 style: ElevatedButton.styleFrom(
-                                                                                    backgroundColor: Theme.of(context).primaryColor,
+                                                                                    backgroundColor: AppColors.adaptivePrimary(context),
                                                                                     elevation: 3,
                                                                                     shape: RoundedRectangleBorder(
                                                                                         borderRadius: BorderRadius.circular(12),
@@ -204,7 +205,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                                 child: const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surfaceLight,
+                                                                                        color: AppColors.onPrimary,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -258,6 +259,7 @@ class _ProfilePageState extends State<ProfilePage> {
             context: context,
             isScrollControlled: true,
             useRootNavigator: true,
+            backgroundColor: AppColors.surface(context),
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
@@ -278,12 +280,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                         Container(
                                             padding: const EdgeInsets.symmetric(vertical: 16),
                                             decoration: BoxDecoration(
-                                                color: Theme.of(context).scaffoldBackgroundColor,
+                                                color: AppColors.surface(context),
                                                 borderRadius:
                                                 const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -295,7 +297,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight: FontWeight.w700,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                         letterSpacing: 0.5,
                                                     ),
                                                 ),
@@ -327,14 +329,14 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                     label: 'Username',
                                                                     value: widget.user.email,
                                                                 ),
-                                                                const SizedBox(height: 6),
+                                                                 SizedBox(height: 6),
                                                                 Container(
-                                                                    margin: const EdgeInsets.symmetric(vertical: 12),
-                                                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                                                    margin:  EdgeInsets.symmetric(vertical: 12),
+                                                                    padding:  EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                                                     decoration: BoxDecoration(
-                                                                        color: AppColors.surfaceVariantLight,
+                                                                        color: AppColors.surfaceVariant(context),
                                                                         borderRadius: BorderRadius.circular(12),
-                                                                        border: Border.all(color: AppColors.borderLight),
+                                                                        border: Border.all(color: AppColors.border(context)),
                                                                     ),
                                                                     child: Column(
                                                                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -352,7 +354,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                                             'View Password Requirements',
                                                                                             style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                                                                                 fontWeight: FontWeight.w600,
-                                                                                                color: AppColors.textPrimaryLight,
+                                                                                                color: AppColors.textPrimary(context),
                                                                                             ),
                                                                                         ),
                                                                                         AnimatedRotation(
@@ -454,7 +456,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                         Expanded(
                                                                             child: ElevatedButton(
                                                                                 style: ElevatedButton.styleFrom(
-                                                                                    backgroundColor: Theme.of(context).primaryColor,
+                                                                                    backgroundColor: AppColors.adaptivePrimary(context),
                                                                                     elevation: 3,
                                                                                     shape: RoundedRectangleBorder(
                                                                                         borderRadius: BorderRadius.circular(12),
@@ -500,7 +502,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                                 child: const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surfaceLight,
+                                                                                        color: AppColors.onPrimary,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -556,6 +558,7 @@ class _ProfilePageState extends State<ProfilePage> {
             context: context,
             isScrollControlled: true,
             useRootNavigator: true,
+            backgroundColor: AppColors.surface(context),
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
@@ -576,12 +579,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                         Container(
                                             padding: const EdgeInsets.symmetric(vertical: 16),
                                             decoration: BoxDecoration(
-                                                color: Theme.of(context).scaffoldBackgroundColor,
+                                                color: AppColors.surface(context),
                                                 borderRadius:
                                                 const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -593,7 +596,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight: FontWeight.w700,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                         letterSpacing: 0.5,
                                                     ),
                                                 ),
@@ -705,7 +708,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                         Expanded(
                                                                             child: ElevatedButton(
                                                                                 style: ElevatedButton.styleFrom(
-                                                                                    backgroundColor: Theme.of(context).primaryColor,
+                                                                                    backgroundColor: AppColors.adaptivePrimary(context),
                                                                                     elevation: 3,
                                                                                     shape: RoundedRectangleBorder(
                                                                                         borderRadius: BorderRadius.circular(12),
@@ -758,7 +761,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                                 child: const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surfaceLight,
+                                                                                        color: AppColors.onPrimary,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -831,7 +834,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                     style: Theme.of(context)
                                                         .textTheme
                                                         .headlineMedium
-                                                        ?.copyWith(color: Theme.of(context).primaryColor),
+                                                        ?.copyWith(color: AppColors.adaptivePrimary(context)),
                                                 ),
                                                 const SizedBox(height: 10),
                                                 Common.buildTextField(
@@ -923,7 +926,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                         ),
                                                         ElevatedButton(
                                                             style: ElevatedButton.styleFrom(
-                                                                backgroundColor: Theme.of(context).primaryColor,
+                                                                backgroundColor: AppColors.adaptivePrimary(context),
                                                             ),
                                                             onPressed: () async {
                                                                 if (formKey.currentState!.validate()) {
@@ -951,7 +954,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                             },
                                                             child: const Text(
                                                                 'Submit',
-                                                                style: TextStyle(color: AppColors.surfaceLight),
+                                                                style: TextStyle(color: AppColors.onPrimary),
                                                             ),
                                                         ),
                                                     ],
@@ -1127,6 +1130,7 @@ class ProfileSection extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
         return Card(
+            color: AppColors.surface(context),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0),
             ),
@@ -1145,16 +1149,16 @@ class ProfileSection extends StatelessWidget {
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).primaryColor),
+                                        color: AppColors.adaptivePrimary(context)),
                                 ),
                                 if (isEditEnabled)
                                 IconButton(
-                                    icon: const Icon(Icons.edit, color: AppColors.success),
+                                    icon:  Icon(Icons.edit, color: AppColors.success),
                                     onPressed: onEdit,
                                 ),
                             ],
                         ),
-                        Divider(color: AppColors.borderLight),
+                        Divider(color: AppColors.border(context)),
                         Column(children: fields),
                     ],
                 ),
@@ -1176,17 +1180,17 @@ class ProfileField extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(
                 children: [
-                    Icon(icon, color: Theme.of(context).primaryColor, size: 20),
-                    const SizedBox(width: 8),
+                    Icon(icon, color: AppColors.iconPrimary(context), size: 20),
+                     SizedBox(width: 8),
                     Text(
                         "$label: ",
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w600, color: AppColors.textPrimaryLight),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, color: AppColors.textPrimary(context)),
                     ),
                     Expanded(
                         child: Text(
                             value,
-                            style: TextStyle(color: AppColors.textSecondaryLight),
+                            style: TextStyle(color: AppColors.textSecondary(context)),
                             overflow: TextOverflow.ellipsis,
                         ),
                     ),
@@ -1213,6 +1217,7 @@ class EmployeeListSection extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
         return Card(
+            color: AppColors.surface(context),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0),
             ),
@@ -1231,7 +1236,7 @@ class EmployeeListSection extends StatelessWidget {
                                     style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
-                                        color: Theme.of(context).primaryColor,
+                                        color: AppColors.adaptivePrimary(context),
                                     ),
                                 ),
                                 if (user.farmOwner)
@@ -1244,7 +1249,7 @@ class EmployeeListSection extends StatelessWidget {
                                 ),
                             ],
                         ),
-                        Divider(color: AppColors.borderLight),
+                        Divider(color: AppColors.border(context)),
                         Column(
                             children: employees.map((employee) {
                                     String initials = (employee['name']?[0] ?? '') +
@@ -1256,26 +1261,26 @@ class EmployeeListSection extends StatelessWidget {
                                         padding: const EdgeInsets.symmetric(vertical: 6.0),
                                         child: ListTile(
                                             leading: CircleAvatar(
-                                                backgroundColor: Theme.of(context).primaryColor,
+                                                backgroundColor: AppColors.adaptivePrimary(context),
                                                 radius: 24,
                                                 child: Text(
                                                     initials.toUpperCase(),
                                                     style: const TextStyle(
-                                                        color: AppColors.surfaceLight,
+                                                        color: AppColors.onPrimary,
                                                         fontWeight: FontWeight.bold,
                                                     ),
                                                 ),
                                             ),
                                             title: Text(
                                                 '${employee['name']} ${employee['surname']}',
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                     fontWeight: FontWeight.w600,
-                                                    color: AppColors.textPrimaryLight,
+                                                    color: AppColors.textPrimary(context),
                                                 ),
                                             ),
                                             subtitle: Text(
                                                 employee['formattedRoles']!,
-                                                style: TextStyle(color: AppColors.textSecondaryLight, fontSize: 11),
+                                                style: TextStyle(color: AppColors.textSecondary(context), fontSize: 11),
                                             ),
                                             trailing: user.farmOwner
                                                 ? PopupMenuButton<String>(
@@ -1421,6 +1426,7 @@ class EmployeeListSection extends StatelessWidget {
             context: context,
             isScrollControlled: true,
             useRootNavigator: true,
+            backgroundColor: AppColors.surface(context),
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
@@ -1440,11 +1446,11 @@ class EmployeeListSection extends StatelessWidget {
                                         Container(
                                             padding: const EdgeInsets.symmetric(vertical: 16),
                                             decoration: BoxDecoration(
-                                                color: Theme.of(context).scaffoldBackgroundColor,
+                                                color: AppColors.surface(context),
                                                 borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor.withOpacity(0.2),
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -1456,7 +1462,7 @@ class EmployeeListSection extends StatelessWidget {
                                                     style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight: FontWeight.w700,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                         letterSpacing: 0.5,
                                                     ),
                                                 ),
@@ -1487,37 +1493,52 @@ class EmployeeListSection extends StatelessWidget {
                                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                                         children: [
                                                                             Padding(
-                                                                                padding: const EdgeInsets.only(bottom: 6),
+                                                                                padding:  EdgeInsets.only(bottom: 6),
                                                                                 child: Text(
                                                                                     'Assign coops to $employeeName',
-                                                                                    style: const TextStyle(
+                                                                                    style: TextStyle(
                                                                                         fontSize: 16,
                                                                                         fontWeight: FontWeight.w700,
-                                                                                        color: AppColors.textPrimaryLight,
+                                                                                        color: AppColors.textPrimary(context),
                                                                                     ),
                                                                                 ),
                                                                             ),
 
-                                                                            // ✅ Info note
+                                                                            // Info note
                                                                             Container(
                                                                                 decoration: BoxDecoration(
-                                                                                    color: AppColors.infoLight,
+                                                                                    color: AppColors.info.withValues(alpha: 0.1),
                                                                                     borderRadius: BorderRadius.circular(10),
-                                                                                    border: Border.all(color: AppColors.infoLight),
+                                                                                    border: Border.all(
+                                                                                        color: AppColors.info.withValues(alpha: 0.35),
+                                                                                    ),
                                                                                 ),
-                                                                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                                                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                                                                 child: Row(
                                                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                                                     children: [
-                                                                                        Icon(Icons.info_outline, color: AppColors.info, size: 20),
-                                                                                        const SizedBox(width: 8),
+                                                                                        const Icon(Icons.info_outline, color: AppColors.info, size: 18),
+                                                                                        const SizedBox(width: 10),
                                                                                         Expanded(
-                                                                                            child: Text(
-                                                                                                'Note: Access is limited to the selected coops. If none are selected, the user will have no access.',
-                                                                                                style: TextStyle(
-                                                                                                    fontSize: 13,
-                                                                                                    color: AppColors.info,
-                                                                                                    height: 1.3,
+                                                                                            child: RichText(
+                                                                                                text: TextSpan(
+                                                                                                    style: TextStyle(
+                                                                                                        fontSize: 13,
+                                                                                                        color: AppColors.textSecondary(context),
+                                                                                                        height: 1.4,
+                                                                                                    ),
+                                                                                                    children: const [
+                                                                                                        TextSpan(
+                                                                                                            text: 'Note: ',
+                                                                                                            style: TextStyle(
+                                                                                                                fontWeight: FontWeight.w700,
+                                                                                                                color: AppColors.info,
+                                                                                                            ),
+                                                                                                        ),
+                                                                                                        TextSpan(
+                                                                                                            text: 'Access is limited to the selected coops. If none are selected, the user will have no access.',
+                                                                                                        ),
+                                                                                                    ],
                                                                                                 ),
                                                                                             ),
                                                                                         ),
@@ -1549,13 +1570,13 @@ class EmployeeListSection extends StatelessWidget {
                                                                             },
                                                                             child: Card(
                                                                                 elevation: 3,
-                                                                                margin: const EdgeInsets.symmetric(vertical: 8),
+                                                                                margin:  EdgeInsets.symmetric(vertical: 8),
                                                                                 shape: RoundedRectangleBorder(
                                                                                     borderRadius: BorderRadius.circular(16),
                                                                                     side: BorderSide(
                                                                                         color: isSelected
-                                                                                            ? Theme.of(context).primaryColor
-                                                                                            : AppColors.borderLight,
+                                                                                            ? AppColors.adaptivePrimary(context)
+                                                                                            : AppColors.border(context),
                                                                                         width: isSelected ? 1.5 : 1,
                                                                                     ),
                                                                                 ),
@@ -1587,18 +1608,18 @@ class EmployeeListSection extends StatelessWidget {
                                                                                                     children: [
                                                                                                         Text(
                                                                                                             coop.coopName,
-                                                                                                            style: const TextStyle(
+                                                                                                            style: TextStyle(
                                                                                                                 fontSize: 16,
                                                                                                                 fontWeight: FontWeight.w700,
-                                                                                                                color: AppColors.textPrimaryLight,
+                                                                                                                color: AppColors.textPrimary(context),
                                                                                                             ),
                                                                                                         ),
-                                                                                                        const SizedBox(height: 4),
+                                                                                                         SizedBox(height: 4),
                                                                                                         Text(
                                                                                                             "${coop.coopType.toLowerCase().capitalize()} (${coop.growthPhase.value})",
-                                                                                                            style: const TextStyle(
+                                                                                                            style: TextStyle(
                                                                                                                 fontSize: 12,
-                                                                                                                color: AppColors.textSecondaryLight,
+                                                                                                                color: AppColors.textSecondary(context),
                                                                                                             ),
                                                                                                             overflow: TextOverflow.ellipsis,
                                                                                                         )
@@ -1609,7 +1630,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                             // Checkbox
                                                                                             Checkbox(
                                                                                                 value: isSelected,
-                                                                                                activeColor: Theme.of(context).primaryColor,
+                                                                                                activeColor: AppColors.adaptivePrimary(context),
                                                                                                 shape: RoundedRectangleBorder(
                                                                                                     borderRadius: BorderRadius.circular(6),
                                                                                                 ),
@@ -1631,7 +1652,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                     },
                                                                 ),
 
-                                                                const SizedBox(height: 18),
+                                                                const SizedBox(height: 0),
 
                                                                 Row(
                                                                     mainAxisAlignment: MainAxisAlignment.end,
@@ -1639,7 +1660,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                         Expanded(
                                                                             child: ElevatedButton(
                                                                                 style: ElevatedButton.styleFrom(
-                                                                                    backgroundColor: Theme.of(context).primaryColor,
+                                                                                    backgroundColor: AppColors.adaptivePrimary(context),
                                                                                     elevation: 3,
                                                                                     shape: RoundedRectangleBorder(
                                                                                         borderRadius: BorderRadius.circular(12),
@@ -1683,7 +1704,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                 child: const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surfaceLight,
+                                                                                        color: AppColors.onPrimary,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -1766,13 +1787,14 @@ class EmployeeListSection extends StatelessWidget {
             context: context,
             isScrollControlled: true,
             useRootNavigator: true,
+            backgroundColor: AppColors.surface(context),
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
             builder: (context) {
                 return DraggableScrollableSheet(
                     expand: false,
-                    initialChildSize: 0.85,
+                    initialChildSize: 0.65,
                     minChildSize: 0.4,
                     maxChildSize: 0.95,
                     builder: (context, scrollController) {
@@ -1785,12 +1807,12 @@ class EmployeeListSection extends StatelessWidget {
                                         Container(
                                             padding: const EdgeInsets.symmetric(vertical: 16),
                                             decoration: BoxDecoration(
-                                                color: Theme.of(context).scaffoldBackgroundColor,
+                                                color: AppColors.surface(context),
                                                 borderRadius:
                                                 const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor.withOpacity(0.2),
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -1802,7 +1824,7 @@ class EmployeeListSection extends StatelessWidget {
                                                     style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight: FontWeight.w700,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                         letterSpacing: 0.5,
                                                     ),
                                                 ),
@@ -1815,56 +1837,65 @@ class EmployeeListSection extends StatelessWidget {
                                             child: SingleChildScrollView(
                                                 controller: scrollController,
                                                 child: Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 18,
-                                                        right: 18,
-                                                        top: 18,
-                                                        bottom: MediaQuery.of(context).viewInsets.bottom + 18,
-                                                    ),
+                                                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
                                                     child: Form(
                                                         key: formKey,
                                                         child: Column(
                                                             crossAxisAlignment: CrossAxisAlignment.stretch,
                                                             children: [
-                                                                const SizedBox(height: 12),
+                                                                 SizedBox(height: 12),
                                                                 Text(
                                                                     'Assign roles to $employeeName',
-                                                                    style: const TextStyle(
+                                                                    style: TextStyle(
                                                                         fontSize: 15,
                                                                         fontWeight: FontWeight.w700,
-                                                                        color: AppColors.textPrimaryLight,
+                                                                        color: AppColors.textPrimary(context),
                                                                     ),
                                                                 ),
                                                                 const SizedBox(height: 4),
-                                                                // Info note
-                                                                Container(
-                                                                    decoration: BoxDecoration(
-                                                                        color: AppColors.infoLight,
-                                                                        borderRadius: BorderRadius.circular(10),
-                                                                        border: Border.all(color: AppColors.infoLight),
-                                                                    ),
-                                                                    padding: const EdgeInsets.all(10),
-                                                                    child: Row(
-                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                        children: [
-                                                                            Icon(Icons.info_outline,
-                                                                                color: AppColors.info, size: 20),
-                                                                            const SizedBox(width: 8),
-                                                                            Expanded(
-                                                                                child: Text(
-                                                                                    'Note: The user will have access based on the selected roles. '
-                                                                                        'Please choose at least one role.',
-                                                                                    style: TextStyle(
-                                                                                        fontSize: 13,
-                                                                                        color: AppColors.info,
-                                                                                        height: 1.3,
-                                                                                    ),
-                                                                                ),
-                                                                            ),
-                                                                        ],
-                                                                    ),
-                                                                ),
-                                                                const SizedBox(height: 20),
+                                                                 // Info note
+                                                                 Container(
+                                                                     decoration: BoxDecoration(
+                                                                         color: AppColors.info.withValues(alpha: 0.1),
+                                                                         borderRadius: BorderRadius.circular(10),
+                                                                         border: Border.all(
+                                                                             color: AppColors.info.withValues(alpha: 0.35),
+                                                                         ),
+                                                                     ),
+                                                                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                                                     child: Row(
+                                                                         crossAxisAlignment: CrossAxisAlignment.start,
+                                                                         children: [
+                                                                             const Icon(Icons.info_outline,
+                                                                                 color: AppColors.info, size: 18),
+                                                                             const SizedBox(width: 10),
+                                                                             Expanded(
+                                                                                 child: RichText(
+                                                                                     text: TextSpan(
+                                                                                         style: TextStyle(
+                                                                                             fontSize: 13,
+                                                                                             color: AppColors.textSecondary(context),
+                                                                                             height: 1.4,
+                                                                                         ),
+                                                                                         children: const [
+                                                                                             TextSpan(
+                                                                                                 text: 'Note: ',
+                                                                                                 style: TextStyle(
+                                                                                                     fontWeight: FontWeight.w700,
+                                                                                                     color: AppColors.info,
+                                                                                                 ),
+                                                                                             ),
+                                                                                             TextSpan(
+                                                                                                 text: 'The user\'s access will reflect the selected roles. At least one role must be assigned.',
+                                                                                             ),
+                                                                                         ],
+                                                                                     ),
+                                                                                 ),
+                                                                             ),
+                                                                         ],
+                                                                     ),
+                                                                 ),
+                                                                const SizedBox(height: 8),
 
                                                                 // Roles multi-select cards
                                                                 ListView.builder(
@@ -1889,25 +1920,25 @@ class EmployeeListSection extends StatelessWidget {
                                                                             child: Card(
                                                                                 elevation: 3,
                                                                                 margin:
-                                                                                const EdgeInsets.symmetric(vertical: 8),
+                                                                                 EdgeInsets.symmetric(vertical: 8),
                                                                                 shape: RoundedRectangleBorder(
                                                                                     borderRadius: BorderRadius.circular(16),
                                                                                     side: BorderSide(
                                                                                         color: isSelected
-                                                                                            ? Theme.of(context).primaryColor
-                                                                                            : AppColors.borderLight,
+                                                                                            ? AppColors.adaptivePrimary(context)
+                                                                                            : AppColors.border(context),
                                                                                         width: isSelected ? 2 : 1,
                                                                                     ),
                                                                                 ),
                                                                                 child: Padding(
-                                                                                    padding: const EdgeInsets.all(12.0),
+                                                                                    padding:  EdgeInsets.all(12.0),
                                                                                     child: Row(
                                                                                         children: [
                                                                                             Icon(role["icon"] as IconData,
                                                                                                 size: 32,
                                                                                                 color: isSelected
-                                                                                                    ? Theme.of(context).primaryColor
-                                                                                                    : AppColors.textSecondaryLight),
+                                                                                                    ? AppColors.adaptivePrimary(context)
+                                                                                                    : AppColors.textSecondary(context)),
                                                                                             const SizedBox(width: 14),
                                                                                             Expanded(
                                                                                                 child: Column(
@@ -1916,18 +1947,18 @@ class EmployeeListSection extends StatelessWidget {
                                                                                                     children: [
                                                                                                         Text(
                                                                                                             role["label"] as String,
-                                                                                                            style: const TextStyle(
+                                                                                                            style: TextStyle(
                                                                                                                 fontSize: 16,
                                                                                                                 fontWeight: FontWeight.w700,
-                                                                                                                color: AppColors.textPrimaryLight,
+                                                                                                                color: AppColors.textPrimary(context),
                                                                                                             ),
                                                                                                         ),
-                                                                                                        const SizedBox(height: 4),
+                                                                                                         SizedBox(height: 4),
                                                                                                         Text(
                                                                                                             role["description"] as String,
                                                                                                             style: TextStyle(
                                                                                                                 fontSize: 13,
-                                                                                                                color: AppColors.textSecondaryLight,
+                                                                                                                color: AppColors.textSecondary(context),
                                                                                                             ),
                                                                                                         ),
                                                                                                     ],
@@ -1936,7 +1967,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                             Checkbox(
                                                                                                 value: isSelected,
                                                                                                 activeColor:
-                                                                                                Theme.of(context).primaryColor,
+                                                                                                AppColors.adaptivePrimary(context),
                                                                                                 shape: RoundedRectangleBorder(
                                                                                                     borderRadius: BorderRadius.circular(6),
                                                                                                 ),
@@ -1958,119 +1989,98 @@ class EmployeeListSection extends StatelessWidget {
                                                                     },
                                                                 ),
 
-                                                                const SizedBox(height: 36),
-
-                                                                // Action buttons
-                                                                Row(
-                                                                    mainAxisAlignment: MainAxisAlignment.end,
-                                                                    children: [
-                                                                        Expanded(
-                                                                            child: ElevatedButton(
-                                                                                style: ElevatedButton.styleFrom(
-                                                                                    backgroundColor:
-                                                                                    Theme.of(context).primaryColor,
-                                                                                    elevation: 3,
-                                                                                    shape: RoundedRectangleBorder(
-                                                                                        borderRadius: BorderRadius.circular(12),
-                                                                                    ),
-                                                                                    padding:
-                                                                                    const EdgeInsets.symmetric(vertical: 14),
-                                                                                ),
-                                                                                onPressed: () async {
-                                                                                    if (selectedRoles.isEmpty) {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath:
-                                                                                            'assets/lottie/error.json',
-                                                                                            message:
-                                                                                            "Please select at least one role.",
-                                                                                            autoCloseAfter:
-                                                                                            const Duration(seconds: 3),
-                                                                                        );
-                                                                                        return;
-                                                                                    }
-
-                                                                                    await Common.showLottieDialog(
-                                                                                        context,
-                                                                                        lottiePath:
-                                                                                        'assets/lottie/loading_animation.json',
-                                                                                    );
-
-                                                                                    final response =
-                                                                                        await service.updateUserRoles(
-                                                                                            updatedByUserId: user.id,
-                                                                                            farmId: farm.id,
-                                                                                            userId: userId,
-                                                                                            roles: selectedRoles,
-                                                                                        );
-
-                                                                                    if (context.mounted) {
-                                                                                        Navigator.of(context,
-                                                                                            rootNavigator: true)
-                                                                                            .pop();
-                                                                                    }
-
-                                                                                    if (response.success) {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath:
-                                                                                            'assets/lottie/success_check.json',
-                                                                                            autoCloseAfter:
-                                                                                            const Duration(seconds: 2),
-                                                                                        );
-                                                                                        if (context.mounted) {
-                                                                                            Navigator.of(context).pop();
-                                                                                        }
-                                                                                        onCoopUpdated();
-                                                                                    } else {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath:
-                                                                                            'assets/lottie/error.json',
-                                                                                            message: response.message,
-                                                                                            autoCloseAfter:
-                                                                                            const Duration(seconds: 5),
-                                                                                        );
-                                                                                    }
-                                                                                },
-                                                                                child: const Text(
-                                                                                    'Submit',
-                                                                                    style: TextStyle(
-                                                                                        color: AppColors.surfaceLight,
-                                                                                        fontWeight: FontWeight.w600,
-                                                                                    ),
-                                                                                ),
-                                                                            ),
-                                                                        ),
-                                                                        const SizedBox(width: 12),
-                                                                        OutlinedButton(
-                                                                            style: OutlinedButton.styleFrom(
-                                                                                foregroundColor: AppColors.error,
-                                                                                side: const BorderSide(color: AppColors.error),
-                                                                                shape: RoundedRectangleBorder(
-                                                                                    borderRadius: BorderRadius.circular(12),
-                                                                                ),
-                                                                                padding: const EdgeInsets.symmetric(
-                                                                                    horizontal: 20, vertical: 12),
-                                                                            ),
-                                                                            onPressed: () =>
-                                                                            Navigator.of(context).pop(),
-                                                                            child: const Text(
-                                                                                'Cancel',
-                                                                                style:
-                                                                                TextStyle(fontWeight: FontWeight.w500),
-                                                                            ),
-                                                                        ),
-                                                                    ],
-                                                                ),
-                                                            ],
-                                                        ),
-                                                    ),
-                                                ),
-                                            ),
-                                        ),
-                                    ],
-                                );
+                                                                const SizedBox(height: 0),
+                                                                 Row(
+                                                                     children: [
+                                                                         Expanded(
+                                                                             child: ElevatedButton(
+                                                                                 style: ElevatedButton.styleFrom(
+                                                                                     backgroundColor: AppColors.adaptivePrimary(context),
+                                                                                     elevation: 3,
+                                                                                     shape: RoundedRectangleBorder(
+                                                                                         borderRadius: BorderRadius.circular(12),
+                                                                                     ),
+                                                                                     padding: const EdgeInsets.symmetric(vertical: 14),
+                                                                                 ),
+                                                                                 onPressed: () async {
+                                                                                     if (selectedRoles.isEmpty) {
+                                                                                         await Common.showLottieDialog(
+                                                                                             context,
+                                                                                             lottiePath: 'assets/lottie/error.json',
+                                                                                             message: "Please select at least one role.",
+                                                                                             autoCloseAfter: const Duration(seconds: 3),
+                                                                                         );
+                                                                                         return;
+                                                                                     }
+                                                                                     await Common.showLottieDialog(
+                                                                                         context,
+                                                                                         lottiePath: 'assets/lottie/loading_animation.json',
+                                                                                     );
+                                                                                     final response = await service.updateUserRoles(
+                                                                                         updatedByUserId: user.id,
+                                                                                         farmId: farm.id,
+                                                                                         userId: userId,
+                                                                                         roles: selectedRoles,
+                                                                                     );
+                                                                                     if (context.mounted) {
+                                                                                         Navigator.of(context, rootNavigator: true).pop();
+                                                                                     }
+                                                                                     if (response.success) {
+                                                                                         await Common.showLottieDialog(
+                                                                                             context,
+                                                                                             lottiePath: 'assets/lottie/success_check.json',
+                                                                                             autoCloseAfter: const Duration(seconds: 2),
+                                                                                         );
+                                                                                         if (context.mounted) {
+                                                                                             Navigator.of(context).pop();
+                                                                                         }
+                                                                                         onCoopUpdated();
+                                                                                     } else {
+                                                                                         await Common.showLottieDialog(
+                                                                                             context,
+                                                                                             lottiePath: 'assets/lottie/error.json',
+                                                                                             message: response.message,
+                                                                                             autoCloseAfter: const Duration(seconds: 5),
+                                                                                         );
+                                                                                     }
+                                                                                 },
+                                                                                 child: const Text(
+                                                                                     'Submit',
+                                                                                     style: TextStyle(
+                                                                                         color: AppColors.onPrimary,
+                                                                                         fontWeight: FontWeight.w600,
+                                                                                     ),
+                                                                                 ),
+                                                                             ),
+                                                                         ),
+                                                                         const SizedBox(width: 12),
+                                                                         OutlinedButton(
+                                                                             style: OutlinedButton.styleFrom(
+                                                                                 foregroundColor: AppColors.error,
+                                                                                 side: const BorderSide(color: AppColors.error),
+                                                                                 shape: RoundedRectangleBorder(
+                                                                                     borderRadius: BorderRadius.circular(12),
+                                                                                 ),
+                                                                                 padding: const EdgeInsets.symmetric(
+                                                                                     horizontal: 20, vertical: 12),
+                                                                             ),
+                                                                             onPressed: () => Navigator.of(context).pop(),
+                                                                             child: const Text(
+                                                                                 'Cancel',
+                                                                                 style: TextStyle(fontWeight: FontWeight.w500),
+                                                                             ),
+                                                                         ),
+                                                                     ],
+                                                                 ),
+                                                                 const SizedBox(height: 16),
+                                                             ],
+                                                         ),
+                                                     ),
+                                                 ),
+                                             ),
+                                         ),
+                                     ],
+                                 );
                             },
                         );
                     },
@@ -2097,6 +2107,7 @@ class EmployeeListSection extends StatelessWidget {
             context: context,
             isScrollControlled: true,
             useRootNavigator: true,
+            backgroundColor: AppColors.surface(context),
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
@@ -2117,12 +2128,12 @@ class EmployeeListSection extends StatelessWidget {
                                         Container(
                                             padding: const EdgeInsets.symmetric(vertical: 16),
                                             decoration: BoxDecoration(
-                                                color: Theme.of(context).scaffoldBackgroundColor,
+                                                color: AppColors.surface(context),
                                                 borderRadius:
                                                 const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -2134,7 +2145,7 @@ class EmployeeListSection extends StatelessWidget {
                                                     style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight: FontWeight.w700,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                         letterSpacing: 0.5,
                                                     ),
                                                 ),
@@ -2201,7 +2212,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                     context: context,
                                                                 ),
                                                                 const SizedBox(height: 22),
-                                                                const Align(
+                                                                Align(
                                                                     alignment: Alignment.centerLeft,
                                                                     child: Padding(
                                                                         padding: EdgeInsets.fromLTRB(14, 0, 0, 0),
@@ -2210,7 +2221,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                             style: TextStyle(
                                                                                 fontSize: 14,
                                                                                 fontWeight: FontWeight.bold,
-                                                                                color: AppColors.textPrimaryLight,
+                                                                                color: AppColors.textPrimary(context),
                                                                             ),
                                                                         ),
                                                                     ),
@@ -2218,11 +2229,11 @@ class EmployeeListSection extends StatelessWidget {
                                                                 // Use Wrap and Chip widgets to display roles more appealingly
 
                                                                 Container(
-                                                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                                                    padding:  EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                                                     decoration: BoxDecoration(
-                                                                        border: Border.all(color: AppColors.borderLight),
+                                                                        border: Border.all(color: AppColors.border(context)),
                                                                         borderRadius: BorderRadius.circular(16),
-                                                                        color: AppColors.surfaceVariantLight,
+                                                                        color: AppColors.surfaceVariant(context),
                                                                         boxShadow: [
                                                                             BoxShadow(
                                                                                 color: Colors.black.withOpacity(0.05),
@@ -2247,7 +2258,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                             roleLabel,
                                                                                             style: TextStyle(
                                                                                                 fontWeight: FontWeight.w600,
-                                                                                                color: isSelected ? Colors.white : AppColors.textPrimaryLight,
+                                                                                                color: isSelected ? Colors.white : AppColors.textPrimary(context),
                                                                                             ),
                                                                                         ),
                                                                                         selected: isSelected,
@@ -2261,13 +2272,13 @@ class EmployeeListSection extends StatelessWidget {
                                                                                                 });
                                                                                         },
                                                                                         selectedColor: AppColors.primary,
-                                                                                        backgroundColor: AppColors.borderLight,
+                                                                                        backgroundColor: AppColors.border(context),
                                                                                         shape: RoundedRectangleBorder(
                                                                                             borderRadius: BorderRadius.circular(12),
                                                                                             side: BorderSide(
                                                                                                 color: isSelected
                                                                                                     ? AppColors.primary
-                                                                                                    : AppColors.borderLight,
+                                                                                                    : AppColors.border(context),
                                                                                             ),
                                                                                         ),
                                                                                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -2296,7 +2307,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                         Expanded(
                                                                             child: ElevatedButton(
                                                                                 style: ElevatedButton.styleFrom(
-                                                                                    backgroundColor: Theme.of(context).primaryColor,
+                                                                                    backgroundColor: AppColors.adaptivePrimary(context),
                                                                                     elevation: 3,
                                                                                     shape: RoundedRectangleBorder(
                                                                                         borderRadius: BorderRadius.circular(12),
@@ -2346,7 +2357,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                 child: const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surfaceLight,
+                                                                                        color: AppColors.onPrimary,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -2410,15 +2421,15 @@ class _PasswordRequirementRow extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
         return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            padding:  EdgeInsets.symmetric(vertical: 4.0),
             child: Row(
                 children: [
-                    Icon(Icons.check_circle_outline, size: 18, color: AppColors.textSecondaryLight),
-                    const SizedBox(width: 8),
+                    Icon(Icons.check_circle_outline, size: 18, color: AppColors.textSecondary(context)),
+                     SizedBox(width: 8),
                     Expanded(
                         child: Text(
                             text,
-                            style: TextStyle(fontSize: 13.5, color: AppColors.textSecondaryLight),
+                            style: TextStyle(fontSize: 13.5, color: AppColors.textSecondary(context)),
                         ),
                     ),
                 ],

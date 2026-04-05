@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
@@ -15,7 +16,6 @@ import '../models/farm.dart';
 import '../models/message_response.dart';
 import '../models/user.dart';
 import '../service/poultry_pal_service.dart';
-import 'bottom_app_bar_border_painter.dart';
 import 'common.dart';
 import 'farm_dashboard.dart';
 import 'login_screen.dart';
@@ -28,13 +28,41 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+    static const List<String> _pageTitles = [
+        'Reminders', 'Dashboard', 'My Coops', 'Profile', 'Settings',
+    ];
+
     int _selectedIndex = 2;
     Farm? farm;
     User? user;
-    String _appBarTitle = "My Coops";
+    String _appBarTitle = 'My Coops';
     List<Coop> coops = [];
     List<Widget> _widgetOptions = [];
     PoultryPalService service = PoultryPalService();
+
+    // ── Time-based greeting ───────────────────────────────────────────────────
+    String get _greeting {
+        final hour = DateTime.now().hour;
+        final name = user?.name ?? '';
+        if (hour >= 5 && hour < 12) return 'Good morning, $name 🌅';
+        if (hour >= 12 && hour < 17) return 'Good afternoon, $name ☀️';
+        if (hour >= 17 && hour < 21) return 'Good evening, $name 🌇';
+        return 'Good night, $name 🌙';
+    }
+
+    // ── Quick-stats computed from live farm data ───────────────────────────────
+    int get _totalActiveCoops => coops.where((c) => c.active).length;
+    int get _totalChickens => coops.fold(0, (sum, c) => sum + c.numberOfChickens);
+    int get _todayEggCount {
+        final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+        return coops.fold(0, (sum, coop) =>
+            sum + coop.eggPackagingRecords
+                .where((r) => r.createdDate.startsWith(today))
+                .fold(0, (s, r) => s + r.totalEggs));
+    }
+    int get _pendingRemindersCount => coops.fold(0, (sum, coop) =>
+        sum + coop.reminder.upcomingReminders.length + coop.reminder.overdueTasks.length);
 
     @override
     void initState() {
@@ -72,7 +100,15 @@ class _HomeScreenState extends State<HomeScreen> {
     void _updateWidgetOptions(Farm farm, User user) {
         _widgetOptions = [
             RemindersScreen(farm: farm, user: user, onCoopUpdated: _onCoopUpdated),
-            FarmDashboard(farm: farm, user: user),
+            FarmDashboard(
+                farm: farm,
+                user: user,
+                onRefresh: _initializeData,
+                onNavigateToTab: (index) => setState(() {
+                    _selectedIndex = index;
+                    _appBarTitle = _pageTitles[index];
+                }),
+            ),
             buildMyCoopsPage(),
             ProfilePage(farm: farm, user: user, onCoopUpdated: _onCoopUpdated),
             SettingsScreen(farm: farm, user: user),
@@ -93,8 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     Builder buildMyCoopsPage() {
         final sortedCoops = [...coops]..sort((a, b) {
-                if (a.active == b.active) return 0; // Keep relative order if both same
-                return a.active ? -1 : 1; // Active first
+                if (a.active == b.active) return 0;
+                return a.active ? -1 : 1;
             });
         return Builder(
             builder: (BuildContext context) {
@@ -102,23 +138,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                         Expanded(
                             child: coops.isEmpty
-                                ? const Center(
+                                ? Center(
                                     child: Padding(
-                                        padding: EdgeInsets.all(16.0),
+                                        padding: const EdgeInsets.all(16.0),
                                         child: Text(
                                             'Let\'s add your coop details to get started.',
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 fontSize: 18,
-                                                color: AppColors.textTertiaryLight,
+                                                color: AppColors.textTertiary(context),
                                                 fontWeight: FontWeight.w500,
                                             ),
                                         ),
                                     ),
                                 )
-                                : // Sort so active coops come first
-
-                                ListView.builder(
+                                : ListView.builder(
+                                    padding: const EdgeInsets.only(bottom: 96),
                                     itemCount: sortedCoops.length,
                                     itemBuilder: (context, index) {
                                         return CoopListItem(
@@ -129,27 +164,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                         );
                                     },
                                 ),
-
                         ),
-                        const SingleChildScrollView(
-                            child: Column(
-                                children: [
-                                    SizedBox(height: 50), // Space at the bottom
-                                ],
-                            ),
-                        )
-
                     ],
                 );
             },
         );
-    }
-
-    void _onItemTapped(int index, String title) {
-        setState(() {
-                _selectedIndex = index;
-                _appBarTitle = title;
-            });
     }
 
     Future<void> _logout() async {
@@ -166,97 +185,310 @@ class _HomeScreenState extends State<HomeScreen> {
         );
     }
 
+    // ── BUILD ─────────────────────────────────────────────────────────────────
+
     @override
     Widget build(BuildContext context) {
-        // Show loading screen if data hasn't been initialized yet
         if (farm == null || user == null || _widgetOptions.isEmpty) {
             return Scaffold(
-                appBar: AppBar(
-                    title: const Text("Loading..."),
-                    elevation: 0,
-                ),
-                body: const Center(
-                    child: CircularProgressIndicator(),
-                ),
+                appBar: AppBar(title: const Text('Loading...'), elevation: 0),
+                body: const Center(child: CircularProgressIndicator()),
             );
         }
 
         return Scaffold(
-            extendBody: true, // Let the FAB overlap the nav bar background
-            floatingActionButton: Visibility(
-                visible: MediaQuery.of(context).viewInsets.bottom == 0,
-                child: FloatingActionButton(
-                    onPressed: () => _onItemTapped(2, "My Coops"),
-                    backgroundColor: _selectedIndex == 2
-                        ? AppColors.success : Theme.of(context).primaryColor,
+            // FAB: only shown on My Coops tab for farm owners
+            floatingActionButton: (_selectedIndex == 2 && user!.farmOwner)
+                ? FloatingActionButton(
+                    heroTag: 'add_coop_fab',
+                    onPressed: () => _showAddCoopBottomSheet(context),
+                    backgroundColor: AppColors.success,
                     shape: const CircleBorder(),
-                    child: const Icon(Icons.add_home_work_outlined, size: 28),
+                    tooltip: 'Add New Coop',
+                    child: const Icon(Icons.add, color: Colors.white, size: 28),
+                )
+                : null,
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+
+            body: NestedScrollView(
+                headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                    _buildSliverAppBar(context, innerBoxIsScrolled),
+                    SliverToBoxAdapter(child: _buildQuickStatsRow()),
+                    const SliverToBoxAdapter(
+                        child: Divider(height: 1, thickness: 1),
+                    ),
+                ],
+                body: _widgetOptions[_selectedIndex],
+            ),
+
+            bottomNavigationBar: _buildNavigationBar(),
+        );
+    }
+
+    // ── SLIVER APP BAR ────────────────────────────────────────────────────────
+
+    SliverAppBar _buildSliverAppBar(BuildContext context, bool innerBoxIsScrolled) {
+        return SliverAppBar(
+            expandedHeight: 170.0,
+            pinned: true,
+            floating: false,
+            snap: false,
+            forceElevated: innerBoxIsScrolled,
+            backgroundColor: AppColors.surface(context),
+            foregroundColor: AppColors.adaptivePrimary(context),
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            scrolledUnderElevation: 2,
+            shadowColor: AppColors.shadowLight.withValues(alpha: 0.15),
+            // Animated title — fades between tab names
+            title: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (child, animation) =>
+                    FadeTransition(opacity: animation, child: child),
+                child: Text(
+                    _appBarTitle,
+                    key: ValueKey(_appBarTitle),
+                    style: TextStyle(
+                        color: AppColors.adaptivePrimary(context),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                    ),
                 ),
             ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-            appBar: customAppBar(context, farm!, user!, _appBarTitle, _logout),
-
-            body: Center(
-                child: (_selectedIndex < _widgetOptions.length && _widgetOptions.isNotEmpty)
-                    ? _widgetOptions[_selectedIndex]
-                    : const CircularProgressIndicator(),
+            actions: [
+                // Context-sensitive action (download report on Dashboard)
+                AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 400),
+                    transitionBuilder: (child, animation) =>
+                        FadeTransition(opacity: animation, child: child),
+                    child: _buildAppBarAction(context),
+                ),
+                // Logout
+                IconButton(
+                    icon: Icon(Icons.logout_sharp, color: AppColors.adaptivePrimary(context)),
+                    onPressed: _logout,
+                    tooltip: 'Logout',
+                ),
+            ],
+            flexibleSpace: FlexibleSpaceBar(
+                collapseMode: CollapseMode.parallax,
+                background: _buildExpandedHeader(context),
             ),
-            bottomNavigationBar: Stack(
+        );
+    }
+
+    /// Contextual action button in the app bar (download report on Dashboard tab).
+    Widget _buildAppBarAction(BuildContext context) {
+        if (_appBarTitle == 'Dashboard' &&
+            user!.farmOwner &&
+            farm!.farmReport.coopReports.isNotEmpty) {
+            return IconButton(
+                key: const ValueKey('download_action'),
+                icon: Icon(Icons.download_outlined, color: AppColors.adaptivePrimary(context)),
+                tooltip: 'Email Farm Report',
+                onPressed: () async {
+                    final MessageResponse response = await service.sendReportViaEmail(
+                        farmId: farm!.id,
+                        userId: user!.id,
+                    );
+                    if (response.success) {
+                        _showSuccessSnackBar(response.message);
+                    } else {
+                        _showErrorSnackBar(response.message);
+                    }
+                },
+            );
+        }
+        return const SizedBox.shrink(key: ValueKey('no_action'));
+    }
+
+    /// Expanded flexible-space background: greeting + farm/user info.
+    Widget _buildExpandedHeader(BuildContext context) {
+        final topOffset = MediaQuery.of(context).padding.top + 56 + 6;
+        return Container(
+            color: AppColors.surface(context),
+            padding: EdgeInsets.fromLTRB(16, topOffset, 100, 8),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                    BottomAppBar(
-                        shape: const CircularNotchedRectangle(),
-                        notchMargin: 6.0,
-                        child: SizedBox(
-                            height: 60,
-                            child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: <Widget>[
-                                    Expanded(
-                                        child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                                _buildBottomNavItem(Icons.fact_check, 'Reminders', 0),
-                                                _buildBottomNavItem(Icons.bar_chart, 'Dashboard', 1),
-                                            ],
+                    // Farm avatar + greeting + farm name
+                    Row(
+                        children: [
+                            Hero(
+                                tag: 'farm-avatar',
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                            color: AppColors.border(context),
+                                            width: 1.5,
                                         ),
                                     ),
-                                    const SizedBox(width: 60), // Leave space for the center button
-                                    Expanded(
-                                        child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                                _buildBottomNavItem(Icons.person, 'Profile', 3),
-                                                _buildBottomNavItem(Icons.settings, 'Settings', 4),
-                                            ],
+                                    child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.asset(
+                                            'assets/icon.png',
+                                            width: 44,
+                                            height: 44,
+                                            fit: BoxFit.cover,
                                         ),
                                     ),
-                                ],
-                            ),
-                        ),
-                    ),
-                    Positioned.fill(
-                        child: IgnorePointer(
-                            child: CustomPaint(
-                                painter: BottomAppBarBorderPainter(
-                                    color: AppColors.borderLight,
                                 ),
                             ),
-                        ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                                child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                        Text(
+                                            _greeting,
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                                color: AppColors.adaptivePrimary(context),
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                        )
+                                        .animate()
+                                        .fadeIn(duration: 500.ms)
+                                        .moveY(begin: 10),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                            farm!.farmName,
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: AppColors.textSecondary(context),
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                        )
+                                        .animate()
+                                        .fadeIn(duration: 500.ms, delay: 80.ms)
+                                        .moveY(begin: 10),
+                                    ],
+                                ),
+                            ),
+                        ],
                     ),
                 ],
             ),
-
         );
     }
 
-    Widget _buildBottomNavItem(IconData icon, String label, int index) {
-        return IconButton(
-            icon: Icon(icon),
-            onPressed: () => _onItemTapped(index, label),
-            color: _selectedIndex == index
-                ? AppColors.success : Theme.of(context).primaryColor,
+    // ── QUICK-STATS ROW ───────────────────────────────────────────────────────
+
+    Widget _buildQuickStatsRow() {
+        return Container(
+            color: Theme.of(context).scaffoldBackgroundColor,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Row(
+                children: [
+                    _buildStatCard('Coops', '$_totalActiveCoops',
+                        Icons.home_work_outlined, AppColors.primary),
+                    const SizedBox(width: 8),
+                    _buildStatCard('Chickens', '$_totalChickens',
+                        Icons.egg_alt_outlined, AppColors.secondaryDark),
+                    const SizedBox(width: 8),
+                    _buildStatCard("Eggs Today", '$_todayEggCount',
+                        Icons.egg_outlined, AppColors.success),
+                    const SizedBox(width: 8),
+                    _buildStatCard('Reminders', '$_pendingRemindersCount',
+                        Icons.notifications_outlined, AppColors.warning),
+                ],
+            ),
         );
     }
+
+    Widget _buildStatCard(String label, String value, IconData icon, Color color) {
+        return Expanded(
+            child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                        color: color.withValues(alpha: 0.28),
+                        width: 1,
+                    ),
+                ),
+                child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                        Icon(icon, color: color, size: 18),
+                        const SizedBox(height: 3),
+                        Text(
+                            value,
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: color,
+                            ),
+                        ),
+                        Text(
+                            label,
+                            style: TextStyle(
+                                fontSize: 9,
+                                color: AppColors.textSecondary(context),
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                        ),
+                    ],
+                ),
+            ),
+        );
+    }
+
+    // ── MATERIAL 3 NAVIGATION BAR ─────────────────────────────────────────────
+
+    NavigationBar _buildNavigationBar() {
+        return NavigationBar(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: (index) {
+                setState(() {
+                    _selectedIndex = index;
+                    _appBarTitle = _pageTitles[index];
+                });
+            },
+            backgroundColor: AppColors.surface(context),
+            indicatorColor: AppColors.primary.withValues(alpha: 0.15),
+            surfaceTintColor: Colors.transparent,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            elevation: 3,
+            destinations: const [
+                NavigationDestination(
+                    icon: Icon(Icons.notifications_outlined),
+                    selectedIcon: Icon(Icons.notifications, color: AppColors.primary),
+                    label: 'Reminders',
+                ),
+                NavigationDestination(
+                    icon: Icon(Icons.bar_chart_outlined),
+                    selectedIcon: Icon(Icons.bar_chart, color: AppColors.primary),
+                    label: 'Dashboard',
+                ),
+                NavigationDestination(
+                    icon: Icon(Icons.home_work_outlined),
+                    selectedIcon: Icon(Icons.home_work, color: AppColors.primary),
+                    label: 'My Coops',
+                ),
+                NavigationDestination(
+                    icon: Icon(Icons.person_outline),
+                    selectedIcon: Icon(Icons.person, color: AppColors.primary),
+                    label: 'Profile',
+                ),
+                NavigationDestination(
+                    icon: Icon(Icons.settings_outlined),
+                    selectedIcon: Icon(Icons.settings, color: AppColors.primary),
+                    label: 'Settings',
+                ),
+            ],
+        );
+    }
+
+    // ── ADD COOP BOTTOM SHEET ─────────────────────────────────────────────────
 
     void _showAddCoopBottomSheet(BuildContext context) {
         final formKey = GlobalKey<FormState>();
@@ -297,7 +529,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 const BorderRadius.vertical(top: Radius.circular(20)),
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
                                                         blurRadius: 10,
                                                         offset: const Offset(0, 2),
                                                     ),
@@ -309,7 +541,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight: FontWeight.w700,
-                                                        color: Theme.of(context).primaryColor,
+                                                        color: AppColors.adaptivePrimary(context),
                                                         letterSpacing: 0.5,
                                                     ),
                                                 ),
@@ -355,7 +587,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                 style: TextStyle(
                                                                                     fontSize: 14,
                                                                                     fontWeight: FontWeight.w500,
-                                                                                    color: showCoopTypeError ? AppColors.error : Theme.of(context).primaryColor,
+                                                                                    color: showCoopTypeError ? AppColors.error : AppColors.adaptivePrimary(context),
                                                                                 ),
                                                                             ),
                                                                             const SizedBox(height: 3),
@@ -363,7 +595,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                 width: double.infinity, // Expand horizontally
                                                                                 decoration: BoxDecoration(
                                                                                     border: Border.all(
-                                                                                        color: showCoopTypeError ? AppColors.error : Theme.of(context).primaryColor.withAlpha(128),
+                                                                                        color: showCoopTypeError ? AppColors.error : AppColors.adaptivePrimary(context).withAlpha(128),
                                                                                         width: 1,
                                                                                     ),
                                                                                     borderRadius: BorderRadius.circular(8),
@@ -382,7 +614,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                             child: Text(
                                                                                                 'Broiler',
                                                                                                 style: TextStyle(
-                                                                                                    color: coopType == 'Broiler' ? Colors.white : Colors.black,
+                                                                                                    color: coopType == 'Broiler' ? Colors.white : AppColors.textPrimary(context),
                                                                                                 ),
                                                                                             ),
                                                                                         ),
@@ -391,15 +623,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                             child: Text(
                                                                                                 'Layers',
                                                                                                 style: TextStyle(
-                                                                                                    color: coopType == 'Layers' ? Colors.white : Colors.black,
+                                                                                                    color: coopType == 'Layers' ? Colors.white : AppColors.textPrimary(context),
                                                                                                 ),
                                                                                             ),
                                                                                         ),
                                                                                     },
-                                                                                    borderColor: AppColors.borderLight,
+                                                                                    borderColor: AppColors.border(context),
                                                                                     selectedColor: AppColors.primary,
-                                                                                    unselectedColor: Colors.white,
-                                                                                    pressedColor: AppColors.surfaceVariantLight,
+                                                                                    unselectedColor: AppColors.surface(context),
+                                                                                    pressedColor: AppColors.surfaceVariant(context),
                                                                                 ),
                                                                             ),
                                                                             if (showCoopTypeError)
@@ -427,7 +659,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                 style: TextStyle(
                                                                                     fontSize: 14,
                                                                                     fontWeight: FontWeight.w500,
-                                                                                    color: showGrowthPhaseError ? AppColors.error : Theme.of(context).primaryColor,
+                                                                                    color: showGrowthPhaseError ? AppColors.error : AppColors.adaptivePrimary(context),
                                                                                 ),
                                                                             ),
                                                                             const SizedBox(height: 3),
@@ -437,7 +669,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                     border: Border.all(
                                                                                         color: showGrowthPhaseError
                                                                                             ? AppColors.error
-                                                                                            : Theme.of(context).primaryColor.withAlpha(128),
+                                                                                            : AppColors.adaptivePrimary(context).withAlpha(128),
                                                                                         width: 1,
                                                                                     ),
                                                                                     borderRadius: BorderRadius.circular(8),
@@ -458,7 +690,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                                 style: TextStyle(
                                                                                                     color: growthPhase == GrowingPhase.BROODING_PHASE
                                                                                                         ? Colors.white
-                                                                                                        : Colors.black,
+                                                                                                        : AppColors.textPrimary(context),
                                                                                                 ),
                                                                                             ),
                                                                                         ),
@@ -469,7 +701,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                                 style: TextStyle(
                                                                                                     color: growthPhase == GrowingPhase.GROWING_REARING_PHASE
                                                                                                         ? Colors.white
-                                                                                                        : Colors.black,
+                                                                                                        : AppColors.textPrimary(context),
                                                                                                 ),
                                                                                             ),
                                                                                         ),
@@ -480,15 +712,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                                 style: TextStyle(
                                                                                                     color: growthPhase == GrowingPhase.PRODUCTION_FINISHING_PHASE
                                                                                                         ? Colors.white
-                                                                                                        : Colors.black,
+                                                                                                        : AppColors.textPrimary(context),
                                                                                                 ),
                                                                                             ),
                                                                                         ),
                                                                                     },
-                                                                                    borderColor: AppColors.borderLight,
+                                                                                    borderColor: AppColors.border(context),
                                                                                     selectedColor: AppColors.primary,
-                                                                                    unselectedColor: Colors.white,
-                                                                                    pressedColor: AppColors.surfaceVariantLight,
+                                                                                    unselectedColor: AppColors.surface(context),
+                                                                                    pressedColor: AppColors.surfaceVariant(context),
                                                                                 ),
                                                                             ),
                                                                             if (showGrowthPhaseError)
@@ -534,7 +766,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                         Expanded(
                                                                             child: ElevatedButton(
                                                                                 style: ElevatedButton.styleFrom(
-                                                                                    backgroundColor: Theme.of(context).primaryColor,
+                                                                                    backgroundColor: AppColors.adaptivePrimary(context),
                                                                                     elevation: 3,
                                                                                     shape: RoundedRectangleBorder(
                                                                                         borderRadius: BorderRadius.circular(12),
@@ -637,7 +869,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     }
 
-    PreferredSizeWidget customAppBar(
+    // ignore: unused_element — kept for reference only; remove in next cleanup
+    PreferredSizeWidget _legacyCustomAppBar(
         BuildContext context,
         Farm farm,
         User user,
@@ -676,14 +909,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 appBarTitle ?? 'Dashboard',
                                                 key: ValueKey(appBarTitle ?? 'Dashboard'),
                                                 style: TextStyle(
-                                                    color: Theme.of(context).primaryColor,
+                                                    color: AppColors.adaptivePrimary(context),
                                                     fontSize: 18,
                                                     fontWeight: FontWeight.bold,
                                                 ),
                                             ),
                                         ),
                                         IconButton(
-                                            icon: Icon(Icons.logout_sharp, color: Theme.of(context).primaryColor),
+                                            icon: Icon(Icons.logout_sharp, color: AppColors.adaptivePrimary(context)),
                                             onPressed: logout,
                                         ),
                                     ],
@@ -729,7 +962,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         style: TextStyle(
                                                             fontSize: 16,
                                                             fontWeight: FontWeight.bold,
-                                                            color: Theme.of(context).primaryColor,
+                                                            color: AppColors.adaptivePrimary(context),
                                                         ),
                                                     ).animate().fadeIn(duration: 600.ms).moveY(begin: 30),
                                                     const SizedBox(height: 2),
@@ -737,7 +970,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         "${user.surname} ${user.name}",
                                                         style: TextStyle(
                                                             fontSize: 14,
-                                                            color: Theme.of(context).primaryColor,
+                                                            color: AppColors.adaptivePrimary(context),
                                                         ),
                                                     ).animate().fadeIn(duration: 600.ms).moveY(begin: 30),
                                                 ],
@@ -827,8 +1060,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         right: 0,
                         child: Container(
                             width: double.infinity,
-                            decoration: const BoxDecoration(
-                                color: AppColors.backgroundLight,
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).scaffoldBackgroundColor,
                                 borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(25),
                                     topRight: Radius.circular(25),

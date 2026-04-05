@@ -110,14 +110,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: const Text('Automatically Create Reminders'),
                 subtitle: Text(
                   'Enable to automatically create reminders for tasks',
-                  style: TextStyle(fontSize: 11, color: AppColors.textPrimaryLight),
+                  style: TextStyle(fontSize: 11, color: AppColors.textSecondary(context)),
                 ),
                 value: _settingsData.autoCreateReminders ?? false,
                 onChanged: (value) =>
                     setState(() => _settingsData.autoCreateReminders = value),
                 activeColor: AppColors.success,
-                inactiveThumbColor: AppColors.textTertiaryLight,
-                inactiveTrackColor: AppColors.borderLight,
+                inactiveThumbColor: AppColors.textTertiary(context),
+                inactiveTrackColor: AppColors.border(context),
               ),
 
               const SizedBox(height: 5),
@@ -125,14 +125,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: const Text('Receive Daily Reminders'),
                 subtitle: Text(
                   'Enable daily reminders for medications, vaccinations and feeding schedules',
-                  style: TextStyle(fontSize: 11, color: AppColors.textPrimaryLight),
+                  style: TextStyle(fontSize: 11, color: AppColors.textSecondary(context)),
                 ),
                 value: _settingsData.dailyReminders ?? false,
                 onChanged: (value) =>
                     setState(() => _settingsData.dailyReminders = value),
                 activeColor: AppColors.success,
-                inactiveThumbColor: AppColors.textTertiaryLight,
-                inactiveTrackColor: AppColors.borderLight,
+                inactiveThumbColor: AppColors.textTertiary(context),
+                inactiveTrackColor: AppColors.border(context),
               ),
 
               const SizedBox(height: 5),
@@ -140,14 +140,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: const Text('Sales Alerts'),
                 subtitle: Text(
                   'Enable to receive alerts when a sale is recorded.',
-                  style: TextStyle(fontSize: 11, color: AppColors.textPrimaryLight),
+                  style: TextStyle(fontSize: 11, color: AppColors.textSecondary(context)),
                 ),
                 value: _settingsData.salesAlerts ?? false,
                 onChanged: (value) =>
                     setState(() => _settingsData.salesAlerts = value),
                 activeColor: AppColors.success,
-                inactiveThumbColor: AppColors.textTertiaryLight,
-                inactiveTrackColor: AppColors.borderLight,
+                inactiveThumbColor: AppColors.textTertiary(context),
+                inactiveTrackColor: AppColors.border(context),
               ),
 
               const SizedBox(height: 5),
@@ -155,28 +155,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: const Text('Mortality Alerts'),
                 subtitle: Text(
                   'Enable to receive alerts when a mortality is recorded.',
-                  style: TextStyle(fontSize: 11, color: AppColors.textPrimaryLight),
+                  style: TextStyle(fontSize: 11, color: AppColors.textSecondary(context)),
                 ),
                 value: _settingsData.mortalityAlerts ?? false,
                 onChanged: (value) =>
                     setState(() => _settingsData.mortalityAlerts = value),
                 activeColor: AppColors.success,
-                inactiveThumbColor: AppColors.textTertiaryLight,
-                inactiveTrackColor: AppColors.borderLight,
+                inactiveThumbColor: AppColors.textTertiary(context),
+                inactiveTrackColor: AppColors.border(context),
               ),
               const SizedBox(height: 5),
               SwitchListTile(
                 title: const Text('Expense Alerts'),
                 subtitle: Text(
                   'Enable to receive alerts when an expense is recorded.',
-                  style: TextStyle(fontSize: 11, color: AppColors.textPrimaryLight),
+                  style: TextStyle(fontSize: 11, color: AppColors.textSecondary(context)),
                 ),
                 value: _settingsData.expenseAlerts ?? false,
                 onChanged: (value) =>
                     setState(() => _settingsData.expenseAlerts = value),
                 activeColor: AppColors.success,
-                inactiveThumbColor: AppColors.textTertiaryLight,
-                inactiveTrackColor: AppColors.borderLight,
+                inactiveThumbColor: AppColors.textTertiary(context),
+                inactiveTrackColor: AppColors.border(context),
               ),
               const SizedBox(height: 5),
               Autocomplete<Map<String, String>>(
@@ -209,7 +209,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         labelText: 'Currency',
                         labelStyle: const TextStyle(fontSize: 14),
                         prefixIcon: Icon(Icons.attach_money,
-                            color: Theme.of(context).primaryColor),
+                            color: AppColors.adaptivePrimary(context)),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8)),
                         contentPadding: const EdgeInsets.symmetric(
@@ -230,7 +230,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ElevatedButton(
                     onPressed: _saveSettings,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
+                      backgroundColor: AppColors.adaptivePrimary(context),
                       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
                     ),
                     child: const Text(

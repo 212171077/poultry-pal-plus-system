@@ -38,14 +38,14 @@ class MortalityDropdown extends StatelessWidget {
         final border = OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide(
-                color: Theme.of(context).primaryColor.withAlpha(128),
+                color: AppColors.adaptivePrimary(context).withAlpha(128),
             ),
         );
 
         final focusedBorder = OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide(
-                color: Theme.of(context).primaryColor,
+                color: AppColors.adaptivePrimary(context),
                 width: 2.0,
             ),
         );
@@ -64,7 +64,7 @@ class MortalityDropdown extends StatelessWidget {
                 labelStyle: const TextStyle(fontSize: 14),
                 prefixIcon: Padding(
                     padding: const EdgeInsets.only(left: 12, right: 0), // tighter spacing
-                    child: Icon(Icons.category_outlined, color: Theme.of(context).primaryColor),
+                    child: Icon(Icons.category_outlined, color: AppColors.adaptivePrimary(context)),
                 ),
                 prefixIconConstraints: const BoxConstraints(
                     minWidth: 0,
@@ -85,7 +85,7 @@ class MortalityDropdown extends StatelessWidget {
                 decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Theme.of(context).primaryColor.withAlpha(80)),
+                    border: Border.all(color: AppColors.adaptivePrimary(context).withAlpha(80)),
                     boxShadow: [
                         BoxShadow(
                             color: Colors.black.withOpacity(0.05),

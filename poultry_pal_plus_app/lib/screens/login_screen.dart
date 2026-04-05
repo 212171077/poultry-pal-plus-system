@@ -171,17 +171,18 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
   InputDecoration _inputDecoration(String label, IconData icon,
       {Widget? suffixIcon}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(color: AppColors.textPrimaryLight),
+      labelStyle: TextStyle(color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight),
       filled: true,
-      fillColor: AppColors.surfaceVariantLight,
+      fillColor: isDark ? AppColors.surfaceVariantDark : AppColors.surfaceVariantLight,
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide.none,
       ),
-      prefixIcon: Icon(icon, color: AppColors.primary),
+      prefixIcon: Icon(icon, color: isDark ? AppColors.primaryLight : AppColors.primary),
       suffixIcon: suffixIcon,
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
@@ -219,10 +220,10 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                         padding: const EdgeInsets.all(20),
                         margin: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                          color: AppColors.surfaceLight,
+                          color: theme.colorScheme.surface,
                           borderRadius: BorderRadius.circular(40),
                           border: Border.all(
-                              color: AppColors.borderLight, width: 1),
+                              color: theme.colorScheme.outline, width: 1),
                           boxShadow: const [
                             BoxShadow(color: Colors.black12,
                                 blurRadius: 12,
@@ -241,9 +242,9 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                   color: AppColors.primary,
                                   shape: BoxShape.circle,
                                 ),
-                                child: const CircleAvatar(
+                                child: CircleAvatar(
                                   radius: 40,
-                                  backgroundColor: AppColors.surfaceLight,
+                                  backgroundColor: theme.colorScheme.surface,
                                   backgroundImage: AssetImage(
                                       'assets/login.png'),
                                 ),
@@ -326,7 +327,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                             ElevatedButton(
                               onPressed: isLoading ? null : _login,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: theme.primaryColor,
+                                backgroundColor: AppColors.adaptivePrimary(context),
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 50, vertical: 15),
                                 shape: RoundedRectangleBorder(

@@ -54,7 +54,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 "Please note that some value you "
                 "enter will be used to predict potential "
                 "profit and provide guidance on selling "
@@ -63,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 "impact the calculations.",
                 style: TextStyle(
                   fontSize: 14,
-                  color: AppColors.textPrimaryLight,
+                  color: AppColors.textPrimary(context),
                 ),
               ),
               const SizedBox(height: 16),
@@ -154,12 +154,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ElevatedButton(
                 onPressed: _saveSettings,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
+                  backgroundColor: AppColors.adaptivePrimary(context),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 child: const Text(
                   'Save Settings',
-                  style: TextStyle(fontSize: 18, color: AppColors.surfaceLight),
+                  style: TextStyle(fontSize: 18, color: AppColors.onPrimary),
                 ),
               ),
             ],

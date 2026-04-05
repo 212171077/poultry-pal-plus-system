@@ -46,6 +46,7 @@ abstract class AppColors {
   static const Color primary      = Color(0xFF8B5A2B); // Warm sienna brown
   static const Color primaryLight = Color(0xFFA6703F); // Lighter for dark-mode use
   static const Color primaryDark  = Color(0xFF6B4320); // Deeper for pressed/hover
+  static const Color primaryBright = Color(0xFFD4A574); // Bright warm brown for dark-mode accent text
 
   // ── SECONDARY — Harvest Amber / Gold ─────────────────────────────────────
   // WHY: Amber (#F4A623) sits naturally alongside brown — like wheat beside
@@ -116,6 +117,44 @@ abstract class AppColors {
   // ── SHADOWS ───────────────────────────────────────────────────────────────
   static const Color shadowLight = Color(0xFF000000);
   static const Color shadowDark  = Color(0xFF000000);
+
+  // ── ADAPTIVE HELPERS ──────────────────────────────────────────────────────
+  // Use these in widgets to get the correct color for the current theme.
+  // Usage: AppColors.surface(context)
+
+  static bool _isDark(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
+
+  static Color background(BuildContext context) =>
+      _isDark(context) ? backgroundDark : backgroundLight;
+  static Color surface(BuildContext context) =>
+      _isDark(context) ? surfaceDark : surfaceLight;
+  static Color surfaceVariant(BuildContext context) =>
+      _isDark(context) ? surfaceVariantDark : surfaceVariantLight;
+
+  static Color textPrimary(BuildContext context) =>
+      _isDark(context) ? textPrimaryDark : textPrimaryLight;
+  static Color textSecondary(BuildContext context) =>
+      _isDark(context) ? textSecondaryDark : textSecondaryLight;
+  static Color textTertiary(BuildContext context) =>
+      _isDark(context) ? textTertiaryDark : textTertiaryLight;
+  static Color textDisabled(BuildContext context) =>
+      _isDark(context) ? textDisabledDark : textDisabledLight;
+
+  static Color border(BuildContext context) =>
+      _isDark(context) ? borderDark : borderLight;
+  static Color divider(BuildContext context) =>
+      _isDark(context) ? dividerDark : dividerLight;
+
+  static Color adaptivePrimary(BuildContext context) =>
+      _isDark(context) ? primaryBright : primary;
+
+  /// For icons on cards/surfaces — needs higher contrast in dark mode
+  static Color iconPrimary(BuildContext context) =>
+      _isDark(context) ? secondaryLight : primary;
+
+  /// For text on colored backgrounds (e.g. on primary buttons) — always white.
+  static const Color onPrimary = Colors.white;
 }
 
 // ============================================================================
@@ -541,6 +580,15 @@ class AppTheme {
         shape: CircleBorder(),
       ),
 
+      // ---- Bottom Sheet Theme ----
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: AppColors.surfaceLight,
+        modalBackgroundColor: AppColors.surfaceLight,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+      ),
+
       // ---- Divider Theme ----
       dividerTheme: const DividerThemeData(
         color: AppColors.dividerLight,
@@ -797,6 +845,15 @@ class AppTheme {
         foregroundColor: Colors.white,
         elevation: AppElevation.lg,
         shape: CircleBorder(),
+      ),
+
+      // ---- Bottom Sheet Theme ----
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: AppColors.surfaceDark,
+        modalBackgroundColor: AppColors.surfaceDark,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
       ),
 
       // ---- Divider Theme ----

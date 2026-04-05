@@ -82,9 +82,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceLight,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppColors.surfaceVariantLight),
+                        border: Border.all(color: Theme.of(context).colorScheme.outline),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.05),
@@ -118,7 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
-                              color: Theme.of(context).primaryColor,
+                              color: AppColors.adaptivePrimary(context),
                               height: 1.3,
                             ),
                           ),
@@ -214,7 +214,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                             child: ElevatedButton(
                               onPressed: _register,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).primaryColor,
+                                backgroundColor: AppColors.adaptivePrimary(context),
                                 padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
@@ -270,22 +270,23 @@ class _RegisterScreenState extends State<RegisterScreen>
     Widget? suffixIcon,
     required String? Function(String?) validator,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
         controller: controller,
         obscureText: obscureText,
-        style: const TextStyle(fontSize: 16),
+        style: TextStyle(fontSize: 16, color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight),
         decoration: InputDecoration(
-          prefixIcon: icon != null ? Icon(icon, color: AppColors.primary) : null,
+          prefixIcon: icon != null ? Icon(icon, color: isDark ? AppColors.primaryLight : AppColors.primary) : null,
           suffixIcon: suffixIcon,
           labelText: labelText,
-          labelStyle: const TextStyle(
-            color: AppColors.textPrimaryLight,
+          labelStyle: TextStyle(
+            color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
             fontWeight: FontWeight.w500,
           ),
           filled: true,
-          fillColor: AppColors.surfaceVariantLight,
+          fillColor: isDark ? AppColors.surfaceVariantDark : AppColors.surfaceVariantLight,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
@@ -297,7 +298,7 @@ class _RegisterScreenState extends State<RegisterScreen>
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 1.5),
+            borderSide: BorderSide(color: AppColors.adaptivePrimary(context), width: 1.5),
           ),
         ),
         validator: validator,
