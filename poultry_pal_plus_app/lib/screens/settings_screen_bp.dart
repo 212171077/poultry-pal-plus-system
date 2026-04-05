@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:poultry_pal_plus_app/models/settings_data_bp.dart';
 import 'package:poultry_pal_plus_app/screens/common.dart';
 
@@ -39,7 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _showSuccessSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      Common.buildSnackBar(message, Colors.green),
+      Common.buildSnackBar(message, AppColors.success),
     );
   }
 
@@ -62,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 "impact the calculations.",
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.black87,
+                  color: AppColors.textPrimaryLight,
                 ),
               ),
               const SizedBox(height: 16),
@@ -158,7 +159,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 child: const Text(
                   'Save Settings',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+                  style: TextStyle(fontSize: 18, color: AppColors.surfaceLight),
                 ),
               ),
             ],

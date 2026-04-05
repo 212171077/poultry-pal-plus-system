@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
 class ExpenseTypeDropdown extends StatelessWidget {
@@ -91,11 +92,11 @@ class ExpenseTypeDropdown extends StatelessWidget {
                         ),
                         errorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Colors.red),
+                            borderSide: const BorderSide(color: AppColors.error),
                         ),
                         focusedErrorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Colors.red, width: 2),
+                            borderSide: const BorderSide(color: AppColors.error, width: 2),
                         ),
                       errorText: isInvalid ? 'Please select an expense type' : null,
                     ),
@@ -121,7 +122,7 @@ class ExpenseTypeDropdown extends StatelessWidget {
                                         key,
                                         style: TextStyle(
                                             fontSize: 14,
-                                            color: isInvalid ? Colors.red : Colors.black,
+                                            color: isInvalid ? AppColors.error : Colors.black,
                                             fontWeight: FontWeight.w400,
                                         ),
                                         overflow: TextOverflow.ellipsis,
@@ -153,7 +154,7 @@ class ExpenseTypeDropdown extends StatelessWidget {
                                                     ),
                                                 );
                                             },
-                                            child: const Icon(Icons.info_outline, color: Colors.blue, size: 20),
+                                            child: const Icon(Icons.info_outline, color: AppColors.info, size: 20),
                                         )
                                         else
                                         const SizedBox(width: 20),

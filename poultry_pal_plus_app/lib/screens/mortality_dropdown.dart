@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
 class MortalityDropdown extends StatelessWidget {
@@ -74,10 +75,10 @@ class MortalityDropdown extends StatelessWidget {
                 enabledBorder: border,
                 focusedBorder: focusedBorder,
                 errorBorder: border.copyWith(
-                    borderSide: const BorderSide(color: Colors.red),
+                    borderSide: const BorderSide(color: AppColors.error),
                 ),
                 focusedErrorBorder: border.copyWith(
-                    borderSide: const BorderSide(color: Colors.red, width: 2),
+                    borderSide: const BorderSide(color: AppColors.error, width: 2),
                 ),
             ),
             dropdownStyleData: DropdownStyleData(
@@ -104,7 +105,7 @@ class MortalityDropdown extends StatelessWidget {
                   key,
                   style: TextStyle(
                     fontSize: 14,
-                    color: isPlaceholder && hasSubmitted ? Colors.red : Colors.black,
+                    color: isPlaceholder && hasSubmitted ? AppColors.error : Colors.black,
                     fontWeight: FontWeight.w400,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -136,7 +137,7 @@ class MortalityDropdown extends StatelessWidget {
                                             ),
                                         );
                                     },
-                                    child: const Icon(Icons.info_outline, color: Colors.blue, size: 20),
+                                    child: const Icon(Icons.info_outline, color: AppColors.info, size: 20),
                                 )
                                 else
                                 const SizedBox(width: 20),

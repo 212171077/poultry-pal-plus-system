@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:poultry_pal_plus_app/models/coop.dart';
@@ -80,13 +81,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
     void _showErrorSnackBar(String message) {
         ScaffoldMessenger.of(context).showSnackBar(
-            Common.buildSnackBar(message, Colors.red),
+            Common.buildSnackBar(message, AppColors.error),
         );
     }
 
     void _showSuccessSnackBar(String message) {
         ScaffoldMessenger.of(context).showSnackBar(
-            Common.buildSnackBar(message, Colors.green),
+            Common.buildSnackBar(message, AppColors.success),
         );
     }
 
@@ -109,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                                 fontSize: 18,
-                                                color: Colors.grey,
+                                                color: AppColors.textTertiaryLight,
                                                 fontWeight: FontWeight.w500,
                                             ),
                                         ),
@@ -187,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: FloatingActionButton(
                     onPressed: () => _onItemTapped(2, "My Coops"),
                     backgroundColor: _selectedIndex == 2
-                        ? Colors.green : Theme.of(context).primaryColor,
+                        ? AppColors.success : Theme.of(context).primaryColor,
                     shape: const CircleBorder(),
                     child: const Icon(Icons.add_home_work_outlined, size: 28),
                 ),
@@ -237,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: IgnorePointer(
                             child: CustomPaint(
                                 painter: BottomAppBarBorderPainter(
-                                    color: Colors.grey[300]!,
+                                    color: AppColors.borderLight,
                                 ),
                             ),
                         ),
@@ -253,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(icon),
             onPressed: () => _onItemTapped(index, label),
             color: _selectedIndex == index
-                ? Colors.green : Theme.of(context).primaryColor,
+                ? AppColors.success : Theme.of(context).primaryColor,
         );
     }
 
@@ -354,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                 style: TextStyle(
                                                                                     fontSize: 14,
                                                                                     fontWeight: FontWeight.w500,
-                                                                                    color: showCoopTypeError ? Colors.red : Theme.of(context).primaryColor,
+                                                                                    color: showCoopTypeError ? AppColors.error : Theme.of(context).primaryColor,
                                                                                 ),
                                                                             ),
                                                                             const SizedBox(height: 3),
@@ -362,7 +363,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                 width: double.infinity, // Expand horizontally
                                                                                 decoration: BoxDecoration(
                                                                                     border: Border.all(
-                                                                                        color: showCoopTypeError ? Colors.red : Theme.of(context).primaryColor.withAlpha(128),
+                                                                                        color: showCoopTypeError ? AppColors.error : Theme.of(context).primaryColor.withAlpha(128),
                                                                                         width: 1,
                                                                                     ),
                                                                                     borderRadius: BorderRadius.circular(8),
@@ -395,10 +396,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                             ),
                                                                                         ),
                                                                                     },
-                                                                                    borderColor: Colors.grey[300],
-                                                                                    selectedColor: Colors.brown[300],
+                                                                                    borderColor: AppColors.borderLight,
+                                                                                    selectedColor: AppColors.primary,
                                                                                     unselectedColor: Colors.white,
-                                                                                    pressedColor: Colors.brown[50],
+                                                                                    pressedColor: AppColors.surfaceVariantLight,
                                                                                 ),
                                                                             ),
                                                                             if (showCoopTypeError)
@@ -407,7 +408,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                 child: Text(
                                                                                     'Please select a coop type',
                                                                                     style: TextStyle(
-                                                                                        color: Colors.red,
+                                                                                        color: AppColors.error,
                                                                                         fontSize: 12,
                                                                                     ),
                                                                                 ),
@@ -426,7 +427,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                 style: TextStyle(
                                                                                     fontSize: 14,
                                                                                     fontWeight: FontWeight.w500,
-                                                                                    color: showGrowthPhaseError ? Colors.red : Theme.of(context).primaryColor,
+                                                                                    color: showGrowthPhaseError ? AppColors.error : Theme.of(context).primaryColor,
                                                                                 ),
                                                                             ),
                                                                             const SizedBox(height: 3),
@@ -435,7 +436,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                 decoration: BoxDecoration(
                                                                                     border: Border.all(
                                                                                         color: showGrowthPhaseError
-                                                                                            ? Colors.red
+                                                                                            ? AppColors.error
                                                                                             : Theme.of(context).primaryColor.withAlpha(128),
                                                                                         width: 1,
                                                                                     ),
@@ -484,10 +485,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                             ),
                                                                                         ),
                                                                                     },
-                                                                                    borderColor: Colors.grey[300],
-                                                                                    selectedColor: Colors.brown[300],
+                                                                                    borderColor: AppColors.borderLight,
+                                                                                    selectedColor: AppColors.primary,
                                                                                     unselectedColor: Colors.white,
-                                                                                    pressedColor: Colors.brown[50],
+                                                                                    pressedColor: AppColors.surfaceVariantLight,
                                                                                 ),
                                                                             ),
                                                                             if (showGrowthPhaseError)
@@ -496,7 +497,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                 child: Text(
                                                                                     'Please select a growth phase',
                                                                                     style: TextStyle(
-                                                                                        color: Colors.red,
+                                                                                        color: AppColors.error,
                                                                                         fontSize: 12,
                                                                                     ),
                                                                                 ),
@@ -593,7 +594,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                 child: const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: Colors.white,
+                                                                                        color: AppColors.surfaceLight,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -602,8 +603,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                         const SizedBox(width: 12),
                                                                         OutlinedButton(
                                                                             style: OutlinedButton.styleFrom(
-                                                                                foregroundColor: Colors.red,
-                                                                                side: const BorderSide(color: Colors.red),
+                                                                                foregroundColor: AppColors.error,
+                                                                                side: const BorderSide(color: AppColors.error),
                                                                                 shape: RoundedRectangleBorder(
                                                                                     borderRadius: BorderRadius.circular(12),
                                                                                 ),
@@ -652,7 +653,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                         height: 190,
                         decoration: const BoxDecoration(
-                            color: Colors.white,
+                            color: AppColors.surfaceLight,
                         ),
                         padding: const EdgeInsets.only(top: 40, left: 16, right: 16),
                         child: Column(
@@ -699,7 +700,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 decoration: BoxDecoration(
                                                     borderRadius: BorderRadius.circular(12),
                                                     border: Border.all(
-                                                        color: Colors.grey,
+                                                        color: AppColors.textTertiaryLight,
                                                         width: 1.5,
                                                     ),
                                                 ),
@@ -757,9 +758,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     key: const ValueKey('add_coop_button'),
                                                     margin: const EdgeInsets.only(left: 8),
                                                     decoration: BoxDecoration(
-                                                        color: Colors.white,
+                                                        color: AppColors.surfaceLight,
                                                         shape: BoxShape.circle,
-                                                        border: Border.all(color: Colors.green, width: 2),
+                                                        border: Border.all(color: AppColors.success, width: 2),
                                                     ),
                                                     child: Material(
                                                         color: Colors.transparent,
@@ -771,7 +772,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             },
                                                             child: const Padding(
                                                                 padding: EdgeInsets.all(8.0),
-                                                                child: Icon(Icons.add, color: Colors.green),
+                                                                child: Icon(Icons.add, color: AppColors.success),
                                                             ),
                                                         ),
                                                     ),
@@ -781,9 +782,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         key: const ValueKey('download_button'),
                                                         margin: const EdgeInsets.only(left: 8),
                                                         decoration: BoxDecoration(
-                                                            color: Colors.white, // changed here
+                                                            color: AppColors.surfaceLight, // changed here
                                                             shape: BoxShape.circle,
-                                                            border: Border.all(color: Colors.green, width: 2),
+                                                            border: Border.all(color: AppColors.success, width: 2),
                                                         ),
                                                         child: Material(
                                                             color: Colors.transparent,
@@ -804,7 +805,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 },
                                                                 child: const Padding(
                                                                     padding: EdgeInsets.all(8.0),
-                                                                    child: Icon(Icons.download, color: Colors.green),
+                                                                    child: Icon(Icons.download, color: AppColors.success),
                                                                 ),
                                                             ),
                                                         ),
@@ -827,14 +828,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Container(
                             width: double.infinity,
                             decoration: const BoxDecoration(
-                                color: Colors.white,
+                                color: AppColors.backgroundLight,
                                 borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(25),
                                     topRight: Radius.circular(25),
                                 ),
                                 boxShadow: [
                                     BoxShadow(
-                                        color: Colors.grey,
+                                        color: AppColors.textTertiaryLight,
                                         blurRadius: 1,
                                         offset: Offset(0, -1),
                                     ),

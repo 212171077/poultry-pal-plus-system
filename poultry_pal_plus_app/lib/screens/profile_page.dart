@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:poultry_pal_plus_app/models/farm.dart';
 import 'package:poultry_pal_plus_app/models/user.dart';
 import '../models/coop.dart';
@@ -203,7 +204,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                                 child: const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: Colors.white,
+                                                                                        color: AppColors.surfaceLight,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -212,8 +213,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                         const SizedBox(width: 12),
                                                                         OutlinedButton(
                                                                             style: OutlinedButton.styleFrom(
-                                                                                foregroundColor: Colors.red,
-                                                                                side: const BorderSide(color: Colors.red),
+                                                                                foregroundColor: AppColors.error,
+                                                                                side: const BorderSide(color: AppColors.error),
                                                                                 shape: RoundedRectangleBorder(
                                                                                     borderRadius: BorderRadius.circular(12),
                                                                                 ),
@@ -331,9 +332,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                     margin: const EdgeInsets.symmetric(vertical: 12),
                                                                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                                                     decoration: BoxDecoration(
-                                                                        color: Colors.grey[100],
+                                                                        color: AppColors.surfaceVariantLight,
                                                                         borderRadius: BorderRadius.circular(12),
-                                                                        border: Border.all(color: Colors.grey.shade300),
+                                                                        border: Border.all(color: AppColors.borderLight),
                                                                     ),
                                                                     child: Column(
                                                                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -351,7 +352,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                                             'View Password Requirements',
                                                                                             style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                                                                                 fontWeight: FontWeight.w600,
-                                                                                                color: Colors.grey[800],
+                                                                                                color: AppColors.textPrimaryLight,
                                                                                             ),
                                                                                         ),
                                                                                         AnimatedRotation(
@@ -359,7 +360,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                                             duration: const Duration(milliseconds: 200),
                                                                                             child: const Icon(
                                                                                                 Icons.expand_more,
-                                                                                                color: Colors.green,
+                                                                                                color: AppColors.success,
                                                                                             ),
                                                                                         ),
                                                                                     ],
@@ -499,7 +500,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                                 child: const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: Colors.white,
+                                                                                        color: AppColors.surfaceLight,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -508,8 +509,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                         const SizedBox(width: 12),
                                                                         OutlinedButton(
                                                                             style: OutlinedButton.styleFrom(
-                                                                                foregroundColor: Colors.red,
-                                                                                side: const BorderSide(color: Colors.red),
+                                                                                foregroundColor: AppColors.error,
+                                                                                side: const BorderSide(color: AppColors.error),
                                                                                 shape: RoundedRectangleBorder(
                                                                                     borderRadius: BorderRadius.circular(12),
                                                                                 ),
@@ -757,7 +758,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                                 child: const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: Colors.white,
+                                                                                        color: AppColors.surfaceLight,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -766,8 +767,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                                                         const SizedBox(width: 12),
                                                                         OutlinedButton(
                                                                             style: OutlinedButton.styleFrom(
-                                                                                foregroundColor: Colors.red,
-                                                                                side: const BorderSide(color: Colors.red),
+                                                                                foregroundColor: AppColors.error,
+                                                                                side: const BorderSide(color: AppColors.error),
                                                                                 shape: RoundedRectangleBorder(
                                                                                     borderRadius: BorderRadius.circular(12),
                                                                                 ),
@@ -916,7 +917,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                         TextButton(
                                                             child: const Text(
                                                                 'Cancel',
-                                                                style: TextStyle(color: Colors.red),
+                                                                style: TextStyle(color: AppColors.error),
                                                             ),
                                                             onPressed: () => Navigator.of(context).pop(),
                                                         ),
@@ -950,7 +951,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                             },
                                                             child: const Text(
                                                                 'Submit',
-                                                                style: TextStyle(color: Colors.white),
+                                                                style: TextStyle(color: AppColors.surfaceLight),
                                                             ),
                                                         ),
                                                     ],
@@ -969,14 +970,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
     void _showErrorSnackBar(String message) {
         ScaffoldMessenger.of(context).showSnackBar(
-            Common.buildSnackBar(message, Colors.red),
+            Common.buildSnackBar(message, AppColors.error),
         );
     }
 
     void _showSuccessSnackBar(String message, VoidCallback onCoopUpdated) {
         onCoopUpdated();
         ScaffoldMessenger.of(context).showSnackBar(
-            Common.buildSnackBar(message, Colors.green),
+            Common.buildSnackBar(message, AppColors.success),
         );
     }
 
@@ -1148,12 +1149,12 @@ class ProfileSection extends StatelessWidget {
                                 ),
                                 if (isEditEnabled)
                                 IconButton(
-                                    icon: const Icon(Icons.edit, color: Colors.green),
+                                    icon: const Icon(Icons.edit, color: AppColors.success),
                                     onPressed: onEdit,
                                 ),
                             ],
                         ),
-                        Divider(color: Colors.grey[300]),
+                        Divider(color: AppColors.borderLight),
                         Column(children: fields),
                     ],
                 ),
@@ -1180,12 +1181,12 @@ class ProfileField extends StatelessWidget {
                     Text(
                         "$label: ",
                         style: const TextStyle(
-                            fontWeight: FontWeight.w600, color: Colors.black87),
+                            fontWeight: FontWeight.w600, color: AppColors.textPrimaryLight),
                     ),
                     Expanded(
                         child: Text(
                             value,
-                            style: TextStyle(color: Colors.grey[700]),
+                            style: TextStyle(color: AppColors.textSecondaryLight),
                             overflow: TextOverflow.ellipsis,
                         ),
                     ),
@@ -1236,14 +1237,14 @@ class EmployeeListSection extends StatelessWidget {
                                 if (user.farmOwner)
                                 IconButton(
                                     icon: const Icon(Icons.add_circle_outline_sharp,
-                                        color: Colors.green),
+                                        color: AppColors.success),
                                     onPressed: () => {
                                         _showAddUserBottomSheet(context, user, farm, onCoopUpdated)
                                     },
                                 ),
                             ],
                         ),
-                        Divider(color: Colors.grey[300]),
+                        Divider(color: AppColors.borderLight),
                         Column(
                             children: employees.map((employee) {
                                     String initials = (employee['name']?[0] ?? '') +
@@ -1260,7 +1261,7 @@ class EmployeeListSection extends StatelessWidget {
                                                 child: Text(
                                                     initials.toUpperCase(),
                                                     style: const TextStyle(
-                                                        color: Colors.white,
+                                                        color: AppColors.surfaceLight,
                                                         fontWeight: FontWeight.bold,
                                                     ),
                                                 ),
@@ -1269,17 +1270,17 @@ class EmployeeListSection extends StatelessWidget {
                                                 '${employee['name']} ${employee['surname']}',
                                                 style: const TextStyle(
                                                     fontWeight: FontWeight.w600,
-                                                    color: Colors.black87,
+                                                    color: AppColors.textPrimaryLight,
                                                 ),
                                             ),
                                             subtitle: Text(
                                                 employee['formattedRoles']!,
-                                                style: TextStyle(color: Colors.grey[700], fontSize: 11),
+                                                style: TextStyle(color: AppColors.textSecondaryLight, fontSize: 11),
                                             ),
                                             trailing: user.farmOwner
                                                 ? PopupMenuButton<String>(
                                                     icon: const Icon(Icons.more_vert,
-                                                        color: Colors.green),
+                                                        color: AppColors.success),
                                                     onSelected: (String value) {
                                                         _handleMenuSelection(
                                                             context,
@@ -1297,7 +1298,7 @@ class EmployeeListSection extends StatelessWidget {
                                                             value: 'RemoveUser',
                                                             child: Row(
                                                                 children: [
-                                                                    Icon(Icons.delete, color: Colors.red),
+                                                                    Icon(Icons.delete, color: AppColors.error),
                                                                     SizedBox(width: 8),
                                                                     Text('Remove User'),
                                                                 ],
@@ -1307,7 +1308,7 @@ class EmployeeListSection extends StatelessWidget {
                                                             value: 'UpdateRoles',
                                                             child: Row(
                                                                 children: [
-                                                                    Icon(Icons.edit, color: Colors.blue),
+                                                                    Icon(Icons.edit, color: AppColors.info),
                                                                     SizedBox(width: 8),
                                                                     Text('Update Role(s)'),
                                                                 ],
@@ -1317,7 +1318,7 @@ class EmployeeListSection extends StatelessWidget {
                                                             value: 'UserCoops',
                                                             child: Row(
                                                                 children: [
-                                                                    Icon(Icons.home_work_outlined, color: Colors.brown),
+                                                                    Icon(Icons.home_work_outlined, color: AppColors.primary),
                                                                     SizedBox(width: 8),
                                                                     Text('User Coop(s)'),
                                                                 ],
@@ -1492,7 +1493,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                     style: const TextStyle(
                                                                                         fontSize: 16,
                                                                                         fontWeight: FontWeight.w700,
-                                                                                        color: Colors.black87,
+                                                                                        color: AppColors.textPrimaryLight,
                                                                                     ),
                                                                                 ),
                                                                             ),
@@ -1500,22 +1501,22 @@ class EmployeeListSection extends StatelessWidget {
                                                                             // ✅ Info note
                                                                             Container(
                                                                                 decoration: BoxDecoration(
-                                                                                    color: Colors.blue.shade50,
+                                                                                    color: AppColors.infoLight,
                                                                                     borderRadius: BorderRadius.circular(10),
-                                                                                    border: Border.all(color: Colors.blue.shade100),
+                                                                                    border: Border.all(color: AppColors.infoLight),
                                                                                 ),
                                                                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                                                                 child: Row(
                                                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                                                     children: [
-                                                                                        Icon(Icons.info_outline, color: Colors.blue.shade700, size: 20),
+                                                                                        Icon(Icons.info_outline, color: AppColors.info, size: 20),
                                                                                         const SizedBox(width: 8),
                                                                                         Expanded(
                                                                                             child: Text(
                                                                                                 'Note: Access is limited to the selected coops. If none are selected, the user will have no access.',
                                                                                                 style: TextStyle(
                                                                                                     fontSize: 13,
-                                                                                                    color: Colors.blue.shade800,
+                                                                                                    color: AppColors.info,
                                                                                                     height: 1.3,
                                                                                                 ),
                                                                                             ),
@@ -1554,7 +1555,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                     side: BorderSide(
                                                                                         color: isSelected
                                                                                             ? Theme.of(context).primaryColor
-                                                                                            : Colors.grey.shade300,
+                                                                                            : AppColors.borderLight,
                                                                                         width: isSelected ? 1.5 : 1,
                                                                                     ),
                                                                                 ),
@@ -1589,15 +1590,15 @@ class EmployeeListSection extends StatelessWidget {
                                                                                                             style: const TextStyle(
                                                                                                                 fontSize: 16,
                                                                                                                 fontWeight: FontWeight.w700,
-                                                                                                                color: Colors.black87,
+                                                                                                                color: AppColors.textPrimaryLight,
                                                                                                             ),
                                                                                                         ),
                                                                                                         const SizedBox(height: 4),
                                                                                                         Text(
                                                                                                             "${coop.coopType.toLowerCase().capitalize()} (${coop.growthPhase.value})",
-                                                                                                            style: TextStyle(
+                                                                                                            style: const TextStyle(
                                                                                                                 fontSize: 12,
-                                                                                                                color: Theme.of(context).primaryColorDark,
+                                                                                                                color: AppColors.textSecondaryLight,
                                                                                                             ),
                                                                                                             overflow: TextOverflow.ellipsis,
                                                                                                         )
@@ -1682,7 +1683,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                 child: const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: Colors.white,
+                                                                                        color: AppColors.surfaceLight,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -1691,8 +1692,8 @@ class EmployeeListSection extends StatelessWidget {
                                                                         const SizedBox(width: 12),
                                                                         OutlinedButton(
                                                                             style: OutlinedButton.styleFrom(
-                                                                                foregroundColor: Colors.red,
-                                                                                side: const BorderSide(color: Colors.red),
+                                                                                foregroundColor: AppColors.error,
+                                                                                side: const BorderSide(color: AppColors.error),
                                                                                 shape: RoundedRectangleBorder(
                                                                                     borderRadius: BorderRadius.circular(12),
                                                                                 ),
@@ -1831,23 +1832,23 @@ class EmployeeListSection extends StatelessWidget {
                                                                     style: const TextStyle(
                                                                         fontSize: 15,
                                                                         fontWeight: FontWeight.w700,
-                                                                        color: Colors.black87,
+                                                                        color: AppColors.textPrimaryLight,
                                                                     ),
                                                                 ),
                                                                 const SizedBox(height: 4),
                                                                 // Info note
                                                                 Container(
                                                                     decoration: BoxDecoration(
-                                                                        color: Colors.blue.shade50,
+                                                                        color: AppColors.infoLight,
                                                                         borderRadius: BorderRadius.circular(10),
-                                                                        border: Border.all(color: Colors.blue.shade100),
+                                                                        border: Border.all(color: AppColors.infoLight),
                                                                     ),
                                                                     padding: const EdgeInsets.all(10),
                                                                     child: Row(
                                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                                         children: [
                                                                             Icon(Icons.info_outline,
-                                                                                color: Colors.blue.shade700, size: 20),
+                                                                                color: AppColors.info, size: 20),
                                                                             const SizedBox(width: 8),
                                                                             Expanded(
                                                                                 child: Text(
@@ -1855,7 +1856,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                         'Please choose at least one role.',
                                                                                     style: TextStyle(
                                                                                         fontSize: 13,
-                                                                                        color: Colors.blue.shade800,
+                                                                                        color: AppColors.info,
                                                                                         height: 1.3,
                                                                                     ),
                                                                                 ),
@@ -1894,7 +1895,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                     side: BorderSide(
                                                                                         color: isSelected
                                                                                             ? Theme.of(context).primaryColor
-                                                                                            : Colors.grey.shade300,
+                                                                                            : AppColors.borderLight,
                                                                                         width: isSelected ? 2 : 1,
                                                                                     ),
                                                                                 ),
@@ -1906,7 +1907,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                                 size: 32,
                                                                                                 color: isSelected
                                                                                                     ? Theme.of(context).primaryColor
-                                                                                                    : Colors.grey.shade600),
+                                                                                                    : AppColors.textSecondaryLight),
                                                                                             const SizedBox(width: 14),
                                                                                             Expanded(
                                                                                                 child: Column(
@@ -1918,7 +1919,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                                             style: const TextStyle(
                                                                                                                 fontSize: 16,
                                                                                                                 fontWeight: FontWeight.w700,
-                                                                                                                color: Colors.black87,
+                                                                                                                color: AppColors.textPrimaryLight,
                                                                                                             ),
                                                                                                         ),
                                                                                                         const SizedBox(height: 4),
@@ -1926,7 +1927,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                                             role["description"] as String,
                                                                                                             style: TextStyle(
                                                                                                                 fontSize: 13,
-                                                                                                                color: Colors.grey.shade700,
+                                                                                                                color: AppColors.textSecondaryLight,
                                                                                                             ),
                                                                                                         ),
                                                                                                     ],
@@ -2035,7 +2036,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                 child: const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: Colors.white,
+                                                                                        color: AppColors.surfaceLight,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -2044,8 +2045,8 @@ class EmployeeListSection extends StatelessWidget {
                                                                         const SizedBox(width: 12),
                                                                         OutlinedButton(
                                                                             style: OutlinedButton.styleFrom(
-                                                                                foregroundColor: Colors.red,
-                                                                                side: const BorderSide(color: Colors.red),
+                                                                                foregroundColor: AppColors.error,
+                                                                                side: const BorderSide(color: AppColors.error),
                                                                                 shape: RoundedRectangleBorder(
                                                                                     borderRadius: BorderRadius.circular(12),
                                                                                 ),
@@ -2209,7 +2210,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                             style: TextStyle(
                                                                                 fontSize: 14,
                                                                                 fontWeight: FontWeight.bold,
-                                                                                color: Colors.black87,
+                                                                                color: AppColors.textPrimaryLight,
                                                                             ),
                                                                         ),
                                                                     ),
@@ -2219,9 +2220,9 @@ class EmployeeListSection extends StatelessWidget {
                                                                 Container(
                                                                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                                                     decoration: BoxDecoration(
-                                                                        border: Border.all(color: Colors.grey.shade300),
+                                                                        border: Border.all(color: AppColors.borderLight),
                                                                         borderRadius: BorderRadius.circular(16),
-                                                                        color: Colors.grey.shade50,
+                                                                        color: AppColors.surfaceVariantLight,
                                                                         boxShadow: [
                                                                             BoxShadow(
                                                                                 color: Colors.black.withOpacity(0.05),
@@ -2246,7 +2247,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                             roleLabel,
                                                                                             style: TextStyle(
                                                                                                 fontWeight: FontWeight.w600,
-                                                                                                color: isSelected ? Colors.white : Colors.black87,
+                                                                                                color: isSelected ? Colors.white : AppColors.textPrimaryLight,
                                                                                             ),
                                                                                         ),
                                                                                         selected: isSelected,
@@ -2259,14 +2260,14 @@ class EmployeeListSection extends StatelessWidget {
                                                                                                     }
                                                                                                 });
                                                                                         },
-                                                                                        selectedColor: Colors.brown[300],
-                                                                                        backgroundColor: Colors.grey.shade300,
+                                                                                        selectedColor: AppColors.primary,
+                                                                                        backgroundColor: AppColors.borderLight,
                                                                                         shape: RoundedRectangleBorder(
                                                                                             borderRadius: BorderRadius.circular(12),
                                                                                             side: BorderSide(
                                                                                                 color: isSelected
-                                                                                                    ? Colors.brown[300]!
-                                                                                                    : Colors.grey.shade400,
+                                                                                                    ? AppColors.primary
+                                                                                                    : AppColors.borderLight,
                                                                                             ),
                                                                                         ),
                                                                                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -2282,7 +2283,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                 const Text(
                                                                     'Please select at least one role.',
                                                                     style: TextStyle(
-                                                                        color: Colors.red,
+                                                                        color: AppColors.error,
                                                                         fontWeight: FontWeight.w500,
                                                                     ),
                                                                 ),
@@ -2345,7 +2346,7 @@ class EmployeeListSection extends StatelessWidget {
                                                                                 child: const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: Colors.white,
+                                                                                        color: AppColors.surfaceLight,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -2354,8 +2355,8 @@ class EmployeeListSection extends StatelessWidget {
                                                                         const SizedBox(width: 12),
                                                                         OutlinedButton(
                                                                             style: OutlinedButton.styleFrom(
-                                                                                foregroundColor: Colors.red,
-                                                                                side: const BorderSide(color: Colors.red),
+                                                                                foregroundColor: AppColors.error,
+                                                                                side: const BorderSide(color: AppColors.error),
                                                                                 shape: RoundedRectangleBorder(
                                                                                     borderRadius: BorderRadius.circular(12),
                                                                                 ),
@@ -2388,7 +2389,7 @@ class EmployeeListSection extends StatelessWidget {
 
     void _showErrorSnackBar(String message, BuildContext context) {
         ScaffoldMessenger.of(context).showSnackBar(
-            Common.buildSnackBar(message, Colors.red),
+            Common.buildSnackBar(message, AppColors.error),
         );
     }
 
@@ -2396,7 +2397,7 @@ class EmployeeListSection extends StatelessWidget {
         String message, VoidCallback onCoopUpdated, BuildContext context) {
         onCoopUpdated();
         ScaffoldMessenger.of(context).showSnackBar(
-            Common.buildSnackBar(message, Colors.green),
+            Common.buildSnackBar(message, AppColors.success),
         );
     }
 }
@@ -2412,12 +2413,12 @@ class _PasswordRequirementRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 4.0),
             child: Row(
                 children: [
-                    Icon(Icons.check_circle_outline, size: 18, color: Colors.grey[600]),
+                    Icon(Icons.check_circle_outline, size: 18, color: AppColors.textSecondaryLight),
                     const SizedBox(width: 8),
                     Expanded(
                         child: Text(
                             text,
-                            style: TextStyle(fontSize: 13.5, color: Colors.grey[700]),
+                            style: TextStyle(fontSize: 13.5, color: AppColors.textSecondaryLight),
                         ),
                     ),
                 ],

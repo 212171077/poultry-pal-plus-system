@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:poultry_pal_plus_app/models/settings_data.dart';
 import 'package:poultry_pal_plus_app/screens/common.dart';
 
@@ -84,13 +85,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _showSuccessSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      Common.buildSnackBar(message, Colors.green),
+      Common.buildSnackBar(message, AppColors.success),
     );
   }
 
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      Common.buildSnackBar(message, Colors.red),
+      Common.buildSnackBar(message, AppColors.error),
     );
   }
 
@@ -109,14 +110,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: const Text('Automatically Create Reminders'),
                 subtitle: Text(
                   'Enable to automatically create reminders for tasks',
-                  style: TextStyle(fontSize: 11, color: Colors.grey[800]),
+                  style: TextStyle(fontSize: 11, color: AppColors.textPrimaryLight),
                 ),
                 value: _settingsData.autoCreateReminders ?? false,
                 onChanged: (value) =>
                     setState(() => _settingsData.autoCreateReminders = value),
-                activeColor: Colors.green,
-                inactiveThumbColor: Colors.grey,
-                inactiveTrackColor: Colors.grey[300],
+                activeColor: AppColors.success,
+                inactiveThumbColor: AppColors.textTertiaryLight,
+                inactiveTrackColor: AppColors.borderLight,
               ),
 
               const SizedBox(height: 5),
@@ -124,14 +125,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: const Text('Receive Daily Reminders'),
                 subtitle: Text(
                   'Enable daily reminders for medications, vaccinations and feeding schedules',
-                  style: TextStyle(fontSize: 11, color: Colors.grey[800]),
+                  style: TextStyle(fontSize: 11, color: AppColors.textPrimaryLight),
                 ),
                 value: _settingsData.dailyReminders ?? false,
                 onChanged: (value) =>
                     setState(() => _settingsData.dailyReminders = value),
-                activeColor: Colors.green,
-                inactiveThumbColor: Colors.grey,
-                inactiveTrackColor: Colors.grey[300],
+                activeColor: AppColors.success,
+                inactiveThumbColor: AppColors.textTertiaryLight,
+                inactiveTrackColor: AppColors.borderLight,
               ),
 
               const SizedBox(height: 5),
@@ -139,14 +140,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: const Text('Sales Alerts'),
                 subtitle: Text(
                   'Enable to receive alerts when a sale is recorded.',
-                  style: TextStyle(fontSize: 11, color: Colors.grey[800]),
+                  style: TextStyle(fontSize: 11, color: AppColors.textPrimaryLight),
                 ),
                 value: _settingsData.salesAlerts ?? false,
                 onChanged: (value) =>
                     setState(() => _settingsData.salesAlerts = value),
-                activeColor: Colors.green,
-                inactiveThumbColor: Colors.grey,
-                inactiveTrackColor: Colors.grey[300],
+                activeColor: AppColors.success,
+                inactiveThumbColor: AppColors.textTertiaryLight,
+                inactiveTrackColor: AppColors.borderLight,
               ),
 
               const SizedBox(height: 5),
@@ -154,28 +155,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: const Text('Mortality Alerts'),
                 subtitle: Text(
                   'Enable to receive alerts when a mortality is recorded.',
-                  style: TextStyle(fontSize: 11, color: Colors.grey[800]),
+                  style: TextStyle(fontSize: 11, color: AppColors.textPrimaryLight),
                 ),
                 value: _settingsData.mortalityAlerts ?? false,
                 onChanged: (value) =>
                     setState(() => _settingsData.mortalityAlerts = value),
-                activeColor: Colors.green,
-                inactiveThumbColor: Colors.grey,
-                inactiveTrackColor: Colors.grey[300],
+                activeColor: AppColors.success,
+                inactiveThumbColor: AppColors.textTertiaryLight,
+                inactiveTrackColor: AppColors.borderLight,
               ),
               const SizedBox(height: 5),
               SwitchListTile(
                 title: const Text('Expense Alerts'),
                 subtitle: Text(
                   'Enable to receive alerts when an expense is recorded.',
-                  style: TextStyle(fontSize: 11, color: Colors.grey[800]),
+                  style: TextStyle(fontSize: 11, color: AppColors.textPrimaryLight),
                 ),
                 value: _settingsData.expenseAlerts ?? false,
                 onChanged: (value) =>
                     setState(() => _settingsData.expenseAlerts = value),
-                activeColor: Colors.green,
-                inactiveThumbColor: Colors.grey,
-                inactiveTrackColor: Colors.grey[300],
+                activeColor: AppColors.success,
+                inactiveThumbColor: AppColors.textTertiaryLight,
+                inactiveTrackColor: AppColors.borderLight,
               ),
               const SizedBox(height: 5),
               Autocomplete<Map<String, String>>(
@@ -234,7 +235,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     child: const Text(
                       'Save Settings',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                      style: TextStyle(fontSize: 18, color: AppColors.surfaceLight),
                     ),
                   ),
                 ],

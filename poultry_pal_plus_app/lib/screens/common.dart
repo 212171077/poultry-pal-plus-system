@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:lottie/lottie.dart';
 import 'package:poultry_pal_plus_app/models/box_size.dart';
 import '../models/egg_size.dart';
@@ -13,13 +14,13 @@ class Common {
             content: Row(
                 mainAxisAlignment: MainAxisAlignment.start, // Align to the start
                 children: [
-                    const Icon(Icons.check_circle, color: Colors.white),
+                    const Icon(Icons.check_circle, color: AppColors.surfaceLight),
                     const SizedBox(width: 10),
                     Expanded(
                         // Wrap text with Expanded
                         child: Text(
                             message,
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: AppColors.surfaceLight),
                             textAlign: TextAlign.start, // Align text to the start
                         ),
                     ),
@@ -81,16 +82,16 @@ class Common {
                                 enabledBorder: border,
                                 focusedBorder: focusedBorder,
                                 errorBorder: border.copyWith(
-                                    borderSide: const BorderSide(color: Colors.red),
+                                    borderSide: const BorderSide(color: AppColors.error),
                                 ),
                                 focusedErrorBorder: border.copyWith(
-                                    borderSide: const BorderSide(color: Colors.red, width: 2),
+                                    borderSide: const BorderSide(color: AppColors.error, width: 2),
                                 ),
                                 suffixIcon: isPassword
                                     ? IconButton(
                                         icon: Icon(
                                             obscureText ? Icons.visibility_off : Icons.visibility,
-                                            color: Colors.grey[600],
+                                            color: AppColors.textSecondaryLight,
                                         ),
                                         onPressed: () {
                                             setState(() {
@@ -134,10 +135,10 @@ class Common {
                     borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
                 ),
                 errorBorder: border.copyWith(
-                    borderSide: const BorderSide(color: Colors.red),
+                    borderSide: const BorderSide(color: AppColors.error),
                 ),
                 focusedErrorBorder: border.copyWith(
-                    borderSide: const BorderSide(color: Colors.red, width: 2),
+                    borderSide: const BorderSide(color: AppColors.error, width: 2),
                 ),
             ),
             value: value,
@@ -263,7 +264,7 @@ class Common {
                                                 },
                                                 child: const Icon(
                                                     Icons.info_outline,
-                                                    color: Colors.blue,
+                                                    color: AppColors.info,
                                                 ),
                                             ),
                                             const SizedBox(width: 10),
@@ -296,7 +297,7 @@ class Common {
         bool hasError = false,
     }) {
         final borderColor = hasError
-            ? Colors.red
+            ? AppColors.error
             : Theme.of(context).primaryColor.withAlpha(128);
 
         final border = OutlineInputBorder(
@@ -320,7 +321,7 @@ class Common {
                 decoration: InputDecoration(
                     labelText: label,
                     labelStyle: TextStyle(
-                        color: hasError ? Colors.red : Theme.of(context).primaryColor,
+                        color: hasError ? AppColors.error : Theme.of(context).primaryColor,
                         fontSize: 14,
                     ),
                     prefixIcon: Icon(
@@ -332,7 +333,7 @@ class Common {
                     enabledBorder: border,
                     focusedBorder: border.copyWith(
                         borderSide: BorderSide(
-                            color: hasError ? Colors.red : Theme.of(context).primaryColor,
+                            color: hasError ? AppColors.error : Theme.of(context).primaryColor,
                             width: 2,
                         ),
                     ),
@@ -344,8 +345,8 @@ class Common {
                     style: TextStyle(
                         fontSize: 14,
                         color: date != null
-                            ? Colors.black87
-                            : (hasError ? Colors.red : Colors.black),
+                            ? AppColors.textPrimaryLight
+                            : (hasError ? AppColors.error : Colors.black),
                     ),
                 ),
 
@@ -363,11 +364,11 @@ class Common {
             margin: const EdgeInsets.symmetric(vertical: 6), // Consistent spacing with readout
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), // Compact padding
             decoration: BoxDecoration(
-                color: Colors.grey[100], // Subtle background color
+                color: AppColors.surfaceVariantLight, // Subtle background color
                 borderRadius: BorderRadius.circular(8), // Rounded corners
                 boxShadow: [
                     BoxShadow(
-                        color: Colors.grey.withOpacity(0.1), // Minimal shadow for depth
+                        color: AppColors.textTertiaryLight.withOpacity(0.1), // Minimal shadow for depth
                         blurRadius: 4,
                         offset: const Offset(0, 2), // Light shadow offset
                     ),
@@ -385,18 +386,18 @@ class Common {
                 hint: Text(
                     hintText,
                     style: TextStyle(
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondaryLight,
                         fontSize: 14,
                     ),
                 ),
                 style: const TextStyle(
-                    color: Colors.black87,
+                    color: AppColors.textPrimaryLight,
                     fontSize: 14,
                 ),
-                dropdownColor: Colors.white, // Dropdown background color
+                dropdownColor: AppColors.surfaceLight, // Dropdown background color
                 icon: Icon(
                     Icons.arrow_drop_down,
-                    color: Colors.grey[700],
+                    color: AppColors.textSecondaryLight,
                 ),
             ),
         );
@@ -408,7 +409,7 @@ class Common {
             margin: const EdgeInsets.symmetric(vertical: 6), // Slight vertical spacing
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), // Compact padding
             decoration: BoxDecoration(
-                color: Colors.grey[100], // Subtle background color
+                color: AppColors.surfaceVariantLight, // Subtle background color
                 borderRadius: BorderRadius.circular(8), // Rounded corners
                 boxShadow: [
                     BoxShadow(
@@ -425,7 +426,7 @@ class Common {
                         title,
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.blueGrey[700],
+                            color: AppColors.textSecondaryLight,
                             fontSize: 12,
                         ),
                     ),
@@ -434,7 +435,7 @@ class Common {
                         content,
                         style: const TextStyle(
                             fontSize: 14,
-                            color: Colors.black87,
+                            color: AppColors.textPrimaryLight,
                         ),
                         overflow: TextOverflow.ellipsis,
                     ),
@@ -449,7 +450,7 @@ class Common {
             margin: const EdgeInsets.symmetric(vertical: 6), // Slight vertical spacing
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), // Compact padding
             decoration: BoxDecoration(
-                color: Colors.grey[100], // Subtle background color
+                color: AppColors.surfaceVariantLight, // Subtle background color
                 borderRadius: BorderRadius.circular(8), // Rounded corners
                 boxShadow: [
                     BoxShadow(
@@ -567,7 +568,7 @@ class Common {
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: showError ? Colors.red : Theme.of(context).primaryColor,
+                        color: showError ? AppColors.error : Theme.of(context).primaryColor,
                     ),
                 ),
                 const SizedBox(height: 6),
@@ -576,7 +577,7 @@ class Common {
                     decoration: BoxDecoration(
                         border: Border.all(
                             color: showError
-                                ? Colors.red
+                                ? AppColors.error
                                 : Theme.of(context).primaryColor.withAlpha(128),
                             width: 1,
                         ),
@@ -622,10 +623,10 @@ class Common {
                                 ),
                             ),
                         },
-                        borderColor: Colors.grey[300],
-                        selectedColor: Colors.brown[300],
+                        borderColor: AppColors.borderLight,
+                        selectedColor: AppColors.primary,
                         unselectedColor: Colors.white,
-                        pressedColor: Colors.brown[50],
+                        pressedColor: AppColors.surfaceVariantLight,
                     ),
                 ),
                 if (showError)
@@ -634,7 +635,7 @@ class Common {
                     child: Text(
                         'Please select a growth phase',
                         style: TextStyle(
-                            color: Colors.red,
+                            color: AppColors.error,
                             fontSize: 12,
                         ),
                     ),
@@ -684,7 +685,7 @@ class Common {
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: showError ? Colors.red : Theme.of(context).primaryColor,
+                        color: showError ? AppColors.error : Theme.of(context).primaryColor,
                     ),
                 ),
                 const SizedBox(height: 6),
@@ -704,12 +705,12 @@ class Common {
                                                     padding: const EdgeInsets.symmetric(
                                                         horizontal: 12, vertical: 8),
                                                     decoration: BoxDecoration(
-                                                        color: isSelected ? Colors.brown[300] : Colors.grey[200],
+                                                        color: isSelected ? AppColors.primary : AppColors.surfaceVariantLight,
                                                         borderRadius: BorderRadius.circular(16),
                                                         border: Border.all(
                                                             color: isSelected
-                                                                ? Colors.brown[400]!
-                                                                : Colors.grey.shade400,
+                                                                ? AppColors.primary
+                                                                : AppColors.borderLight,
                                                             width: 1.2,
                                                         ),
                                                     ),
@@ -721,7 +722,7 @@ class Common {
                                                                     ? Icons.radio_button_checked
                                                                     : Icons.radio_button_off,
                                                                 size: 16,
-                                                                color: isSelected ? Colors.white : Colors.grey[700],
+                                                                color: isSelected ? Colors.white : AppColors.textSecondaryLight,
                                                             ),
                                                             const SizedBox(width: 6),
                                                             Text(
@@ -729,7 +730,7 @@ class Common {
                                                                 style: TextStyle(
                                                                     fontSize: 13,
                                                                     fontWeight: FontWeight.w600,
-                                                                    color: isSelected ? Colors.white : Colors.black87,
+                                                                    color: isSelected ? Colors.white : AppColors.textPrimaryLight,
                                                                 ),
                                                             ),
                                                         ],
@@ -764,8 +765,8 @@ class Common {
                                                 decoration: BoxDecoration(
                                                     shape: BoxShape.circle,
                                                     color: index == activeDot
-                                                        ? Colors.brown[400]
-                                                        : Colors.grey.shade400,
+                                                        ? AppColors.primary
+                                                        : AppColors.borderLight,
                                                 ),
                                             );
                                         }),
@@ -780,7 +781,7 @@ class Common {
                     child: Text(
                         'Please select egg size',
                         style: TextStyle(
-                            color: Colors.red,
+                            color: AppColors.error,
                             fontSize: 12,
                         ),
                     ),
@@ -824,7 +825,7 @@ class Common {
                     style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: showError ? Colors.red : Theme.of(context).primaryColor,
+                        color: showError ? AppColors.error : Theme.of(context).primaryColor,
                     ),
                 ),
                 const SizedBox(height: 6),
@@ -844,12 +845,12 @@ class Common {
                                                     padding: const EdgeInsets.symmetric(
                                                         horizontal: 12, vertical: 8),
                                                     decoration: BoxDecoration(
-                                                        color: isSelected ? Colors.brown[300] : Colors.grey[200],
+                                                        color: isSelected ? AppColors.primary : AppColors.surfaceVariantLight,
                                                         borderRadius: BorderRadius.circular(16),
                                                         border: Border.all(
                                                             color: isSelected
-                                                                ? Colors.brown[400]!
-                                                                : Colors.grey.shade400,
+                                                                ? AppColors.primary
+                                                                : AppColors.borderLight,
                                                             width: 1.2,
                                                         ),
                                                     ),
@@ -861,7 +862,7 @@ class Common {
                                                                     ? Icons.radio_button_checked
                                                                     : Icons.radio_button_off,
                                                                 size: 16,
-                                                                color: isSelected ? Colors.white : Colors.grey[700],
+                                                                color: isSelected ? Colors.white : AppColors.textSecondaryLight,
                                                             ),
                                                             const SizedBox(width: 6),
                                                             Text(
@@ -869,7 +870,7 @@ class Common {
                                                                 style: TextStyle(
                                                                     fontSize: 13,
                                                                     fontWeight: FontWeight.w600,
-                                                                    color: isSelected ? Colors.white : Colors.black87,
+                                                                    color: isSelected ? Colors.white : AppColors.textPrimaryLight,
                                                                 ),
                                                             ),
                                                         ],
@@ -903,8 +904,8 @@ class Common {
                                                 decoration: BoxDecoration(
                                                     shape: BoxShape.circle,
                                                     color: index == activeDot
-                                                        ? Colors.brown[400]
-                                                        : Colors.grey.shade400,
+                                                        ? AppColors.primary
+                                                        : AppColors.borderLight,
                                                 ),
                                             );
                                         }),
@@ -919,7 +920,7 @@ class Common {
                     child: Text(
                         'Please select box size',
                         style: TextStyle(
-                            color: Colors.red,
+                            color: AppColors.error,
                             fontSize: 12,
                         ),
                     ),
@@ -944,7 +945,7 @@ class Common {
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: showError ? Colors.red : Theme.of(context).primaryColor,
+                            color: showError ? AppColors.error : Theme.of(context).primaryColor,
                         ),
                     ),
                     const SizedBox(height: 3),
@@ -953,7 +954,7 @@ class Common {
                         decoration: BoxDecoration(
                             border: Border.all(
                                 color: showError
-                                    ? Colors.red
+                                    ? AppColors.error
                                     : Theme.of(context).primaryColor.withAlpha(128),
                                 width: 1,
                             ),
@@ -990,10 +991,10 @@ class Common {
                                     ),
                                 ),
                             },
-                            borderColor: Colors.grey[300],
-                            selectedColor: Colors.brown[300],
+                            borderColor: AppColors.borderLight,
+                            selectedColor: AppColors.primary,
                             unselectedColor: Colors.white,
-                            pressedColor: Colors.brown[50],
+                            pressedColor: AppColors.surfaceVariantLight,
                         ),
                     ),
                     if (showError)
@@ -1002,7 +1003,7 @@ class Common {
                         child: Text(
                             'Please select a coop type',
                             style: TextStyle(
-                                color: Colors.red,
+                                color: AppColors.error,
                                 fontSize: 12,
                             ),
                         ),
@@ -1028,7 +1029,7 @@ class Common {
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: showError ? Colors.red : Theme.of(context).primaryColor,
+                            color: showError ? AppColors.error : Theme.of(context).primaryColor,
                         ),
                     ),
                     const SizedBox(height: 3),
@@ -1037,7 +1038,7 @@ class Common {
                         decoration: BoxDecoration(
                             border: Border.all(
                                 color: showError
-                                    ? Colors.red
+                                    ? AppColors.error
                                     : Theme.of(context).primaryColor.withAlpha(128),
                                 width: 1,
                             ),
@@ -1068,10 +1069,10 @@ class Common {
                                     ),
                                 ),
                             },
-                            borderColor: Colors.grey[300],
-                            selectedColor: Colors.brown[300],
+                            borderColor: AppColors.borderLight,
+                            selectedColor: AppColors.primary,
                             unselectedColor: Colors.white,
-                            pressedColor: Colors.brown[50],
+                            pressedColor: AppColors.surfaceVariantLight,
                         ),
                     ),
                     if (showError)
@@ -1080,7 +1081,7 @@ class Common {
                         child: Text(
                             'Please select payment status',
                             style: TextStyle(
-                                color: Colors.red,
+                                color: AppColors.error,
                                 fontSize: 12,
                             ),
                         ),

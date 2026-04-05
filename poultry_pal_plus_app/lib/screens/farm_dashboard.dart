@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 
 import '../models/farm.dart';
 import '../models/farm_report.dart';
@@ -22,7 +23,7 @@ class _FarmDashboardState extends State<FarmDashboard> {
     Widget build(BuildContext context) {
         PoultryPalService service = PoultryPalService();
         return Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.surfaceLight,
             body: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: SingleChildScrollView(
@@ -63,7 +64,7 @@ class _FarmDashboardState extends State<FarmDashboard> {
                                             textAlign: TextAlign.start,
                                             style: TextStyle(
                                                 fontSize: 18,
-                                                color: Colors.grey,
+                                                color: AppColors.textTertiaryLight,
                                                 fontWeight: FontWeight.w500,
                                             ),
                                         ),
@@ -116,14 +117,14 @@ class _FarmDashboardState extends State<FarmDashboard> {
                             Icons.fact_check_outlined,
                             'Total Chickens',
                             report.totalChickens.toStringAsFixed(0),
-                            Colors.orange,
+                            AppColors.warning,
 
                         ),
                         _buildMetricCard(
                             Icons.warning,
                             'Total Mortalities',
                             '${report.totalMortalities} Losses',
-                            Colors.grey,
+                            AppColors.textTertiaryLight,
                         ),
                     ],
                 ),
@@ -135,13 +136,13 @@ class _FarmDashboardState extends State<FarmDashboard> {
                             Icons.attach_money,
                             'Total Sales',
                             'R${report.totalSales.toStringAsFixed(2)}',
-                            Colors.green,
+                            AppColors.success,
                         ),
                         _buildMetricCard(
                             Icons.money_off,
                             'Total Expenses',
                             'R${report.totalExpenses.toStringAsFixed(2)}',
-                            Colors.redAccent,
+                            AppColors.error,
                         ),
                     ],
                 ),
@@ -154,7 +155,7 @@ class _FarmDashboardState extends State<FarmDashboard> {
         return Expanded(
             child: Card(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                color: Colors.white,
+                color: AppColors.surfaceLight,
                 shadowColor: color.withOpacity(0.5),
                 elevation: 4,
                 child: Padding(
@@ -175,7 +176,7 @@ class _FarmDashboardState extends State<FarmDashboard> {
                                 style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.black87),
+                                    color: AppColors.textPrimaryLight),
                                 textAlign: TextAlign.center,
                             ),
                         ],
@@ -200,7 +201,7 @@ class _FarmDashboardState extends State<FarmDashboard> {
 
         return Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            color: Colors.white,
+            color: AppColors.surfaceLight,
             // Adjusted card color for better contrast
             elevation: 4,
             margin: const EdgeInsets.symmetric(vertical: 8),
@@ -223,15 +224,15 @@ class _FarmDashboardState extends State<FarmDashboard> {
                                     ),
                                     const SizedBox(height: 8),
 
-                                    coopDetailDesign('Type', coopType, Colors.brown, null, imageUrl),
+                                    coopDetailDesign('Type', coopType, AppColors.primary, null, imageUrl),
 
                                     coopDetailDesign(
-                                        'Total Chickens', chickens.toString(), Colors.orange, Icons.fact_check, null),
-                                    coopDetailDesign('Age', age, Colors.blue, Icons.timer, null),
+                                        'Total Chickens', chickens.toString(), AppColors.warning, Icons.fact_check, null),
+                                    coopDetailDesign('Age', age, AppColors.info, Icons.timer, null),
                                     coopDetailDesign(
-                                        'Mortality', mortality.toString(), Colors.redAccent, Icons.warning, null),
+                                        'Mortality', mortality.toString(), AppColors.error, Icons.warning, null),
                                     coopDetailDesign('Available Chickens',
-                                        availableChickens.toString(), Colors.green, Icons.check_box, null),
+                                        availableChickens.toString(), AppColors.success, Icons.check_box, null),
                                 ],
                             ),
                         ),
@@ -250,32 +251,32 @@ class _FarmDashboardState extends State<FarmDashboard> {
                                                 sections: [
                                                     PieChartSectionData(
                                                         value: totalSales.toDouble() < 1 ? 0 : totalSales.toDouble(),
-                                                        color: Colors.blue[200]!,
+                                                        color: AppColors.infoLight,
                                                         title: 'Sales\nR$totalSales',
                                                         titleStyle: const TextStyle(
                                                             fontSize: 12,
                                                             fontWeight: FontWeight.bold,
-                                                            color: Colors.black54),
+                                                            color: AppColors.textSecondaryLight),
                                                         radius: 55,
                                                     ),
                                                     PieChartSectionData(
                                                         value: totalExpenses.toDouble() < 1 ? 0 : totalExpenses.toDouble(),
-                                                        color: Colors.red[200]!,
+                                                        color: AppColors.errorLight,
                                                         title: 'Expenses\nR$totalExpenses',
                                                         titleStyle: const TextStyle(
                                                             fontSize: 12,
                                                             fontWeight: FontWeight.bold,
-                                                            color: Colors.black54),
+                                                            color: AppColors.textSecondaryLight),
                                                         radius: 45,
                                                     ),
                                                     PieChartSectionData(
                                                         value: profit.toDouble() < 1 ? 0 : profit.toDouble(),
-                                                        color: Colors.green[200]!,
+                                                        color: AppColors.successLight,
                                                         title: 'Profit\nR$profit',
                                                         titleStyle: const TextStyle(
                                                             fontSize: 12,
                                                             fontWeight: FontWeight.bold,
-                                                            color: Colors.black54),
+                                                            color: AppColors.textSecondaryLight),
                                                         radius: 50,
                                                     ),
                                                 ],
@@ -322,7 +323,7 @@ class _FarmDashboardState extends State<FarmDashboard> {
                     ],
                     Text(
                         '$label: ',
-                        style: const TextStyle(fontSize: 12, color: Colors.black54, fontWeight: FontWeight.w500),
+                        style: const TextStyle(fontSize: 12, color: AppColors.textSecondaryLight, fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(width: 4),
                     Container(
@@ -348,13 +349,13 @@ class _FarmDashboardState extends State<FarmDashboard> {
 
     void _showErrorSnackBar(String message) {
         ScaffoldMessenger.of(context).showSnackBar(
-            Common.buildSnackBar(message, Colors.red),
+            Common.buildSnackBar(message, AppColors.error),
         );
     }
 
     void _showSuccessSnackBar(String message) {
         ScaffoldMessenger.of(context).showSnackBar(
-            Common.buildSnackBar(message, Colors.green),
+            Common.buildSnackBar(message, AppColors.success),
         );
     }
 }

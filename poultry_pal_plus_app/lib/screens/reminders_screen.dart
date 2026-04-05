@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:lottie/lottie.dart';
 
 import '../models/coop.dart';
@@ -44,7 +45,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                                 fontSize: 18,
-                                color: Colors.grey,
+                                color: AppColors.textTertiaryLight,
                                 fontWeight: FontWeight.w500,
                             ),
                         ),
@@ -108,7 +109,7 @@ class _ExpandableCoopCardState
                 border: Border.all(color: Colors.black12, width: 0.3),
                 gradient: LinearGradient(
                     colors: isExpanded
-                        ? [Colors.brown[50]!, Colors.brown[200]!]
+                        ? [AppColors.surfaceVariantLight, AppColors.primaryLight]
                         : [Colors.white, Colors.white],
                 ),
                 boxShadow: [
@@ -156,7 +157,7 @@ class _ExpandableCoopCardState
                                                                     shape: BoxShape.circle,
                                                                     boxShadow: [
                                                                         BoxShadow(
-                                                                            color: Colors.green.withValues(
+                                                                            color: AppColors.success.withValues(
                                                                                 alpha: (0.3 + (0.1 * value)),
                                                                             ),
                                                                             blurRadius: 4 + (2 * value),
@@ -201,7 +202,7 @@ class _ExpandableCoopCardState
                                                     context,
                                                     icon: Icons.warning_amber_rounded,
                                                     count: overdueTasks.length,
-                                                    color: Colors.red[300]!,
+                                                    color: AppColors.errorLight,
                                                     hasPhaseTransition: false,
                                                 ),
                                             ),
@@ -213,7 +214,7 @@ class _ExpandableCoopCardState
                                                     context,
                                                     icon: Icons.notifications_active_rounded,
                                                     count: upcomingReminders.length,
-                                                    color: Colors.blue[300]!,
+                                                    color: AppColors.infoLight,
                                                     hasPhaseTransition: hasPhaseTransition,
                                                 ),
                                             ),
@@ -238,12 +239,12 @@ class _ExpandableCoopCardState
                                                     overflow: TextOverflow.ellipsis,
                                                 ),
                                                 const SizedBox(height: 2),
-                                                Text(
-                                                    "${widget.coop.coopType.toLowerCase().capitalize()} (${widget.coop.growthPhase.value})",
-                                                    style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Theme.of(context).primaryColorDark,
-                                                    ),
+                                                                Text(
+                                                                    "${widget.coop.coopType.toLowerCase().capitalize()} (${widget.coop.growthPhase.value})",
+                                                                    style: const TextStyle(
+                                                                        fontSize: 12,
+                                                                        color: AppColors.textSecondaryLight,
+                                                                    ),
                                                     overflow: TextOverflow.ellipsis,
                                                 ),
                                             ],
@@ -257,7 +258,7 @@ class _ExpandableCoopCardState
                                         icon: Icon(
                                             isExpanded ? Icons.expand_less : Icons.expand_more,
                                             size: 40,
-                                            color: Colors.green,
+                                            color: AppColors.success,
                                         ),
                                         onPressed: () {
                                             setState(() {
@@ -285,7 +286,7 @@ class _ExpandableCoopCardState
                         child: Container(
                             padding: const EdgeInsets.all(16.0),
                             decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: AppColors.surfaceLight,
                                 borderRadius: BorderRadius.circular(16.0),
                                 border: Border.all(color: Colors.black12, width: 0.3),
                             ),
@@ -320,7 +321,7 @@ class _ExpandableCoopCardState
                                                                     ? 'Schedule sent successfully, please check your email.'
                                                                     : 'Failed to send schedule.',
                                                             ),
-                                                            backgroundColor: success ? Colors.green : Colors.red,
+                                                            backgroundColor: success ? AppColors.success : AppColors.error,
                                                             behavior: SnackBarBehavior.floating,
                                                             shape: RoundedRectangleBorder(
                                                                 borderRadius: BorderRadius.circular(10),
@@ -336,7 +337,7 @@ class _ExpandableCoopCardState
                                                     ScaffoldMessenger.of(context).showSnackBar(
                                                         const SnackBar(
                                                             content: Text('❗ Something went wrong.'),
-                                                            backgroundColor: Colors.red,
+                                                            backgroundColor: AppColors.error,
                                                             behavior: SnackBarBehavior.floating,
                                                             shape: RoundedRectangleBorder(
                                                                 borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -359,7 +360,7 @@ class _ExpandableCoopCardState
                                                             onPressed: isSending ? null : handleSend,
                                                             style: ElevatedButton.styleFrom(
                                                                 elevation: 2,
-                                                                backgroundColor: Colors.white, // White background
+                                                                backgroundColor: AppColors.surfaceLight, // White background
                                                                 foregroundColor: Theme.of(context).primaryColor, // Icon & text color
                                                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                                                 shape: RoundedRectangleBorder(
@@ -441,7 +442,7 @@ class _ExpandableCoopCardState
                                                             ),
                                                             IconButton(
                                                                 icon: const Icon(Icons.info_outline,
-                                                                    color: Colors.blue),
+                                                                    color: AppColors.info),
                                                                 onPressed: () =>
                                                                 _showPhaseTransitionInfoPopup(context),
                                                             ),
@@ -452,7 +453,7 @@ class _ExpandableCoopCardState
                                                         'Tap "Confirm" to proceed or the info icon for more details.',
                                                         style: TextStyle(
                                                             fontSize: 11,
-                                                            color: Colors.green,
+                                                            color: AppColors.success,
                                                             fontWeight: FontWeight.w600),
                                                     ),
                                                     const SizedBox(height: 10),
@@ -463,14 +464,14 @@ class _ExpandableCoopCardState
                                                                     Column(
                                                                         children: [
                                                                             const Icon(Icons.circle,
-                                                                                color: Colors.green, size: 16),
+                                                                                color: AppColors.success, size: 16),
                                                                             const SizedBox(height: 4),
                                                                             Text(
                                                                                 widget.coop.phaseTransition
                                                                                     .currentPhase.value,
                                                                                 style: TextStyle(
                                                                                     fontSize: 11,
-                                                                                    color: Colors.green[800],
+                                                                                    color: AppColors.success,
                                                                                     fontWeight: FontWeight.bold,
                                                                                 ),
                                                                             ),
@@ -478,7 +479,7 @@ class _ExpandableCoopCardState
                                                                     ),
                                                                     const Expanded(
                                                                         child: Divider(
-                                                                            color: Colors.green,
+                                                                            color: AppColors.success,
                                                                             thickness: 2,
                                                                             indent: 0,
                                                                             endIndent: 0,
@@ -487,13 +488,13 @@ class _ExpandableCoopCardState
                                                                     const Column(
                                                                         children: [
                                                                             Icon(Icons.arrow_forward_ios,
-                                                                                color: Colors.green, size: 18),
+                                                                                color: AppColors.success, size: 18),
                                                                             SizedBox(height: 4),
                                                                         ],
                                                                     ),
                                                                     const Expanded(
                                                                         child: Divider(
-                                                                            color: Colors.green,
+                                                                            color: AppColors.success,
                                                                             thickness: 2,
                                                                             indent: 0,
                                                                             endIndent: 0,
@@ -502,14 +503,14 @@ class _ExpandableCoopCardState
                                                                     Column(
                                                                         children: [
                                                                             const Icon(Icons.circle_outlined,
-                                                                                color: Colors.grey, size: 16),
+                                                                                color: AppColors.textTertiaryLight, size: 16),
                                                                             const SizedBox(height: 4),
                                                                             Text(
                                                                                 widget.coop.phaseTransition.newPhase
                                                                                     .value,
                                                                                 style: TextStyle(
                                                                                     fontSize: 11,
-                                                                                    color: Colors.grey[700],
+                                                                                    color: AppColors.textSecondaryLight,
                                                                                     fontWeight: FontWeight.bold,
                                                                                 ),
                                                                             ),
@@ -555,29 +556,29 @@ class _ExpandableCoopCardState
                                     ),
                                     if (overdueTasks.isNotEmpty) ...[
                                         _buildSectionTitle(
-                                            context, 'Overdue Tasks', Colors.red[800]!),
+                                            context, 'Overdue Tasks', AppColors.error),
                                         _buildTaskList(
                                             context,
                                             overdueTasks,
                                             widget.coop,
                                             widget.farm,
                                             widget.user,
-                                            Colors.red[50]!,
-                                            Colors.red[800]!,
+                                            AppColors.errorLight,
+                                            AppColors.error,
                                             onCoopUpdated),
                                     ],
                                     if (upcomingReminders.isNotEmpty) ...[
                                         SizedBox(height: overdueTasks.isNotEmpty ? 20 : 0),
                                         _buildSectionTitle(
-                                            context, 'Upcoming Reminders', Colors.blue[800]!),
+                                            context, 'Upcoming Reminders', AppColors.info),
                                         _buildTaskList(
                                             context,
                                             upcomingReminders,
                                             widget.coop,
                                             widget.farm,
                                             widget.user,
-                                            Colors.blue[50]!,
-                                            Colors.blue[800]!,
+                                            AppColors.infoLight,
+                                            AppColors.info,
                                             onCoopUpdated,
                                         ),
                                     ],
@@ -592,7 +593,7 @@ class _ExpandableCoopCardState
                                                         textAlign: TextAlign.center,
                                                         style: TextStyle(
                                                             fontSize: 14,
-                                                            color: Colors.grey,
+                                                            color: AppColors.textTertiaryLight,
                                                             fontWeight: FontWeight.w500,
                                                         ),
                                                     ),
@@ -673,7 +674,7 @@ class _ExpandableCoopCardState
                                                     'Due Date: ${details?['dueDate'] ?? 'Unknown Date'}',
                                                     style: TextStyle(
                                                         fontSize: 12,
-                                                        color: Colors.grey[600],
+                                                        color: AppColors.textSecondaryLight,
                                                     ),
                                                     maxLines: 1,
                                                     overflow: TextOverflow.ellipsis,
@@ -691,7 +692,7 @@ class _ExpandableCoopCardState
                                         constraints: const BoxConstraints(),
                                     ),
                                     PopupMenuButton<String>(
-                                        icon: const Icon(Icons.settings, color: Colors.green),
+                                        icon: const Icon(Icons.settings, color: AppColors.success),
                                         padding: EdgeInsets.zero,
                                         // Reduce spacing around icon
                                         constraints: const BoxConstraints(),
@@ -728,7 +729,7 @@ class _ExpandableCoopCardState
                                                 value: 'Completed',
                                                 child: Row(
                                                     children: [
-                                                        Icon(Icons.check_circle, color: Colors.green),
+                                                        Icon(Icons.check_circle, color: AppColors.success),
                                                         SizedBox(width: 10),
                                                         Text('Completed',
                                                             style: TextStyle(fontSize: 14)),
@@ -739,7 +740,7 @@ class _ExpandableCoopCardState
                                                 value: 'Not Applicable',
                                                 child: Row(
                                                     children: [
-                                                        Icon(Icons.cancel, color: Colors.amber),
+                                                        Icon(Icons.cancel, color: AppColors.secondary),
                                                         SizedBox(width: 10),
                                                         Text('Not Applicable',
                                                             style: TextStyle(fontSize: 14)),
@@ -750,7 +751,7 @@ class _ExpandableCoopCardState
                                                 value: 'Remove Task',
                                                 child: Row(
                                                     children: [
-                                                        Icon(Icons.delete, color: Colors.red),
+                                                        Icon(Icons.delete, color: AppColors.error),
                                                         SizedBox(width: 10),
                                                         Text('Remove Task',
                                                             style: TextStyle(fontSize: 14)),
@@ -801,22 +802,22 @@ class _ExpandableCoopCardState
                                 const Text(
                                     'Action: ',
                                     style: TextStyle(
-                                        fontWeight: FontWeight.w600, color: Colors.black87),
+                                        fontWeight: FontWeight.w600, color: AppColors.textPrimaryLight),
                                 ),
                                 Text(
                                     action,
-                                    style: TextStyle(color: Colors.grey[700]),
+                                    style: TextStyle(color: AppColors.textSecondaryLight),
                                     overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 15),
                                 const Text(
                                     'Reminder: ',
                                     style: TextStyle(
-                                        fontWeight: FontWeight.w600, color: Colors.black87),
+                                        fontWeight: FontWeight.w600, color: AppColors.textPrimaryLight),
                                 ),
                                 Text(
                                     task['type'] + ": " + _getTaskName(task) ?? 'Unknown',
-                                    style: TextStyle(color: Colors.grey[700]),
+                                    style: TextStyle(color: AppColors.textSecondaryLight),
                                     overflow: TextOverflow.visible,
                                 ),
 
@@ -825,7 +826,7 @@ class _ExpandableCoopCardState
                                 const Text(
                                     'Add Comment (Optional):',
                                     style: TextStyle(
-                                        fontWeight: FontWeight.w600, color: Colors.black87),
+                                        fontWeight: FontWeight.w600, color: AppColors.textPrimaryLight),
                                 ),
                                 const SizedBox(height: 5),
                                 TextField(
@@ -833,11 +834,11 @@ class _ExpandableCoopCardState
                                     maxLines: 2,
                                     decoration: InputDecoration(
                                         hintText: 'Add your comment...',
-                                        hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+                                        hintStyle: TextStyle(color: AppColors.textTertiaryLight, fontSize: 14),
                                         border: OutlineInputBorder(
                                             borderRadius: BorderRadius.circular(8),
                                         ),
-                                        fillColor: Colors.grey[100],
+                                        fillColor: AppColors.surfaceVariantLight,
                                         filled: true,
                                     ),
                                 ),
@@ -847,7 +848,7 @@ class _ExpandableCoopCardState
                     actions: [
                         TextButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Cancel', style: TextStyle(color: Colors.red)),
+                            child: const Text('Cancel', style: TextStyle(color: AppColors.error)),
                         ),
                         ElevatedButton(
                             onPressed: () async {
@@ -879,7 +880,7 @@ class _ExpandableCoopCardState
                             ),
                             child: const Text(
                                 'Submit',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(color: AppColors.surfaceLight),
                             ),
                         ),
                     ],
@@ -942,7 +943,7 @@ class _ExpandableCoopCardState
                                             'Select Coop for Transition:',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                color: Colors.blueGrey[700],
+                                                color: AppColors.textSecondaryLight,
                                                 fontSize: 12,
                                             ),
                                         ),
@@ -953,7 +954,7 @@ class _ExpandableCoopCardState
                                                         color: showValidationError &&
                                                             selectedCoopId == null &&
                                                             !useCurrentCoop
-                                                            ? Colors.red
+                                                            ? AppColors.error
                                                             : Colors.transparent,
                                                     ),
                                                     borderRadius: BorderRadius.circular(8),
@@ -978,14 +979,14 @@ class _ExpandableCoopCardState
                                                 'No suitable coop is available for the phase transition. '
                                                 'You can add a new coop on the home page and return here to complete the transition. '
                                                 'Alternatively, re-use the current coop for this transition.',
-                                                Colors.blue.shade700,
+                                                AppColors.info,
                                             ),
                                         const SizedBox(height: 10),
                                         Container(
                                             margin: const EdgeInsets.symmetric(vertical: 6),
                                             padding: const EdgeInsets.all(12),
                                             decoration: BoxDecoration(
-                                                color: Colors.grey[100],
+                                                color: AppColors.surfaceVariantLight,
                                                 borderRadius: BorderRadius.circular(8),
                                                 boxShadow: [
                                                     BoxShadow(
@@ -996,7 +997,7 @@ class _ExpandableCoopCardState
                                                 ],
                                                 border: Border.all(
                                                     color: showValidationError && !useCurrentCoop
-                                                        ? Colors.red
+                                                        ? AppColors.error
                                                         : Colors.transparent,
                                                 ),
                                             ),
@@ -1021,8 +1022,8 @@ class _ExpandableCoopCardState
                                                             style: TextStyle(
                                                                 fontSize: 12,
                                                                 color: useCurrentCoop
-                                                                    ? Colors.green.shade700
-                                                                    : Colors.blueGrey[700],
+                                                                    ? AppColors.success
+                                                                    : AppColors.textSecondaryLight,
                                                                 fontWeight: FontWeight.bold,
                                                             ),
                                                             overflow: TextOverflow.clip,
@@ -1037,7 +1038,7 @@ class _ExpandableCoopCardState
                                             child: Text(
                                                 'Please select a coop from the dropdown or check the box to re-use the current coop.',
                                                 style: TextStyle(
-                                                    color: Colors.red,
+                                                    color: AppColors.error,
                                                     fontSize: 12,
                                                 ),
                                             ),
@@ -1049,7 +1050,7 @@ class _ExpandableCoopCardState
                                 TextButton(
                                     onPressed: () => Navigator.of(context).pop(),
                                     child:
-                                    const Text('Cancel', style: TextStyle(color: Colors.red)),
+                                    const Text('Cancel', style: TextStyle(color: AppColors.error)),
                                 ),
                                 ElevatedButton(
                                     onPressed: () async {
@@ -1086,7 +1087,7 @@ class _ExpandableCoopCardState
                                     ),
                                     child: const Text(
                                         'Submit',
-                                        style: TextStyle(color: Colors.white),
+                                        style: TextStyle(color: AppColors.surfaceLight),
                                     ),
                                 ),
                             ],
@@ -1116,15 +1117,15 @@ class _ExpandableCoopCardState
                     child: Container(
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                            color: Colors.red[600],
+                            color: AppColors.error,
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 1.5),
+                            border: Border.all(color: AppColors.surfaceLight, width: 1.5),
                         ),
                         child: Text(
                             '$count',
                             style: const TextStyle(
                                 fontSize: 6,
-                                color: Colors.white,
+                                color: AppColors.surfaceLight,
                                 fontWeight: FontWeight.bold,
                             ),
                         ),
@@ -1195,7 +1196,7 @@ class _ExpandableCoopCardState
                                                             text: '${entry.value}',
                                                             style: TextStyle(
                                                                 fontWeight: FontWeight.normal,
-                                                                color: Colors.grey[700],
+                                                                color: AppColors.textSecondaryLight,
                                                                 fontSize: 16,
                                                             ),
                                                         ),
@@ -1248,7 +1249,7 @@ void _showPhaseTransitionInfoPopup(BuildContext context) {
                                     Container(
                                         padding: const EdgeInsets.all(8.0),
                                         decoration: BoxDecoration(
-                                            color: Colors.orange.shade50,
+                                            color: AppColors.warningLight,
                                             borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: const Column(
@@ -1259,7 +1260,7 @@ void _showPhaseTransitionInfoPopup(BuildContext context) {
                                                     style: TextStyle(
                                                         fontSize: 18,
                                                         fontWeight: FontWeight.bold,
-                                                        color: Colors.orange,
+                                                        color: AppColors.warning,
                                                     ),
                                                 ),
                                                 SizedBox(height: 8),
@@ -1273,7 +1274,7 @@ void _showPhaseTransitionInfoPopup(BuildContext context) {
                                     Container(
                                         padding: const EdgeInsets.all(8.0),
                                         decoration: BoxDecoration(
-                                            color: Colors.blue.shade50,
+                                            color: AppColors.infoLight,
                                             borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: const Column(
@@ -1284,7 +1285,7 @@ void _showPhaseTransitionInfoPopup(BuildContext context) {
                                                     style: TextStyle(
                                                         fontSize: 18,
                                                         fontWeight: FontWeight.bold,
-                                                        color: Colors.blueAccent,
+                                                        color: AppColors.info,
                                                     ),
                                                 ),
                                                 SizedBox(height: 8),
@@ -1301,7 +1302,7 @@ void _showPhaseTransitionInfoPopup(BuildContext context) {
                                     Container(
                                         padding: const EdgeInsets.all(8.0),
                                         decoration: BoxDecoration(
-                                            color: Colors.green.shade50,
+                                            color: AppColors.successLight,
                                             borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: const Column(
@@ -1312,7 +1313,7 @@ void _showPhaseTransitionInfoPopup(BuildContext context) {
                                                     style: TextStyle(
                                                         fontSize: 18,
                                                         fontWeight: FontWeight.bold,
-                                                        color: Colors.green,
+                                                        color: AppColors.success,
                                                     ),
                                                 ),
                                                 SizedBox(height: 8),
@@ -1342,10 +1343,10 @@ void _showPhaseTransitionInfoPopup(BuildContext context) {
                                     height: 8,
                                     width: 8,
                                     decoration: BoxDecoration(
-                                        color: Colors.blueAccent,
+                                        color: AppColors.info,
                                         shape: BoxShape.circle,
                                         border: Border.all(
-                                            color: Colors.blueAccent,
+                                            color: AppColors.info,
                                             width: 2,
                                         ),
                                     ),
@@ -1361,7 +1362,7 @@ void _showPhaseTransitionInfoPopup(BuildContext context) {
                     child: const Text(
                         'Close',
                         style: TextStyle(
-                            color: Colors.blueAccent, fontWeight: FontWeight.bold),
+                            color: AppColors.info, fontWeight: FontWeight.bold),
                     ),
                 ),
             ],
@@ -1371,7 +1372,7 @@ void _showPhaseTransitionInfoPopup(BuildContext context) {
 
 void _showErrorSnackBar(String message, BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-        Common.buildSnackBar(message, Colors.red),
+        Common.buildSnackBar(message, AppColors.error),
     );
 }
 
@@ -1379,7 +1380,7 @@ void _showSuccessSnackBar(
     String message, VoidCallback onCoopUpdated, BuildContext context) {
     onCoopUpdated();
     ScaffoldMessenger.of(context).showSnackBar(
-        Common.buildSnackBar(message, Colors.green),
+        Common.buildSnackBar(message, AppColors.success),
     );
 }
 

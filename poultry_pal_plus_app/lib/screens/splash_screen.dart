@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:poultry_pal_plus_app/screens/login_screen.dart';
 import 'package:poultry_pal_plus_app/screens/home_screen.dart';
@@ -68,7 +69,7 @@ class _SplashScreenState extends State<SplashScreen>
     @override
     Widget build(BuildContext context) {
         return Scaffold(
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.surfaceLight,
             body: Center(
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lottie/lottie.dart';
 import 'package:poultry_pal_plus_app/screens/register_screen.dart';
@@ -121,13 +122,13 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         SnackBar(
           content: const Row(
             children: [
-              Icon(Icons.error, color: Colors.white),
+              Icon(Icons.error, color: AppColors.surfaceLight),
               SizedBox(width: 10),
               Text('Invalid username or password',
-                  style: TextStyle(color: Colors.white)),
+                  style: TextStyle(color: AppColors.surfaceLight)),
             ],
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10)),
@@ -172,23 +173,23 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       {Widget? suffixIcon}) {
     return InputDecoration(
       labelText: label,
-      labelStyle: const TextStyle(color: Colors.black87),
+      labelStyle: const TextStyle(color: AppColors.textPrimaryLight),
       filled: true,
-      fillColor: Colors.grey[100],
+      fillColor: AppColors.surfaceVariantLight,
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide.none,
       ),
-      prefixIcon: Icon(icon, color: Colors.brown),
+      prefixIcon: Icon(icon, color: AppColors.primary),
       suffixIcon: suffixIcon,
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: Colors.red, width: 1),
+        borderSide: const BorderSide(color: AppColors.error, width: 1),
       ),
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(color: Colors.red, width: 1),
+        borderSide: const BorderSide(color: AppColors.error, width: 1),
       ),
     );
   }
@@ -218,10 +219,10 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                         padding: const EdgeInsets.all(20),
                         margin: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: AppColors.surfaceLight,
                           borderRadius: BorderRadius.circular(40),
                           border: Border.all(
-                              color: Colors.grey[300]!, width: 1),
+                              color: AppColors.borderLight, width: 1),
                           boxShadow: const [
                             BoxShadow(color: Colors.black12,
                                 blurRadius: 12,
@@ -237,12 +238,12 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                 height: 88,
                                 padding: const EdgeInsets.all(4),
                                 decoration: const BoxDecoration(
-                                  color: Colors.brown,
+                                  color: AppColors.primary,
                                   shape: BoxShape.circle,
                                 ),
                                 child: const CircleAvatar(
                                   radius: 40,
-                                  backgroundColor: Colors.white,
+                                  backgroundColor: AppColors.surfaceLight,
                                   backgroundImage: AssetImage(
                                       'assets/login.png'),
                                 ),
@@ -287,7 +288,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                     _obscurePassword
                                         ? Icons.visibility_off
                                         : Icons.visibility,
-                                    color: Colors.brown,
+                                    color: AppColors.primary,
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -332,7 +333,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                     borderRadius: BorderRadius.circular(20)),
                               ),
                               child: const Text('Login',
-                                  style: TextStyle(color: Colors.white)),
+                                  style: TextStyle(color: AppColors.surfaceLight)),
                             ).animate().scale(delay: 400.ms),
                             const SizedBox(height: 10),
                             TextButton(

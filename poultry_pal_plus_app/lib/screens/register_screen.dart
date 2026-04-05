@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:lottie/lottie.dart';
 import 'package:poultry_pal_plus_app/models/message_response.dart';
 import 'package:poultry_pal_plus_app/screens/login_screen.dart';
@@ -81,9 +82,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.surfaceLight,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.grey[200]!),
+                        border: Border.all(color: AppColors.surfaceVariantLight),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.05),
@@ -101,7 +102,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                               height: 88,
                               padding: const EdgeInsets.all(4),
                               decoration: const BoxDecoration(
-                                color: Colors.brown,
+                                color: AppColors.primary,
                                 shape: BoxShape.circle,
                               ),
                               child: const CircleAvatar(
@@ -156,7 +157,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                             icon: Icons.email_outlined,
                             validator: (value) {
                               if (value == null || value.isEmpty) return 'Please enter your email';
-                              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) return 'Enter a valid email';
+                              if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) return 'Enter a valid email';
                               if (value.length > 50) return 'Email must not exceed 50 characters';
                               return null;
                             },
@@ -223,7 +224,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                               child: const Text(
                                 'Register',
                                 style: TextStyle(
-                                    color: Colors.white,
+                                    color: AppColors.surfaceLight,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600),
                               ),
@@ -276,15 +277,15 @@ class _RegisterScreenState extends State<RegisterScreen>
         obscureText: obscureText,
         style: const TextStyle(fontSize: 16),
         decoration: InputDecoration(
-          prefixIcon: icon != null ? Icon(icon, color: Colors.brown) : null,
+          prefixIcon: icon != null ? Icon(icon, color: AppColors.primary) : null,
           suffixIcon: suffixIcon,
           labelText: labelText,
           labelStyle: const TextStyle(
-            color: Colors.black87,
+            color: AppColors.textPrimaryLight,
             fontWeight: FontWeight.w500,
           ),
           filled: true,
-          fillColor: Colors.grey[100],
+          fillColor: AppColors.surfaceVariantLight,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
@@ -364,17 +365,17 @@ class _RegisterScreenState extends State<RegisterScreen>
         final snackBar = SnackBar(
           content: Row(
             children: [
-              const Icon(Icons.error, color: Colors.white),
+              const Icon(Icons.error, color: AppColors.surfaceLight),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   result.message,
-                  style: const TextStyle(color: Colors.white),
+                  style: const TextStyle(color: AppColors.surfaceLight),
                 ),
               ),
             ],
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
