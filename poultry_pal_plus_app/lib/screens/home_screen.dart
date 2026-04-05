@@ -23,7 +23,7 @@ class HomeScreen extends StatefulWidget {
     const HomeScreen({super.key});
 
     @override
-    _HomeScreenState createState() => _HomeScreenState();
+    State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             setState(() {});
         } catch (e) {
-            print('Error initializing data: $e');
+            debugPrint('Error initializing data: $e');
             _showErrorSnackBar('Something went wrong');
         }
     }
@@ -158,6 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
         await prefs.remove('saved_password');
         await prefs.setBool('remember_me', false);
 
+        if (!mounted) return;
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const LoginScreen()),
             (route) => false,
@@ -166,6 +167,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
     @override
     Widget build(BuildContext context) {
+        // Show loading screen if data hasn't been initialized yet
+        if (farm == null || user == null || _widgetOptions.isEmpty) {
+            return Scaffold(
+                appBar: AppBar(
+                    title: const Text("Loading..."),
+                    elevation: 0,
+                ),
+                body: const Center(
+                    child: CircularProgressIndicator(),
+                ),
+            );
+        }
+
         return Scaffold(
             extendBody: true, // Let the FAB overlap the nav bar background
             floatingActionButton: Visibility(
@@ -556,6 +570,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                     if (context.mounted) {
                                                                                         Navigator.of(context, rootNavigator: true).pop();
                                                                                     }
+
+                                                                                    if (!context.mounted) return;
 
                                                                                     if (response.success) {
                                                                                         await Common.showLottieDialog(
