@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
@@ -36,16 +37,65 @@ class CoopListItem extends StatefulWidget {
     _CoopListItemState createState() => _CoopListItemState();
 }
 
-class _CoopListItemState extends State<CoopListItem> {
+class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderStateMixin {
     bool _isExpanded = false;
     PoultryPalService service = PoultryPalService();
     bool isSalesExpanded = false;
     bool isMortalityExpanded = false;
     bool isExpensesExpanded = false;
+    late TabController _tabController;
+    int _currentTab = 0;
+
+    @override
+    void initState() {
+        super.initState();
+        final tabCount = widget.coop.coopType == 'LAYERS' ? 5 : 4;
+        _tabController = TabController(length: tabCount, vsync: this);
+        _tabController.addListener(() {
+            if (!_tabController.indexIsChanging && mounted) {
+                setState(() => _currentTab = _tabController.index);
+            }
+        });
+    }
+
+    @override
+    void dispose() {
+        _tabController.dispose();
+        super.dispose();
+    }
 
     @override
     Widget build(BuildContext context) {
-        return AnimatedContainer(
+        final int totalMortalities = widget.coop.mortalities
+            .fold<int>(0, (sum, m) => sum + m.numberOfDeaths);
+        final double mortalityPct = (widget.coop.numberOfChickens + totalMortalities) > 0
+            ? (totalMortalities / (widget.coop.numberOfChickens + totalMortalities)) * 100
+            : 0.0;
+        final Color mortalityColor = mortalityPct > 5.0 ? AppColors.error : AppColors.success;
+
+        return Dismissible(
+            key: ValueKey('coop-swipe-${widget.coop.id}'),
+            direction: widget.coop.active
+                ? DismissDirection.horizontal
+                : DismissDirection.none,
+            confirmDismiss: (direction) async {
+                if (direction == DismissDirection.startToEnd) {
+                    if (widget.coop.coopType == 'LAYERS') {
+                        _showLayersRecordSalesBottomSheet(
+                            widget.coop, widget.farm.id, widget.onCoopUpdated);
+                    } else {
+                        _showBroilerRecordSalesBottomSheet(
+                            widget.coop, widget.farm.id, widget.onCoopUpdated);
+                    }
+                } else {
+                    _showRecordMortalityBottomSheet(
+                        widget.coop, widget.farm.id, widget.onCoopUpdated);
+                }
+                return false;
+            },
+            background: _buildSwipeBackground(isRight: true),
+            secondaryBackground: _buildSwipeBackground(isRight: false),
+            child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
             margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -73,55 +123,78 @@ class _CoopListItemState extends State<CoopListItem> {
                         contentPadding: const EdgeInsets.all(16.0),
                         leading: Hero(
                             tag: widget.coop.id,
-                            child: widget.coop.active
-                                ? TweenAnimationBuilder<double>(
-                                    tween: Tween(begin: 0.0, end: 1.0),
-                                    duration: const Duration(seconds: 2),
-                                    curve: Curves.easeInOut,
-                                    builder: (context, value, child) {
-                                        return Container(
-                                            padding: const EdgeInsets.all(3), // Space for glow
+                            child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                    widget.coop.active
+                                        ? TweenAnimationBuilder<double>(
+                                            tween: Tween(begin: 0.0, end: 1.0),
+                                            duration: const Duration(seconds: 2),
+                                            curve: Curves.easeInOut,
+                                            builder: (context, value, child) {
+                                                return Container(
+                                                    padding: const EdgeInsets.all(3),
+                                                    decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        boxShadow: [
+                                                            BoxShadow(
+                                                                color: AppColors.success.withValues(
+                                                                    alpha: (0.3 + (0.1 * value)),
+                                                                ),
+                                                                blurRadius: 4 + (2 * value),
+                                                                spreadRadius: 0.5 + (1 * value),
+                                                            ),
+                                                        ],
+                                                    ),
+                                                    child: child,
+                                                );
+                                            },
+                                            onEnd: () {
+                                                if (mounted) setState(() {});
+                                            },
+                                            child: CircleAvatar(
+                                                radius: 30,
+                                                backgroundImage: AssetImage(widget.coop.imageUrl),
+                                            ),
+                                        )
+                                        : Container(
+                                            padding: const EdgeInsets.all(3),
                                             decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
                                                 boxShadow: [
                                                     BoxShadow(
-                                                        color: AppColors.success.withValues(
-                                                            alpha: (0.3 + (0.1 * value)),
-                                                        ),
-                                                        blurRadius: 4 + (2 * value),
-                                                        spreadRadius: 0.5 + (1 * value),
+                                                        color: Colors.white60.withValues(alpha: 0.4),
+                                                        blurRadius: 2,
+                                                        spreadRadius: 0.5,
                                                     ),
                                                 ],
                                             ),
-                                            child: child,
-                                        );
-                                    },
-                                    onEnd: () {
-                                        // Restart the animation for continuous pulse
-                                        if (mounted) setState(() {});
-                                    },
-                                    child: CircleAvatar(
-                                        radius: 30,
-                                        backgroundImage: AssetImage(widget.coop.imageUrl),
-                                    ),
-                                )
-                                : Container(
-                                    padding: const EdgeInsets.all(3), // Space for gray border
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                            BoxShadow(
-                                                color: Colors.white60.withValues(alpha: 0.4),
-                                                blurRadius: 2,
-                                                spreadRadius: 0.5,
+                                            child: CircleAvatar(
+                                                radius: 30,
+                                                backgroundImage: AssetImage(widget.coop.imageUrl),
                                             ),
-                                        ],
+                                        ),
+                                    // Colored status dot: green = Active, grey = Inactive
+                                    Positioned(
+                                        bottom: 2,
+                                        right: 2,
+                                        child: Container(
+                                            width: 14,
+                                            height: 14,
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: widget.coop.active
+                                                    ? AppColors.success
+                                                    : AppColors.textTertiary(context),
+                                                border: Border.all(
+                                                    color: AppColors.surface(context),
+                                                    width: 2,
+                                                ),
+                                            ),
+                                        ),
                                     ),
-                                    child: CircleAvatar(
-                                        radius: 30,
-                                        backgroundImage: AssetImage(widget.coop.imageUrl),
-                                    ),
-                                ),
+                                ],
+                            ),
                         ),
                         title: Text(
                             widget.coop.coopName,
@@ -154,6 +227,38 @@ class _CoopListItemState extends State<CoopListItem> {
                                         _isExpanded = !_isExpanded;
                                     });
                             },
+                        ),
+                    ),
+
+                    // Key metrics visible on collapsed card
+                    if (!_isExpanded)
+                    Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                        child: Wrap(
+                            spacing: 8,
+                            runSpacing: 4,
+                            children: [
+                                _buildMetricChip(
+                                    icon: Icons.egg_outlined,
+                                    value: '${widget.coop.numberOfChickens}',
+                                    label: 'Birds',
+                                    color: AppColors.info,
+                                ),
+                                _buildMetricChip(
+                                    icon: Icons.timer_outlined,
+                                    value: widget.coop.chickenAge,
+                                    label: 'Age',
+                                    color: AppColors.secondaryDark,
+                                ),
+                                _buildMetricChip(
+                                    icon: mortalityPct > 5.0
+                                        ? Icons.trending_down_rounded
+                                        : Icons.trending_flat_rounded,
+                                    value: '${mortalityPct.toStringAsFixed(1)}%',
+                                    label: 'Mortality',
+                                    color: mortalityColor,
+                                ),
+                            ],
                         ),
                     ),
 
@@ -236,6 +341,7 @@ class _CoopListItemState extends State<CoopListItem> {
 
                 ],
             ),
+        ),
         );
     }
 
@@ -338,6 +444,81 @@ class _CoopListItemState extends State<CoopListItem> {
         );
     }
 
+    // ── Swipe action background ─────────────────────────────────────────────
+    Widget _buildSwipeBackground({required bool isRight}) {
+        return Container(
+            decoration: BoxDecoration(
+                color: isRight
+                    ? AppColors.success.withOpacity(0.12)
+                    : AppColors.error.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(16),
+            ),
+            alignment: isRight ? Alignment.centerLeft : Alignment.centerRight,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                    Icon(
+                        isRight
+                            ? Icons.monetization_on_outlined
+                            : Icons.heart_broken_outlined,
+                        color: isRight ? AppColors.success : AppColors.error,
+                        size: 28,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                        isRight ? 'Add Sale' : 'Log Mortality',
+                        style: TextStyle(
+                            color: isRight ? AppColors.success : AppColors.error,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 11,
+                        ),
+                    ),
+                ],
+            ),
+        );
+    }
+
+    // ── Metric chip for the collapsed card ──────────────────────────────────
+    Widget _buildMetricChip({
+        required IconData icon,
+        required String value,
+        required String label,
+        required Color color,
+    }) {
+        return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+            decoration: BoxDecoration(
+                color: color.withOpacity(0.09),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: color.withOpacity(0.25), width: 0.8),
+            ),
+            child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                    Icon(icon, size: 13, color: color),
+                    const SizedBox(width: 4),
+                    Text(
+                        value,
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: color,
+                        ),
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                        label,
+                        style: TextStyle(
+                            fontSize: 10,
+                            color: color.withOpacity(0.75),
+                        ),
+                    ),
+                ],
+            ),
+        );
+    }
+
     Widget _buildAnimatedExpandedContent() {
         return TweenAnimationBuilder<double>(
             tween: Tween<double>(begin: 0, end: 1),
@@ -356,8 +537,8 @@ class _CoopListItemState extends State<CoopListItem> {
     }
 
     Widget _buildExpandedSectionContent() {
+        final bool isLayers = widget.coop.coopType == 'LAYERS';
         return Container(
-            padding:  EdgeInsets.all(16.0),
             decoration: BoxDecoration(
                 color: AppColors.surface(context),
                 borderRadius: BorderRadius.circular(16.0),
@@ -366,110 +547,802 @@ class _CoopListItemState extends State<CoopListItem> {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                            Expanded(
-                                child: _buildInfoRow(
-                                    Icons.fact_check_outlined,
-                                    'Number of Chickens',
-                                    '${widget.coop.numberOfChickens}',
-                                ),
+                    // ── TabBar ──────────────────────────────────────────────
+                    TabBar(
+                        controller: _tabController,
+                        isScrollable: true,
+                        tabAlignment: TabAlignment.start,
+                        indicatorColor: AppColors.adaptivePrimary(context),
+                        labelColor: AppColors.adaptivePrimary(context),
+                        unselectedLabelColor: AppColors.textSecondary(context),
+                        indicatorWeight: 2.5,
+                        labelStyle: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                        ),
+                        unselectedLabelStyle: const TextStyle(fontSize: 11),
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        tabs: [
+                            const Tab(
+                                icon: Icon(Icons.dashboard_outlined, size: 16),
+                                text: 'Overview',
                             ),
-                            if(widget.user.farmOwner)...{
-                                PopupMenuButton<String>(
-                                    icon: Icon(Icons.settings,
-                                        color: Theme
-                                            .of(context)
-                                            .colorScheme
-                                            .secondary),
-                                    onSelected: (String result) {
-                                        _handleMenuSelection(
-                                            result, widget.coop, widget.farm.id,
-                                            widget.onCoopUpdated);
-                                    },
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15),
-                                    ),
-                                    offset:  Offset(0, 50),
-                                    color: AppColors.surface(context),
-                                    elevation: 8,
-                                    itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry<String>>[
-                                        _buildPopupMenuItem(
-                                            'updateCoop',
-                                            Icons.update,
-                                            'Update Coop',
-                                            Theme
-                                                .of(context)
-                                                .colorScheme
-                                                .secondary),
-                                        _buildPopupMenuItem(
-                                            'newBatch',
-                                            Icons.clear_all_outlined,
-                                            'New Chicken batch',
-                                            AppColors.warning),
-                                        _buildPopupMenuItem(
-                                            'deleteCoop',
-                                            Icons.delete_outline,
-                                            'Delete Coop',
-                                            Theme
-                                                .of(context)
-                                                .colorScheme
-                                                .error),
-                                    ],
+                            const Tab(
+                                icon: Icon(Icons.monetization_on_outlined, size: 16),
+                                text: 'Sales',
+                            ),
+                            const Tab(
+                                icon: Icon(Icons.receipt_long_outlined, size: 16),
+                                text: 'Expenses',
+                            ),
+                            const Tab(
+                                icon: Icon(Icons.heart_broken_outlined, size: 16),
+                                text: 'Mortality',
+                            ),
+                            if (isLayers)
+                                const Tab(
+                                    icon: Icon(Icons.egg_outlined, size: 16),
+                                    text: 'Eggs',
                                 ),
-                            }
                         ],
                     ),
-                    _buildInfoRow(Icons.calendar_today_outlined, 'Chicken Arrival',
-                        widget.coop.chickenArrivalDate),
-                    const SizedBox(height: 10),
-                    _buildInfoRow(
-                        Icons.timer_outlined, 'Chicken Age', widget.coop.chickenAge),
-                    const SizedBox(height: 5),
-                    _buildSalesCardSection(
-                        sales: widget.coop.sales,
-                        userId: widget.user.id,
-                        farmId: widget.farm.id,
-                        coopId: widget.coop.id,
-                        onCoopDeleted: widget.onCoopUpdated,
-                        context: context,
+                    const Divider(height: 1),
+                    // ── Tab Content ─────────────────────────────────────────
+                    Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 200),
+                            transitionBuilder: (child, animation) => FadeTransition(
+                                opacity: animation,
+                                child: child,
+                            ),
+                            child: _buildTabContent(_currentTab),
+                        ),
                     ),
+                ],
+            ),
+        );
+    }
 
-                    const SizedBox(height: 5),
-                    _buildExpenseCardSection(
-                        expenses: widget.coop.expenses,
-                        userId: widget.user.id,
-                        farmId: widget.farm.id,
-                        coopId: widget.coop.id,
-                        onCoopDeleted: widget.onCoopUpdated,
-                        context: context,
+    // ── Tab router ─────────────────────────────────────────────────────────
+    Widget _buildTabContent(int tabIndex) {
+        switch (tabIndex) {
+            case 1: return _buildSalesTab();
+            case 2: return _buildExpensesTab();
+            case 3: return _buildMortalityTab();
+            case 4: return _buildEggsTab();
+            default: return _buildOverviewTab();
+        }
+    }
+
+    // ── Tab 0 : Overview ───────────────────────────────────────────────────
+    Widget _buildOverviewTab() {
+        final int totalMortalities = widget.coop.mortalities
+            .fold<int>(0, (sum, m) => sum + m.numberOfDeaths);
+        final double mortalityPct =
+            (widget.coop.numberOfChickens + totalMortalities) > 0
+                ? (totalMortalities /
+                    (widget.coop.numberOfChickens + totalMortalities)) * 100
+                : 0.0;
+
+        return Column(
+            key: const ValueKey('overview'),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                        // Active / Inactive status pill
+                        Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                                color: widget.coop.active
+                                    ? AppColors.success.withOpacity(0.1)
+                                    : AppColors.textTertiary(context)
+                                        .withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                    Container(
+                                        width: 8,
+                                        height: 8,
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: widget.coop.active
+                                                ? AppColors.success
+                                                : AppColors.textTertiary(context),
+                                        ),
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                        widget.coop.active ? 'Active' : 'Inactive',
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: widget.coop.active
+                                                ? AppColors.success
+                                                : AppColors.textTertiary(context),
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ),
+                        if (widget.user.farmOwner)
+                            PopupMenuButton<String>(
+                                icon: Icon(
+                                    Icons.settings,
+                                    color: Theme.of(context).colorScheme.secondary,
+                                ),
+                                onSelected: (String result) {
+                                    _handleMenuSelection(result, widget.coop,
+                                        widget.farm.id, widget.onCoopUpdated);
+                                },
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15)),
+                                offset: const Offset(0, 50),
+                                color: AppColors.surface(context),
+                                elevation: 8,
+                                itemBuilder: (BuildContext context) => [
+                                    _buildPopupMenuItem(
+                                        'updateCoop',
+                                        Icons.update,
+                                        'Update Coop',
+                                        Theme.of(context).colorScheme.secondary),
+                                    _buildPopupMenuItem(
+                                        'newBatch',
+                                        Icons.clear_all_outlined,
+                                        'New Chicken batch',
+                                        AppColors.warning),
+                                    _buildPopupMenuItem(
+                                        'deleteCoop',
+                                        Icons.delete_outline,
+                                        'Delete Coop',
+                                        Theme.of(context).colorScheme.error),
+                                ],
+                            ),
+                    ],
+                ),
+                const SizedBox(height: 12),
+                _buildInfoRow(
+                    Icons.fact_check_outlined,
+                    'Chickens',
+                    '${widget.coop.numberOfChickens}',
+                ),
+                _buildInfoRow(
+                    Icons.calendar_today_outlined,
+                    'Arrived',
+                    widget.coop.chickenArrivalDate,
+                ),
+                const SizedBox(height: 2),
+                _buildInfoRow(
+                    Icons.timer_outlined,
+                    'Age',
+                    widget.coop.chickenAge,
+                ),
+                const SizedBox(height: 12),
+                // Mortality rate summary tile
+                Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                        color: mortalityPct > 5
+                            ? AppColors.error.withOpacity(0.07)
+                            : AppColors.success.withOpacity(0.07),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                            color: mortalityPct > 5
+                                ? AppColors.error.withOpacity(0.25)
+                                : AppColors.success.withOpacity(0.25),
+                        ),
                     ),
-
-                    const SizedBox(height: 5),
-                    _buildMortalityCardSection(
-                        mortalities: widget.coop.mortalities,
-                        userId: widget.user.id,
-                        farmId: widget.farm.id,
-                        coopId: widget.coop.id,
-                        onCoopDeleted: widget.onCoopUpdated,
-                        context: context,
+                    child: Row(
+                        children: [
+                            Icon(
+                                mortalityPct > 5
+                                    ? Icons.trending_down_rounded
+                                    : Icons.trending_up_rounded,
+                                color: mortalityPct > 5
+                                    ? AppColors.error
+                                    : AppColors.success,
+                                size: 22,
+                            ),
+                            const SizedBox(width: 10),
+                            Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                    Text(
+                                        'Mortality Rate',
+                                        style: TextStyle(
+                                            fontSize: 11,
+                                            color: AppColors.textSecondary(context),
+                                        ),
+                                    ),
+                                    Text(
+                                        '${mortalityPct.toStringAsFixed(1)}%'
+                                        '  ($totalMortalities deaths)',
+                                        style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold,
+                                            color: mortalityPct > 5
+                                                ? AppColors.error
+                                                : AppColors.success,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ],
                     ),
+                ),
+            ],
+        );
+    }
 
-                    if (widget.coop.coopType == 'LAYERS') ...[
-                        const SizedBox(height: 5),
-                        _buildEggsRecordCardSection(
-                            eggPackagingRecords: widget.coop.eggPackagingRecords,
-                            userId: widget.user.id,
-                            farmId: widget.farm.id,
-                            coopId: widget.coop.id,
-                            onCoopDeleted: widget.onCoopUpdated,
-                            context: context,
+    // ── Tab 1 : Sales ──────────────────────────────────────────────────────
+    Widget _buildSalesTab() {
+        final sales = widget.coop.sales;
+        final double total =
+            sales.fold(0.0, (sum, s) => sum + s.totalSaleAmount);
+
+        return Column(
+            key: const ValueKey('sales'),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+                _buildTabSummaryCard(
+                    icon: Icons.attach_money,
+                    title: 'Total Sales',
+                    value: 'R${total.toStringAsFixed(2)}',
+                    count: sales.length,
+                    colors: [AppColors.success, AppColors.successLight],
+                    shadowColor: AppColors.success,
+                ),
+                const SizedBox(height: 10),
+                if (widget.coop.active)
+                    _buildAddButton(
+                        label: 'Add Sale',
+                        color: AppColors.success,
+                        onTap: () {
+                            if (widget.coop.coopType == 'LAYERS') {
+                                _showLayersRecordSalesBottomSheet(
+                                    widget.coop,
+                                    widget.farm.id,
+                                    widget.onCoopUpdated);
+                            } else {
+                                _showBroilerRecordSalesBottomSheet(
+                                    widget.coop,
+                                    widget.farm.id,
+                                    widget.onCoopUpdated);
+                            }
+                        },
+                    ),
+                const SizedBox(height: 8),
+                if (sales.isEmpty)
+                    _buildEmptyState(
+                        'No sales recorded yet',
+                        Icons.shopping_cart_outlined,
+                    )
+                else
+                    ...sales.map((s) => _buildInlineSaleItem(s)),
+            ],
+        );
+    }
+
+    // ── Tab 2 : Expenses ────────────────────────────────────────────────────
+    Widget _buildExpensesTab() {
+        final expenses = widget.coop.expenses;
+        final double total = expenses.fold(0.0, (sum, e) => sum + e.amount);
+
+        return Column(
+            key: const ValueKey('expenses'),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+                _buildTabSummaryCard(
+                    icon: Icons.receipt_long_outlined,
+                    title: 'Total Expenses',
+                    value: 'R${total.toStringAsFixed(2)}',
+                    count: expenses.length,
+                    colors: [AppColors.secondaryDark, AppColors.secondary],
+                    shadowColor: AppColors.secondaryDark,
+                ),
+                const SizedBox(height: 10),
+                if (widget.coop.active)
+                    _buildAddButton(
+                        label: 'Add Expense',
+                        color: AppColors.secondaryDark,
+                        onTap: () => _showRecordExpenseBottomSheet(
+                            widget.coop,
+                            widget.farm.id,
+                            widget.onCoopUpdated),
+                    ),
+                const SizedBox(height: 8),
+                if (expenses.isEmpty)
+                    _buildEmptyState(
+                        'No expenses recorded yet',
+                        Icons.receipt_long_outlined,
+                    )
+                else
+                    ...expenses.map((e) => _buildInlineExpenseItem(e)),
+            ],
+        );
+    }
+
+    // ── Tab 3 : Mortality ──────────────────────────────────────────────────
+    Widget _buildMortalityTab() {
+        final mortalities = widget.coop.mortalities;
+        final int totalDeaths =
+            mortalities.fold<int>(0, (sum, m) => sum + m.numberOfDeaths);
+
+        return Column(
+            key: const ValueKey('mortality'),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+                _buildTabSummaryCard(
+                    icon: Icons.heart_broken_outlined,
+                    title: 'Total Deaths',
+                    value: '$totalDeaths birds',
+                    count: mortalities.length,
+                    colors: [AppColors.error, AppColors.errorLight],
+                    shadowColor: AppColors.error,
+                ),
+                const SizedBox(height: 10),
+                if (widget.coop.active)
+                    _buildAddButton(
+                        label: 'Log Mortality',
+                        color: AppColors.error,
+                        onTap: () => _showRecordMortalityBottomSheet(
+                            widget.coop,
+                            widget.farm.id,
+                            widget.onCoopUpdated),
+                    ),
+                const SizedBox(height: 8),
+                if (mortalities.isEmpty)
+                    _buildEmptyState(
+                        'No mortality recorded yet',
+                        Icons.pets_outlined,
+                    )
+                else
+                    ...mortalities.map((m) => _buildInlineMortalityItem(m)),
+            ],
+        );
+    }
+
+    // ── Tab 4 : Egg Packaging (LAYERS only) ───────────────────────────────
+    Widget _buildEggsTab() {
+        final records = widget.coop.eggPackagingRecords;
+        final int totalEggs =
+            records.fold<int>(0, (sum, r) => sum + r.totalEggs);
+
+        return Column(
+            key: const ValueKey('eggs'),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+                _buildTabSummaryCard(
+                    icon: Icons.egg_outlined,
+                    title: 'Total Eggs Packed',
+                    value: '$totalEggs eggs',
+                    count: records.length,
+                    colors: [AppColors.warning, AppColors.warningLight],
+                    shadowColor: AppColors.warning,
+                ),
+                const SizedBox(height: 10),
+                if (widget.coop.active)
+                    _buildAddButton(
+                        label: 'Record Eggs',
+                        color: AppColors.warning,
+                        onTap: () => _showRecordEggsBottomSheet(
+                            widget.coop,
+                            widget.farm.id,
+                            widget.onCoopUpdated),
+                    ),
+                const SizedBox(height: 8),
+                if (records.isEmpty)
+                    _buildEmptyState(
+                        'No egg packaging records yet',
+                        Icons.egg_outlined,
+                    )
+                else
+                    ...records.map((r) => _buildInlineEggItem(r)),
+            ],
+        );
+    }
+
+    // ── Shared tab summary card ─────────────────────────────────────────────
+    Widget _buildTabSummaryCard({
+        required IconData icon,
+        required String title,
+        required String value,
+        required int count,
+        required List<Color> colors,
+        required Color shadowColor,
+    }) {
+        return Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: colors,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                    BoxShadow(
+                        color: shadowColor.withOpacity(0.28),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                    ),
+                ],
+            ),
+            child: Row(
+                children: [
+                    Icon(icon, color: Colors.white, size: 28),
+                    const SizedBox(width: 12),
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                            Text(
+                                title,
+                                style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 11,
+                                ),
+                            ),
+                            TweenAnimationBuilder<double>(
+                                tween: Tween(begin: 0, end: 1),
+                                duration: const Duration(milliseconds: 600),
+                                builder: (context, val, _) => Opacity(
+                                    opacity: val,
+                                    child: Text(
+                                        value,
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ],
+                    ),
+                    const Spacer(),
+                    Text(
+                        '$count record${count == 1 ? '' : 's'}',
+                        style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 11,
+                        ),
+                    ),
+                ],
+            ),
+        );
+    }
+
+    // ── Add button ──────────────────────────────────────────────────────────
+    Widget _buildAddButton({
+        required String label,
+        required Color color,
+        required VoidCallback onTap,
+    }) {
+        return SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+                icon: const Icon(Icons.add, size: 16),
+                label: Text(label),
+                style: OutlinedButton.styleFrom(
+                    foregroundColor: color,
+                    side: BorderSide(color: color),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                ),
+                onPressed: onTap,
+            ),
+        );
+    }
+
+    // ── Empty state ─────────────────────────────────────────────────────────
+    Widget _buildEmptyState(String message, IconData icon) {
+        return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 28),
+            child: Center(
+                child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                        Container(
+                            padding: const EdgeInsets.all(18),
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.surfaceVariant(context),
+                            ),
+                            child: Icon(
+                                icon,
+                                size: 34,
+                                color: AppColors.textTertiary(context),
+                            ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                            message,
+                            style: TextStyle(
+                                color: AppColors.textSecondary(context),
+                                fontSize: 13,
+                            ),
+                            textAlign: TextAlign.center,
                         ),
                     ],
+                ),
+            ),
+        );
+    }
 
-                ],
+    // ── Inline sale item ────────────────────────────────────────────────────
+    Widget _buildInlineSaleItem(Sale sale) {
+        final saleDate = DateFormat('MMM d, yyyy')
+            .format(DateTime.parse(sale.saleDate));
+        final isPaid = sale.paymentStatus == 'PAID';
+
+        return Card(
+            margin: const EdgeInsets.only(bottom: 6),
+            elevation: 0,
+            color: AppColors.surfaceVariant(context),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)),
+            child: ListTile(
+                dense: true,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                leading: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: AppColors.success.withOpacity(0.15),
+                    child: const Icon(
+                        Icons.shopping_cart_outlined,
+                        size: 16,
+                        color: AppColors.success,
+                    ),
+                ),
+                title: Text(
+                    sale.buyerName,
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                    ),
+                ),
+                subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                        Text(
+                            'R${sale.totalSaleAmount.toStringAsFixed(2)} · $saleDate',
+                            style: const TextStyle(fontSize: 11),
+                        ),
+                        const SizedBox(height: 2),
+                        Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 1),
+                            decoration: BoxDecoration(
+                                color: isPaid
+                                    ? AppColors.success.withOpacity(0.1)
+                                    : AppColors.warning.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                                sale.paymentStatus,
+                                style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w600,
+                                    color: isPaid
+                                        ? AppColors.success
+                                        : AppColors.warning,
+                                ),
+                            ),
+                        ),
+                    ],
+                ),
+                trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                        IconButton(
+                            icon: const Icon(
+                                Icons.info_outline,
+                                size: 17,
+                                color: AppColors.info,
+                            ),
+                            onPressed: () =>
+                                _showSaleDetailsDialog(context, sale),
+                            constraints:
+                                const BoxConstraints.tightFor(width: 32, height: 32),
+                            padding: EdgeInsets.zero,
+                        ),
+                        IconButton(
+                            icon: const Icon(
+                                Icons.delete_outline,
+                                size: 17,
+                                color: AppColors.error,
+                            ),
+                            onPressed: () => _deleteCoopItemDialog(
+                                'Sale',
+                                sale.id,
+                                widget.user.id,
+                                widget.farm.id,
+                                widget.coop.id,
+                                widget.onCoopUpdated,
+                            ),
+                            constraints:
+                                const BoxConstraints.tightFor(width: 32, height: 32),
+                            padding: EdgeInsets.zero,
+                        ),
+                    ],
+                ),
+            ),
+        );
+    }
+
+    // ── Inline expense item ─────────────────────────────────────────────────
+    Widget _buildInlineExpenseItem(Expense expense) {
+        final expenseDate = DateFormat('MMM d, yyyy')
+            .format(DateTime.parse(expense.expenseDate));
+
+        return Card(
+            margin: const EdgeInsets.only(bottom: 6),
+            elevation: 0,
+            color: AppColors.surfaceVariant(context),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)),
+            child: ListTile(
+                dense: true,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                leading: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: AppColors.secondaryDark.withOpacity(0.15),
+                    child: const Icon(
+                        Icons.receipt_long_outlined,
+                        size: 16,
+                        color: AppColors.secondaryDark,
+                    ),
+                ),
+                title: Text(
+                    expense.expenseType,
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                    ),
+                ),
+                subtitle: Text(
+                    'R${expense.amount.toStringAsFixed(2)} · $expenseDate',
+                    style: const TextStyle(fontSize: 11),
+                ),
+                trailing: IconButton(
+                    icon: const Icon(
+                        Icons.delete_outline,
+                        size: 17,
+                        color: AppColors.error,
+                    ),
+                    onPressed: () => _deleteCoopItemDialog(
+                        'Expense',
+                        expense.id,
+                        widget.user.id,
+                        widget.farm.id,
+                        widget.coop.id,
+                        widget.onCoopUpdated,
+                    ),
+                    constraints:
+                        const BoxConstraints.tightFor(width: 32, height: 32),
+                    padding: EdgeInsets.zero,
+                ),
+            ),
+        );
+    }
+
+    // ── Inline mortality item ───────────────────────────────────────────────
+    Widget _buildInlineMortalityItem(Mortality mortality) {
+        final dateOccurred = DateFormat('MMM d, yyyy')
+            .format(DateTime.parse(mortality.dateOccurred));
+
+        return Card(
+            margin: const EdgeInsets.only(bottom: 6),
+            elevation: 0,
+            color: AppColors.surfaceVariant(context),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)),
+            child: ListTile(
+                dense: true,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                leading: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: AppColors.error.withOpacity(0.15),
+                    child: const Icon(
+                        Icons.heart_broken_outlined,
+                        size: 16,
+                        color: AppColors.error,
+                    ),
+                ),
+                title: Text(
+                    '${mortality.numberOfDeaths} birds · $dateOccurred',
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                    ),
+                ),
+                subtitle: Text(
+                    mortality.reason,
+                    style: const TextStyle(fontSize: 11),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                ),
+                trailing: IconButton(
+                    icon: const Icon(
+                        Icons.delete_outline,
+                        size: 17,
+                        color: AppColors.error,
+                    ),
+                    onPressed: () => _deleteCoopItemDialog(
+                        'Mortality',
+                        mortality.id,
+                        widget.user.id,
+                        widget.farm.id,
+                        widget.coop.id,
+                        widget.onCoopUpdated,
+                    ),
+                    constraints:
+                        const BoxConstraints.tightFor(width: 32, height: 32),
+                    padding: EdgeInsets.zero,
+                ),
+            ),
+        );
+    }
+
+    // ── Inline egg packaging item ───────────────────────────────────────────
+    Widget _buildInlineEggItem(EggPackagingRecord record) {
+        final recordDate = DateFormat('MMM d, yyyy')
+            .format(DateTime.parse(record.createdDate));
+
+        return Card(
+            margin: const EdgeInsets.only(bottom: 6),
+            elevation: 0,
+            color: AppColors.surfaceVariant(context),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)),
+            child: ListTile(
+                dense: true,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                leading: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: AppColors.warning.withOpacity(0.15),
+                    child: const Icon(
+                        Icons.egg_outlined,
+                        size: 16,
+                        color: AppColors.warning,
+                    ),
+                ),
+                title: Text(
+                    '${record.totalEggs} eggs · ${record.eggSize}',
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                    ),
+                ),
+                subtitle: Text(
+                    '${record.numberOfBoxes} ${record.boxSize} boxes · $recordDate',
+                    style: const TextStyle(fontSize: 11),
+                ),
+                trailing: IconButton(
+                    icon: const Icon(
+                        Icons.delete_outline,
+                        size: 17,
+                        color: AppColors.error,
+                    ),
+                    onPressed: () => _deleteCoopItemDialog(
+                        'EggPackagingRecord',
+                        record.id,
+                        widget.user.id,
+                        widget.farm.id,
+                        widget.coop.id,
+                        widget.onCoopUpdated,
+                    ),
+                    constraints:
+                        const BoxConstraints.tightFor(width: 32, height: 32),
+                    padding: EdgeInsets.zero,
+                ),
             ),
         );
     }
@@ -2868,35 +3741,8 @@ class _CoopListItemState extends State<CoopListItem> {
                                 return Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                        // Fixed header
-                                        Container(
-                                            padding: const EdgeInsets.symmetric(vertical: 16),
-                                            decoration: BoxDecoration(
-                                                color: Theme.of(context).scaffoldBackgroundColor,
-                                                borderRadius:
-                                                const BorderRadius.vertical(top: Radius.circular(20)),
-                                                boxShadow: [
-                                                    BoxShadow(
-                                                        color: AppColors.adaptivePrimary(context).withOpacity(0.2),
-                                                        blurRadius: 10,
-                                                        offset: const Offset(0, 2),
-                                                    ),
-                                                ],
-                                            ),
-                                            child: Center(
-                                                child: Text(
-                                                    'Record Sale',
-                                                    style: TextStyle(
-                                                        fontSize: 20,
-                                                        fontWeight: FontWeight.w700,
-                                                        color: AppColors.adaptivePrimary(context),
-                                                        letterSpacing: 0.5,
-                                                    ),
-                                                ),
-                                            ),
-                                        ),
-                                        const Divider(height: 1),
-
+                                        // Frosted glass header
+                                        _buildFrostedSheetHeader('Record Sale'),
                                         // Scrollable form
                                         Expanded(
                                             child: SingleChildScrollView(
@@ -2906,8 +3752,7 @@ class _CoopListItemState extends State<CoopListItem> {
                                                         left: 18,
                                                         right: 18,
                                                         top: 18,
-                                                        bottom:
-                                                        MediaQuery.of(context).viewInsets.bottom + 18,
+                                                        bottom: MediaQuery.of(context).viewInsets.bottom + 18,
                                                     ),
                                                     child: Form(
                                                         key: formKey,
@@ -4176,6 +5021,58 @@ class _CoopListItemState extends State<CoopListItem> {
             },
         );
 
+    }
+
+    // ── Frosted glass bottom sheet header ─────────────────────────────────
+    Widget _buildFrostedSheetHeader(String title) {
+        return ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                child: Container(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 8, 16),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .scaffoldBackgroundColor
+                            .withOpacity(0.92),
+                        border: Border(
+                            bottom: BorderSide(
+                                color: AppColors.border(context),
+                                width: 0.5,
+                            ),
+                        ),
+                    ),
+                    child: Column(
+                        children: [
+                            // Drag handle
+                            Center(
+                                child: Container(
+                                    width: 36,
+                                    height: 4,
+                                    decoration: BoxDecoration(
+                                        color: AppColors.textTertiary(context)
+                                            .withOpacity(0.4),
+                                        borderRadius: BorderRadius.circular(2),
+                                    ),
+                                ),
+                            ),
+                            const SizedBox(height: 14),
+                            Center(
+                                child: Text(
+                                    title,
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.adaptivePrimary(context),
+                                        letterSpacing: 0.3,
+                                    ),
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            ),
+        );
     }
 
     void _showErrorSnackBar(String message) {

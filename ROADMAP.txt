@@ -118,10 +118,24 @@ Prompt: "Redesign the HomeScreen navigation and app bar. Current issues: the app
 Prompt: "Redesign the FarmDashboard screen for better data visualization and usability. Current state: basic cards with text. New design: (1) Add a summary header with 4 KPI cards in a 2x2 grid: Total Revenue (green), Total Expenses (red), Net Profit (blue), Mortality Rate (orange) - each with an icon, value, and percentage change indicator. (2) Replace the coop cards with a more visual design: add a circular progress indicator showing coop health score, use color-coded chips for coop type (Broiler=amber, Layers=teal), show mini sparkline charts for recent sales/expenses trends inline. (3) Add a 'Quick Actions' floating section with common tasks: Record Sale, Log Mortality, Add Expense, Check Reminders. (4) Use Shimmer loading placeholders while data loads instead of CircularProgressIndicator. (5) Add pull-to-refresh functionality."
 
 **4. Coop Detail & List Improvements:**
-Prompt: "Redesign the CoopListItem widget for better UX. Current state: 4225-line file with everything embedded. New design: (1) Coop cards should show a colored status badge (Active=green dot, Inactive=grey dot). (2) Show key metrics on the collapsed card: chicken count, age, mortality %, and a small trend arrow. (3) When expanded, organize data into tabs (Overview, Sales, Expenses, Mortality, Egg Packaging) instead of one long scrollable list. (4) Use a TabBar inside the expanded card with horizontal swipe between sections. (5) Bottom sheets for adding sales/mortality/expenses should have modern design: frosted glass header, proper form field spacing, success animations using Lottie. (6) Add swipe actions on the coop card: swipe right for quick-add-sale, swipe left for quick-add-mortality. (7) Add an empty state illustration when no sales/expenses/mortality recorded."
+Prompt: "Redesign the CoopListItem widget for better UX. Current state: 4225-line file with everything embedded.
+New design: (1) Coop cards should show a colored status badge (Active=green dot, Inactive=grey dot). (2) Show key
+metrics on the collapsed card: chicken count, age, mortality %, and a small trend arrow. (3) When expanded, organize data
+into tabs (Overview, Sales, Expenses, Mortality, Egg Packaging) instead of one long scrollable list. (4) Use a TabBar inside
+the expanded card with horizontal swipe between sections. (5) Bottom sheets for adding sales/mortality/expenses should have
+modern design: frosted glass header, proper form field spacing, success animations using Lottie. (6) Add swipe actions on
+the coop card: swipe right for quick-add-sale, swipe left for quick-add-mortality. (7) Add an empty state illustration when no sales/expenses/mortality recorded."
 
 **5. Forms & Input UX:**
-Prompt: "Improve all form inputs and bottom sheets in the Flutter app for better farmer-friendly UX. (1) Replace the CupertinoSegmentedControl for coop type/growing phase with large tappable cards showing an icon + label (e.g., a chicken icon for Broiler, an egg icon for Layers). (2) Add input formatting: currency fields should auto-format with thousand separators, quantity fields should have +/- stepper buttons. (3) Add inline validation with real-time feedback (green checkmarks when valid). (4) All bottom sheets should have a progress indicator when submitting (replace the full-screen Lottie loading dialog with an inline loading state on the submit button). (5) Add haptic feedback on successful submissions. (6) Number inputs should show a numeric keyboard by default. Update Common.buildTextField and all bottom sheet forms."
+Prompt: "Improve all form inputs and bottom sheets in the Flutter app for better farmer-friendly UX.
+(1) Replace the CupertinoSegmentedControl for coop type/growing phase with large tappable cards showing an icon + label
+(e.g., a chicken icon for Broiler, an egg icon for Layers).
+(2) Add input formatting: currency fields should auto-format with thousand separators, quantity fields should have +/- stepper buttons.
+(3) Add inline validation with real-time feedback (green checkmarks when valid).
+(4) All bottom sheets should have a progress indicator when submitting (replace the full-screen Lottie loading dialog with an inline
+loading state on the submit button).
+(5) Add haptic feedback on successful submissions.
+(6) Number inputs should show a numeric keyboard by default. Update Common.buildTextField and all bottom sheet forms."
 
 **6. Empty States & Onboarding:**
 Prompt: "Add illustrated empty states and a first-time onboarding flow. (1) Create custom EmptyState widget with Lottie animation + descriptive text + CTA button for: no coops ('Start by adding your first coop'), no sales ('Record your first sale'), no reminders ('Set up vaccination schedules'), empty dashboard ('Add coops to see your farm analytics'). (2) Create a 3-page onboarding screen shown on first launch: Page 1 - 'Manage Your Coops' (illustration + brief text), Page 2 - 'Track Sales & Expenses' (illustration + brief text), Page 3 - 'Stay On Schedule' (illustration about reminders + 'Get Started' button). Use PageView with dot indicators and skip button. Store onboarding completion in SharedPreferences."
