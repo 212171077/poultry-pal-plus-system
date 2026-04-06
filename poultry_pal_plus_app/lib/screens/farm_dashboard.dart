@@ -507,8 +507,8 @@ class _FarmDashboardState extends State<FarmDashboard> {
     Widget _buildShimmer(BuildContext context) {
         final dark = _isDark(context);
         return Shimmer.fromColors(
-            baseColor: dark ? const Color(0xFF3D2C1E) : const Color(0xFFE8DDD5),
-            highlightColor: dark ? const Color(0xFF52402E) : const Color(0xFFF5EDE5),
+            baseColor: dark ? const Color(0xFF243224) : const Color(0xFFE8DDD5),
+            highlightColor: dark ? const Color(0xFF3A5230) : const Color(0xFFF5EDE5),
             child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
                 children: [

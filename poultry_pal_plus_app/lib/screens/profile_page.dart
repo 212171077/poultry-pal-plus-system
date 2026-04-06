@@ -1319,13 +1319,13 @@ class EmployeeListSection extends StatelessWidget {
                                                                 ],
                                                             ),
                                                         ),
-                                                        const PopupMenuItem(
+                                                        PopupMenuItem(
                                                             value: 'UserCoops',
                                                             child: Row(
                                                                 children: [
-                                                                    Icon(Icons.home_work_outlined, color: AppColors.primary),
-                                                                    SizedBox(width: 8),
-                                                                    Text('User Coop(s)'),
+                                                                    Icon(Icons.home_work_outlined, color: AppColors.adaptivePrimary(context)),
+                                                                    const SizedBox(width: 8),
+                                                                    const Text('User Coop(s)'),
                                                                 ],
                                                             ),
                                                         ),
@@ -2271,13 +2271,13 @@ class EmployeeListSection extends StatelessWidget {
                                                                                                     }
                                                                                                 });
                                                                                         },
-                                                                                        selectedColor: AppColors.primary,
+                                                                                        selectedColor: AppColors.adaptivePrimary(context),
                                                                                         backgroundColor: AppColors.border(context),
                                                                                         shape: RoundedRectangleBorder(
                                                                                             borderRadius: BorderRadius.circular(12),
                                                                                             side: BorderSide(
                                                                                                 color: isSelected
-                                                                                                    ? AppColors.primary
+                                                                                                    ? AppColors.adaptivePrimary(context)
                                                                                                     : AppColors.border(context),
                                                                                             ),
                                                                                         ),

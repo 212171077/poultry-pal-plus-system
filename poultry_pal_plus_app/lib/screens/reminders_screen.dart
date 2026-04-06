@@ -107,11 +107,11 @@ class _ExpandableCoopCardState
             margin: const EdgeInsets.symmetric(vertical: 10.0),
             decoration: BoxDecoration(
                 border: Border.all(color: Colors.black12, width: 0.3),
-                gradient: LinearGradient(
-                    colors: isExpanded
-                        ? [AppColors.surfaceVariant(context), AppColors.primaryLight]
-                        : [AppColors.surface(context), AppColors.surface(context)],
-                ),
+                        gradient: LinearGradient(
+                            colors: isExpanded
+                                ? [AppColors.surfaceVariant(context), AppColors.adaptivePrimary(context).withValues(alpha: 0.35)]
+                                : [AppColors.surface(context), AppColors.surface(context)],
+                        ),
                 boxShadow: [
                     BoxShadow(
                         color: Colors.black.withOpacity(0.1),
@@ -569,14 +569,14 @@ class _ExpandableCoopCardState
                                     if (upcomingReminders.isNotEmpty) ...[
                                         SizedBox(height: overdueTasks.isNotEmpty ? 20 : 0),
                                         _buildSectionTitle(
-                                            context, 'Upcoming Reminders', AppColors.primary),
+                                            context, 'Upcoming Reminders', AppColors.adaptivePrimary(context)),
                                         _buildTaskList(
                                             context,
                                             upcomingReminders,
                                             widget.coop,
                                             widget.farm,
                                             widget.user,
-                                            AppColors.primary,
+                                            AppColors.adaptivePrimary(context),
                                             onCoopUpdated,
                                         ),
                                     ],

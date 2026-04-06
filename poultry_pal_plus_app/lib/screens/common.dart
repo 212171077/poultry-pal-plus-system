@@ -626,7 +626,7 @@ class Common {
                             ),
                         },
                         borderColor: AppColors.border(context),
-                        selectedColor: AppColors.primary,
+                        selectedColor: AppColors.adaptivePrimary(context),
                         unselectedColor: isDark ? AppColors.surfaceDark : Colors.white,
                         pressedColor: AppColors.surfaceVariant(context),
                     ),
@@ -707,11 +707,11 @@ class Common {
                                                     padding: const EdgeInsets.symmetric(
                                                         horizontal: 12, vertical: 8),
                                                     decoration: BoxDecoration(
-                                                        color: isSelected ? AppColors.primary : AppColors.surfaceVariant(context),
+                                                        color: isSelected ? AppColors.adaptivePrimary(context) : AppColors.surfaceVariant(context),
                                                         borderRadius: BorderRadius.circular(16),
                                                         border: Border.all(
                                                             color: isSelected
-                                                                ? AppColors.primary
+                                                                ? AppColors.adaptivePrimary(context)
                                                                 : AppColors.border(context),
                                                             width: 1.2,
                                                         ),
@@ -764,7 +764,7 @@ class Common {
                                                 decoration: BoxDecoration(
                                                     shape: BoxShape.circle,
                                                     color: index == activeDot
-                                                        ? AppColors.primary
+                                                        ? AppColors.adaptivePrimary(context)
                                                         : AppColors.border(context),
                                                 ),
                                             );
@@ -844,11 +844,11 @@ class Common {
                                                     padding: const EdgeInsets.symmetric(
                                                         horizontal: 12, vertical: 8),
                                                     decoration: BoxDecoration(
-                                                        color: isSelected ? AppColors.primary : AppColors.surfaceVariant(context),
+                                                        color: isSelected ? AppColors.adaptivePrimary(context) : AppColors.surfaceVariant(context),
                                                         borderRadius: BorderRadius.circular(16),
                                                         border: Border.all(
                                                             color: isSelected
-                                                                ? AppColors.primary
+                                                                ? AppColors.adaptivePrimary(context)
                                                                 : AppColors.border(context),
                                                             width: 1.2,
                                                         ),
@@ -900,7 +900,7 @@ class Common {
                                                 decoration: BoxDecoration(
                                                     shape: BoxShape.circle,
                                                     color: index == activeDot
-                                                        ? AppColors.primary
+                                                        ? AppColors.adaptivePrimary(context)
                                                         : AppColors.border(context),
                                                 ),
                                             );
@@ -989,7 +989,7 @@ class Common {
                                 ),
                             },
                             borderColor: AppColors.border(context),
-                            selectedColor: AppColors.primary,
+                            selectedColor: AppColors.adaptivePrimary(context),
                             unselectedColor: isDark ? AppColors.surfaceDark : Colors.white,
                             pressedColor: AppColors.surfaceVariant(context),
                         ),
@@ -1068,7 +1068,7 @@ class Common {
                                 ),
                             },
                             borderColor: AppColors.border(context),
-                            selectedColor: AppColors.primary,
+                            selectedColor: AppColors.adaptivePrimary(context),
                             unselectedColor: isDark ? AppColors.surfaceDark : Colors.white,
                             pressedColor: AppColors.surfaceVariant(context),
                         ),

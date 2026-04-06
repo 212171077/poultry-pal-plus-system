@@ -106,7 +106,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: _isExpanded
-                        ? [AppColors.surfaceVariant(context), AppColors.primary]
+                        ? [AppColors.surfaceVariant(context), AppColors.adaptivePrimary(context).withValues(alpha: 0.35)]
                         : [AppColors.surface(context), AppColors.surface(context)],
                 ),
                 boxShadow: [

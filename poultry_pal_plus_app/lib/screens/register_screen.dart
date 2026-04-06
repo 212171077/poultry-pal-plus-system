@@ -101,8 +101,8 @@ class _RegisterScreenState extends State<RegisterScreen>
                               width: 88,
                               height: 88,
                               padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: AppColors.primary,
+                              decoration: BoxDecoration(
+                                color: AppColors.adaptivePrimary(context),
                                 shape: BoxShape.circle,
                               ),
                               child: const CircleAvatar(
@@ -278,7 +278,7 @@ class _RegisterScreenState extends State<RegisterScreen>
         obscureText: obscureText,
         style: TextStyle(fontSize: 16, color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight),
         decoration: InputDecoration(
-          prefixIcon: icon != null ? Icon(icon, color: isDark ? AppColors.primaryLight : AppColors.primary) : null,
+          prefixIcon: icon != null ? Icon(icon, color: AppColors.adaptivePrimary(context)) : null,
           suffixIcon: suffixIcon,
           labelText: labelText,
           labelStyle: TextStyle(

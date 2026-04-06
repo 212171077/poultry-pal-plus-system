@@ -182,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide.none,
       ),
-      prefixIcon: Icon(icon, color: isDark ? AppColors.primaryLight : AppColors.primary),
+      prefixIcon: Icon(icon, color: AppColors.adaptivePrimary(context)),
       suffixIcon: suffixIcon,
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
@@ -238,8 +238,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                 width: 88,
                                 height: 88,
                                 padding: const EdgeInsets.all(4),
-                                decoration: const BoxDecoration(
-                                  color: AppColors.primary,
+                                decoration: BoxDecoration(
+                                  color: AppColors.adaptivePrimary(context),
                                   shape: BoxShape.circle,
                                 ),
                                 child: CircleAvatar(
@@ -256,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: theme.primaryColor,
+                                color: AppColors.adaptivePrimary(context),
                               ),
                             ).animate().fadeIn(duration: 600.ms).moveY(
                                 begin: 30),
@@ -289,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                     _obscurePassword
                                         ? Icons.visibility_off
                                         : Icons.visibility,
-                                    color: AppColors.primary,
+                                    color: AppColors.adaptivePrimary(context),
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -317,7 +317,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                                   _rememberMe = value ?? false;
                                 });
                               },
-                              activeColor: theme.primaryColor,
+                              activeColor: AppColors.adaptivePrimary(context),
                               title: const Text("Remember Me"),
                               controlAffinity: ListTileControlAffinity.leading,
                               contentPadding: EdgeInsets.zero,

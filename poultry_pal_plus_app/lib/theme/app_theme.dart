@@ -66,13 +66,14 @@ abstract class AppColors {
   static const Color surfaceLight        = Color(0xFFFFFFFF); // Pure white (cards)
   static const Color surfaceVariantLight = Color(0xFFF4EDE5); // Warm cream fill
 
-  // ── BACKGROUNDS & SURFACES — Dark Mode ───────────────────────────────────
-  // WHY: Dark surfaces are given a subtle warm brown tint (#1A1410) that
-  // echoes the primary without being too heavy. Cards and surface variants
-  // step progressively lighter to maintain clear visual hierarchy.
-  static const Color backgroundDark     = Color(0xFF1A1410); // Deep dark warm
-  static const Color surfaceDark        = Color(0xFF261C14); // Slightly lighter
-  static const Color surfaceVariantDark = Color(0xFF33251A); // Medium warm dark
+  // ── BACKGROUNDS & SURFACES — Dark Mode (Farm Night Mode) ─────────────────
+  // WHY: A deep olive-black (#121A12) grounds the palette in a natural farm
+  // context while eliminating eye-straining pure black. Surfaces step through
+  // progressively lighter green-tinted darks to maintain clear visual
+  // hierarchy without harsh contrast jumps.
+  static const Color backgroundDark     = Color(0xFF121A12); // Farm Night: deep olive-black
+  static const Color surfaceDark        = Color(0xFF1B251B); // Farm Night: green-tinted dark surface
+  static const Color surfaceVariantDark = Color(0xFF243224); // Farm Night: elevated container
 
   // ── TEXT — Light Mode ─────────────────────────────────────────────────────
   // WHY: Neutral iOS-system grays ensure numbers and data labels are easy to
@@ -82,13 +83,15 @@ abstract class AppColors {
   static const Color textTertiaryLight  = Color(0xFFAEAEB2); // Lighter hint gray
   static const Color textDisabledLight  = Color(0xFFC7C7CC); // Disabled state
 
-  // ── TEXT — Dark Mode ──────────────────────────────────────────────────────
-  // WHY: Soft off-white (#F2F2F7) avoids OLED glare. Grays mirror the
-  // light-mode scale for a cohesive, readable dark experience.
-  static const Color textPrimaryDark   = Color(0xFFF2F2F7); // Soft off-white
-  static const Color textSecondaryDark = Color(0xFFAEAEB2); // Medium gray
-  static const Color textTertiaryDark  = Color(0xFF636366); // Darker hint gray
-  static const Color textDisabledDark  = Color(0xFF48484A); // Disabled state
+  // ── TEXT — Dark Mode (Farm Night Mode) ───────────────────────────────────
+  // WHY: A soft green-tinted off-white (#E8F5E9) sits naturally against the
+  // olive-green surfaces and reduces glare compared to pure white. Secondary
+  // and tertiary levels use desaturated grey-greens for clear hierarchy without
+  // harsh brightness steps — ideal for low-light farm environments.
+  static const Color textPrimaryDark   = Color(0xFFE8F5E9); // Farm Night: soft off-white green
+  static const Color textSecondaryDark = Color(0xFFA0B8A0); // Farm Night: muted grey-green
+  static const Color textTertiaryDark  = Color(0xFF637863); // Farm Night: darker hint
+  static const Color textDisabledDark  = Color(0xFF3E5A3E); // Farm Night: disabled
 
   // ── SEMANTIC COLORS ───────────────────────────────────────────────────────
   // WHY: All four semantic colors are clearly distinct from the brown primary
@@ -110,9 +113,29 @@ abstract class AppColors {
   // WHY: Warm beige borders (#E5D9CE) harmonise with the cream background and
   // brown primary — visually cohesive without adding noise.
   static const Color borderLight  = Color(0xFFE5D9CE); // Warm beige border
-  static const Color borderDark   = Color(0xFF3D2E22); // Dark warm border
+  static const Color borderDark   = Color(0xFF2A3F2A); // Farm Night: dark olive border
   static const Color dividerLight = Color(0xFFEDE4D8); // Warm light divider
-  static const Color dividerDark  = Color(0xFF2E2218); // Dark warm divider
+  static const Color dividerDark  = Color(0xFF1F2E1F); // Farm Night: dark olive divider
+
+  // ── FARM NIGHT MODE — Extended Palette ───────────────────────────────────
+  // WHY: Poultry farmers often operate in early mornings, evenings, and
+  // low-light barns. This curated palette:
+  //   Primary  (#6FAF5B) — soft natural green, evokes healthy pasture;
+  //                        WCAG-AA with dark (#0F1E0F) text on button (~6.5:1)
+  //   Secondary (#C2A878) — warm grain/wheat tone for secondary actions
+  //   Accent   (#E6B800) — egg-yolk yellow for FAB and key action highlights;
+  //                        WCAG-AA with dark (#1E1400) text (~10:1)
+  //   Semantics — each slightly desaturated vs. light-mode to reduce glare
+  static const Color primaryFarmNight      = Color(0xFF6FAF5B); // Soft natural green
+  static const Color primaryFarmNightDark  = Color(0xFF4D8F3B); // Deeper pressed/container
+  static const Color secondaryFarmNight    = Color(0xFFC2A878); // Warm grain/wheat tone
+  static const Color accentFarmNight       = Color(0xFFE6B800); // Egg yolk yellow
+
+  // Farm Night muted semantic colors — softer than light-mode variants
+  static const Color successFarmNight = Color(0xFF5CB85C); // Muted soft green
+  static const Color errorFarmNight   = Color(0xFFCF6679); // Slightly muted red
+  static const Color warningFarmNight = Color(0xFFFFAA44); // Warm amber/orange
+  static const Color infoFarmNight    = Color(0xFF5599CC); // Muted sky blue
 
   // ── SHADOWS ───────────────────────────────────────────────────────────────
   static const Color shadowLight = Color(0xFF000000);
@@ -147,11 +170,11 @@ abstract class AppColors {
       _isDark(context) ? dividerDark : dividerLight;
 
   static Color adaptivePrimary(BuildContext context) =>
-      _isDark(context) ? primaryBright : primary;
+      _isDark(context) ? primaryFarmNight : primary;
 
   /// For icons on cards/surfaces — needs higher contrast in dark mode
   static Color iconPrimary(BuildContext context) =>
-      _isDark(context) ? secondaryLight : primary;
+      _isDark(context) ? primaryFarmNight : primary;
 
   /// For text on colored backgrounds (e.g. on primary buttons) — always white.
   static const Color onPrimary = Colors.white;
@@ -660,7 +683,10 @@ class AppTheme {
     );
   }
 
-  // ---- Dark Theme ----
+  // ---- Dark Theme (Farm Night Mode) ----
+  /// Optimised for poultry farmers working in low-light conditions (early
+  /// mornings, evenings, low-light barns). Deep olive-green surfaces reduce
+  /// eye strain while WCAG-AA contrast ratios are maintained throughout.
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
@@ -668,27 +694,27 @@ class AppTheme {
 
       // ---- Color Scheme ----
       colorScheme: const ColorScheme.dark(
-        primary: AppColors.primaryLight,
-        onPrimary: Colors.white,
-        primaryContainer: AppColors.primary,
-        onPrimaryContainer: Colors.white,
-        secondary: AppColors.secondaryLight,
-        onSecondary: Colors.white,
-        secondaryContainer: AppColors.secondary,
-        onSecondaryContainer: Colors.white,
-        tertiary: AppColors.infoLight,
+        primary: AppColors.primaryFarmNight,              // #6FAF5B soft natural green
+        onPrimary: Color(0xFF0F1E0F),                     // near-black — AA contrast ~6.5:1
+        primaryContainer: AppColors.primaryFarmNightDark, // #4D8F3B deeper container
+        onPrimaryContainer: Color(0xFFC8EDB8),            // soft light-green tint
+        secondary: AppColors.secondaryFarmNight,          // #C2A878 warm grain/wheat
+        onSecondary: Color(0xFF1E1408),                   // dark warm for readability
+        secondaryContainer: Color(0xFF7A6545),            // deeper wheat container
+        onSecondaryContainer: Color(0xFFF2E4C8),          // light wheat tint
+        tertiary: AppColors.infoFarmNight,                // #5599CC muted sky blue
         onTertiary: Colors.white,
-        error: AppColors.errorLight,
+        error: AppColors.errorFarmNight,                  // #CF6679 slightly muted red
         onError: Colors.white,
-        errorContainer: AppColors.error,
-        onErrorContainer: Colors.white,
-        surface: AppColors.surfaceDark,
-        onSurface: AppColors.textPrimaryDark,
-        surfaceContainerHighest: AppColors.surfaceVariantDark,
-        onSurfaceVariant: AppColors.textSecondaryDark,
-        outline: AppColors.borderDark,
-        outlineVariant: AppColors.dividerDark,
-        scrim: AppColors.backgroundDark,
+        errorContainer: Color(0xFF8B3A4A),                // deeper muted red container
+        onErrorContainer: Color(0xFFF5C0CA),              // light red tint
+        surface: AppColors.surfaceDark,                   // #1B251B green-tinted surface
+        onSurface: AppColors.textPrimaryDark,             // #E8F5E9 soft off-white green
+        surfaceContainerHighest: AppColors.surfaceVariantDark, // #243224 elevated container
+        onSurfaceVariant: AppColors.textSecondaryDark,    // #A0B8A0 muted grey-green
+        outline: AppColors.borderDark,                    // #2A3F2A dark olive border
+        outlineVariant: AppColors.dividerDark,            // #1F2E1F dark olive divider
+        scrim: AppColors.backgroundDark,                  // #121A12 deep olive-black
       ),
 
       // ---- Scaffold ----
@@ -704,12 +730,14 @@ class AppTheme {
           color: AppColors.textPrimaryDark,
         ),
         iconTheme: const IconThemeData(
-          color: AppColors.primaryLight,
+          color: AppColors.primaryFarmNight,
           size: 24,
         ),
       ),
 
       // ---- Card Theme ----
+      // WHY: Slightly elevated surface (#1B251B) stands out from background
+      // (#121A12) through color alone — no heavy shadows needed in dark mode.
       cardTheme: CardThemeData(
         color: AppColors.surfaceDark,
         elevation: AppElevation.sm,
@@ -720,10 +748,11 @@ class AppTheme {
       ),
 
       // ---- Elevated Button Theme ----
+      // WHY: Dark text on green button — ensures AA contrast (~6.5:1).
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryLight,
-          foregroundColor: Colors.white,
+          backgroundColor: AppColors.primaryFarmNight,
+          foregroundColor: const Color(0xFF0F1E0F),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.lg,
             vertical: AppSpacing.md,
@@ -733,7 +762,7 @@ class AppTheme {
             borderRadius: AppBorderRadius.radiusMd,
           ),
           textStyle: AppTypography.labelLarge(
-            color: Colors.white,
+            color: const Color(0xFF0F1E0F),
           ),
         ),
       ),
@@ -741,13 +770,13 @@ class AppTheme {
       // ---- Text Button Theme ----
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.primaryLight,
+          foregroundColor: AppColors.primaryFarmNight,
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
             vertical: AppSpacing.sm,
           ),
           textStyle: AppTypography.labelLarge(
-            color: AppColors.primaryLight,
+            color: AppColors.primaryFarmNight,
           ),
         ),
       ),
@@ -755,22 +784,24 @@ class AppTheme {
       // ---- Outlined Button Theme ----
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primaryLight,
+          foregroundColor: AppColors.primaryFarmNight,
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.lg,
             vertical: AppSpacing.md,
           ),
           shape: RoundedRectangleBorder(
             borderRadius: AppBorderRadius.radiusMd,
-            side: const BorderSide(color: AppColors.primaryLight),
+            side: const BorderSide(color: AppColors.primaryFarmNight),
           ),
           textStyle: AppTypography.labelLarge(
-            color: AppColors.primaryLight,
+            color: AppColors.primaryFarmNight,
           ),
         ),
       ),
 
       // ---- Input Decoration Theme ----
+      // WHY: surfaceVariantDark (#243224) gives inputs clear visual separation
+      // from the card surface (#1B251B) without harsh borders.
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surfaceVariantDark,
@@ -793,20 +824,20 @@ class AppTheme {
         focusedBorder: OutlineInputBorder(
           borderRadius: AppBorderRadius.radiusMd,
           borderSide: const BorderSide(
-            color: AppColors.primaryLight,
+            color: AppColors.primaryFarmNight,
             width: 2,
           ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: AppBorderRadius.radiusMd,
           borderSide: const BorderSide(
-            color: AppColors.errorLight,
+            color: AppColors.errorFarmNight,
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: AppBorderRadius.radiusMd,
           borderSide: const BorderSide(
-            color: AppColors.errorLight,
+            color: AppColors.errorFarmNight,
             width: 2,
           ),
         ),
@@ -817,14 +848,14 @@ class AppTheme {
           color: AppColors.textSecondaryDark,
         ),
         errorStyle: AppTypography.bodySmall(
-          color: AppColors.errorLight,
+          color: AppColors.errorFarmNight,
         ),
       ),
 
       // ---- Bottom Navigation Bar Theme ----
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.surfaceDark,
-        selectedItemColor: AppColors.primaryLight,
+        selectedItemColor: AppColors.primaryFarmNight,
         unselectedItemColor: AppColors.textTertiaryDark,
         elevation: AppElevation.lg,
         type: BottomNavigationBarType.fixed,
@@ -840,9 +871,12 @@ class AppTheme {
       ),
 
       // ---- Floating Action Button Theme ----
+      // WHY: Egg-yolk yellow (#E6B800) provides high visibility in dark
+      // environments; contrast with dark text (#1E1400) is ~10:1 — WCAG AAA.
+      // It anchors the 'key action' accent role distinctly from the green primary.
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.primaryLight,
-        foregroundColor: Colors.white,
+        backgroundColor: AppColors.accentFarmNight,
+        foregroundColor: Color(0xFF1E1400),
         elevation: AppElevation.lg,
         shape: CircleBorder(),
       ),
@@ -865,19 +899,19 @@ class AppTheme {
 
       // ---- Progress Indicator Theme ----
       progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: AppColors.primaryLight,
+        color: AppColors.primaryFarmNight,
         linearTrackColor: AppColors.surfaceVariantDark,
       ),
 
       // ---- Chip Theme ----
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.surfaceVariantDark,
-        selectedColor: AppColors.primaryLight,
+        selectedColor: AppColors.primaryFarmNight,
         labelStyle: AppTypography.labelMedium(
           color: AppColors.textPrimaryDark,
         ),
         secondaryLabelStyle: AppTypography.labelMedium(
-          color: Colors.white,
+          color: const Color(0xFF0F1E0F),
         ),
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
@@ -927,4 +961,3 @@ class AppTheme {
     );
   }
 }
-

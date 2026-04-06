@@ -386,7 +386,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
                 children: [
                     _buildStatCard('Coops', '$_totalActiveCoops',
-                        Icons.home_work_outlined, AppColors.primary),
+                        Icons.home_work_outlined, AppColors.adaptivePrimary(context)),
                     const SizedBox(width: 8),
                     _buildStatCard('Chickens', '$_totalChickens',
                         Icons.egg_alt_outlined, AppColors.secondaryDark),
@@ -454,34 +454,34 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
             },
             backgroundColor: AppColors.surface(context),
-            indicatorColor: AppColors.primary.withValues(alpha: 0.15),
+            indicatorColor: AppColors.adaptivePrimary(context).withValues(alpha: 0.18),
             surfaceTintColor: Colors.transparent,
             labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
             elevation: 3,
-            destinations: const [
+            destinations: [
                 NavigationDestination(
-                    icon: Icon(Icons.notifications_outlined),
-                    selectedIcon: Icon(Icons.notifications, color: AppColors.primary),
+                    icon: const Icon(Icons.notifications_outlined),
+                    selectedIcon: Icon(Icons.notifications, color: AppColors.adaptivePrimary(context)),
                     label: 'Reminders',
                 ),
                 NavigationDestination(
-                    icon: Icon(Icons.bar_chart_outlined),
-                    selectedIcon: Icon(Icons.bar_chart, color: AppColors.primary),
+                    icon: const Icon(Icons.bar_chart_outlined),
+                    selectedIcon: Icon(Icons.bar_chart, color: AppColors.adaptivePrimary(context)),
                     label: 'Dashboard',
                 ),
                 NavigationDestination(
-                    icon: Icon(Icons.home_work_outlined),
-                    selectedIcon: Icon(Icons.home_work, color: AppColors.primary),
+                    icon: const Icon(Icons.home_work_outlined),
+                    selectedIcon: Icon(Icons.home_work, color: AppColors.adaptivePrimary(context)),
                     label: 'My Coops',
                 ),
                 NavigationDestination(
-                    icon: Icon(Icons.person_outline),
-                    selectedIcon: Icon(Icons.person, color: AppColors.primary),
+                    icon: const Icon(Icons.person_outline),
+                    selectedIcon: Icon(Icons.person, color: AppColors.adaptivePrimary(context)),
                     label: 'Profile',
                 ),
                 NavigationDestination(
-                    icon: Icon(Icons.settings_outlined),
-                    selectedIcon: Icon(Icons.settings, color: AppColors.primary),
+                    icon: const Icon(Icons.settings_outlined),
+                    selectedIcon: Icon(Icons.settings, color: AppColors.adaptivePrimary(context)),
                     label: 'Settings',
                 ),
             ],
@@ -629,7 +629,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                         ),
                                                                                     },
                                                                                     borderColor: AppColors.border(context),
-                                                                                    selectedColor: AppColors.primary,
+                                                                                    selectedColor: AppColors.adaptivePrimary(context),
                                                                                     unselectedColor: AppColors.surface(context),
                                                                                     pressedColor: AppColors.surfaceVariant(context),
                                                                                 ),
@@ -718,7 +718,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                         ),
                                                                                     },
                                                                                     borderColor: AppColors.border(context),
-                                                                                    selectedColor: AppColors.primary,
+                                                                                    selectedColor: AppColors.adaptivePrimary(context),
                                                                                     unselectedColor: AppColors.surface(context),
                                                                                     pressedColor: AppColors.surfaceVariant(context),
                                                                                 ),
