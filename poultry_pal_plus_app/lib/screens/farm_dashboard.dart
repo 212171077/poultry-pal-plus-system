@@ -532,9 +532,11 @@ class _FarmDashboardState extends State<FarmDashboard> {
                     SizedBox(
                         height: 86,
                         child: Row(
-                            children: List.generate(4, (i) => Padding(
-                                padding: EdgeInsets.only(right: i < 3 ? 12 : 0),
-                                child: _sBox(w: 95, h: 86, r: 16),
+                            children: List.generate(4, (i) => Expanded(
+                                child: Padding(
+                                    padding: EdgeInsets.only(right: i < 3 ? 12 : 0),
+                                    child: _sBox(w: double.infinity, h: 86, r: 16),
+                                ),
                             )),
                         ),
                     ),

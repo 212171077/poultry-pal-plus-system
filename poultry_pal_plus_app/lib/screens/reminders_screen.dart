@@ -419,136 +419,155 @@ class _ExpandableCoopCardState
                                     const SizedBox(height: 5),
 
                                     if (hasPhaseTransition)
-                                    Card(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12.0),
+                                    Container(
+                                        margin: const EdgeInsets.symmetric(vertical: 8),
+                                        decoration: BoxDecoration(
+                                            color: AppColors.surface(context),
+                                            borderRadius: BorderRadius.circular(16),
+                                            border: Border.all(
+                                                color: AppColors.warning.withValues(alpha: 0.45),
+                                                width: 1,
+                                            ),
+                                            boxShadow: [
+                                                BoxShadow(
+                                                    color: AppColors.warning.withValues(alpha: 0.10),
+                                                    blurRadius: 10,
+                                                    offset: const Offset(0, 3),
+                                                ),
+                                            ],
                                         ),
-                                        elevation: 3,
-                                        margin: const EdgeInsets.symmetric(vertical: 8.0),
-                                        child: Padding(
-                                            padding: const EdgeInsets.fromLTRB(16, 3, 16, 3),
+                                        child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(16),
                                             child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                    Row(
-                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                        children: [
-                                                            Text(
-                                                                "Perform Phase Transition",
-                                                                style: TextStyle(
-                                                                    fontSize: 14,
-                                                                    fontWeight: FontWeight.bold,
-                                                                    color: AppColors.adaptivePrimary(context)),
-                                                            ),
-                                                            IconButton(
-                                                                icon: const Icon(Icons.info_outline,
-                                                                    color: AppColors.info),
-                                                                onPressed: () =>
-                                                                _showPhaseTransitionInfoPopup(context),
-                                                            ),
-                                                        ],
-                                                    ),
-                                                    const Text(
-                                                        'Your chickens are ready to transition to the next phase. '
-                                                        'Tap "Confirm" to proceed or the info icon for more details.',
-                                                        style: TextStyle(
-                                                            fontSize: 11,
-                                                            color: AppColors.success,
-                                                            fontWeight: FontWeight.w600),
-                                                    ),
-                                                    const SizedBox(height: 10),
-                                                    Column(
-                                                        children: [
-                                                            Row(
-                                                                children: [
-                                                                    Column(
-                                                                        children: [
-                                                                            const Icon(Icons.circle,
-                                                                                color: AppColors.success, size: 16),
-                                                                            const SizedBox(height: 4),
-                                                                            Text(
-                                                                                widget.coop.phaseTransition
-                                                                                    .currentPhase.value,
-                                                                                style: TextStyle(
-                                                                                    fontSize: 11,
-                                                                                    color: AppColors.success,
-                                                                                    fontWeight: FontWeight.bold,
-                                                                                ),
-                                                                            ),
-                                                                        ],
-                                                                    ),
-                                                                    const Expanded(
-                                                                        child: Divider(
-                                                                            color: AppColors.success,
-                                                                            thickness: 2,
-                                                                            indent: 0,
-                                                                            endIndent: 0,
-                                                                        ),
-                                                                    ),
-                                                                    const Column(
-                                                                        children: [
-                                                                            Icon(Icons.arrow_forward_ios,
-                                                                                color: AppColors.success, size: 18),
-                                                                            SizedBox(height: 4),
-                                                                        ],
-                                                                    ),
-                                                                    const Expanded(
-                                                                        child: Divider(
-                                                                            color: AppColors.success,
-                                                                            thickness: 2,
-                                                                            indent: 0,
-                                                                            endIndent: 0,
-                                                                        ),
-                                                                    ),
-                                                                    Column(
-                                                                        children: [
-                                                                            const Icon(Icons.circle_outlined,
-                                                                                color: AppColors.textTertiaryLight, size: 16),
-                                                                            const SizedBox(height: 4),
-                                                                            Text(
-                                                                                widget.coop.phaseTransition.newPhase
-                                                                                    .value,
-                                                                                style: TextStyle(
-                                                                                    fontSize: 11,
-                                                                                    color: AppColors.textSecondary(context),
-                                                                                    fontWeight: FontWeight.bold,
-                                                                                ),
-                                                                            ),
-                                                                        ],
-                                                                    ),
-                                                                ],
-                                                            ),
-                                                            ElevatedButton.icon(
-                                                                onPressed: () =>
-                                                                _showConfirmPhaseTransitionDialog(
-                                                                    context,
-                                                                    widget.coop.phaseTransition.currentPhase
-                                                                        .value,
-                                                                    widget.coop.phaseTransition.newPhase
-                                                                        .value,
-                                                                    widget.user.id,
-                                                                    widget.farm.id,
-                                                                    widget.coop.id,
-                                                                    widget.coop.phaseTransition.transitionCoops,
-                                                                    () => widget.onCoopUpdated(),
+                                                    // ── Header bar ──────────────────────────────
+                                                    Container(
+                                                        padding: const EdgeInsets.symmetric(
+                                                            horizontal: 16, vertical: 12),
+                                                        decoration: BoxDecoration(
+                                                            color: AppColors.warning.withValues(alpha: 0.10),
+                                                            border: Border(
+                                                                bottom: BorderSide(
+                                                                    color: AppColors.warning.withValues(alpha: 0.25),
                                                                 ),
-                                                                icon: const Icon(Icons.sync, size: 18),
-                                                                // Icon for added visual interest
-                                                                label: const Text(
-                                                                    'Confirm',
-                                                                    style: TextStyle(
-                                                                        fontSize: 14,
-                                                                        fontWeight: FontWeight.bold),
-                                                                ),
-                                                                style: ElevatedButton.styleFrom(
-                                                                    padding: const EdgeInsets.symmetric(
-                                                                        vertical: 10, horizontal: 16),
-                                                                    shape: RoundedRectangleBorder(
+                                                            ),
+                                                        ),
+                                                        child: Row(
+                                                            children: [
+                                                                Container(
+                                                                    padding: const EdgeInsets.all(6),
+                                                                    decoration: BoxDecoration(
+                                                                        color: AppColors.warning.withValues(alpha: 0.18),
                                                                         borderRadius: BorderRadius.circular(8),
                                                                     ),
+                                                                    child: const Icon(Icons.sync_rounded,
+                                                                        color: AppColors.warning, size: 16),
                                                                 ),
-                                                            ),
-                                                        ],
+                                                                const SizedBox(width: 10),
+                                                                Expanded(
+                                                                    child: Text(
+                                                                        'Phase Transition Ready',
+                                                                        style: TextStyle(
+                                                                            fontSize: 14,
+                                                                            fontWeight: FontWeight.w700,
+                                                                            color: AppColors.textPrimary(context),
+                                                                        ),
+                                                                    ),
+                                                                ),
+                                                                GestureDetector(
+                                                                    onTap: () => _showPhaseTransitionInfoPopup(context),
+                                                                    child: Container(
+                                                                        padding: const EdgeInsets.all(5),
+                                                                        decoration: BoxDecoration(
+                                                                            color: AppColors.info.withValues(alpha: 0.12),
+                                                                            borderRadius: BorderRadius.circular(7),
+                                                                        ),
+                                                                        child: const Icon(Icons.info_outline_rounded,
+                                                                            color: AppColors.info, size: 17),
+                                                                    ),
+                                                                ),
+                                                            ],
+                                                        ),
+                                                    ),
+                                                    // ── Body ────────────────────────────────────
+                                                    Padding(
+                                                        padding: const EdgeInsets.all(16),
+                                                        child: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                                Text(
+                                                                    'Your chickens are ready to move to the next growth phase.',
+                                                                    style: TextStyle(
+                                                                        fontSize: 12,
+                                                                        color: AppColors.textSecondary(context),
+                                                                        height: 1.4,
+                                                                    ),
+                                                                ),
+                                                                const SizedBox(height: 14),
+                                                                // Phase flow chips
+                                                                Row(
+                                                                    children: [
+                                                                        Expanded(
+                                                                            child: _buildPhaseChip(
+                                                                                context,
+                                                                                label: widget.coop.phaseTransition.currentPhase.value,
+                                                                                color: AppColors.success,
+                                                                                isCurrent: true,
+                                                                            ),
+                                                                        ),
+                                                                        Padding(
+                                                                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                                            child: Icon(
+                                                                                Icons.arrow_forward_rounded,
+                                                                                color: AppColors.warning,
+                                                                                size: 22,
+                                                                            ),
+                                                                        ),
+                                                                        Expanded(
+                                                                            child: _buildPhaseChip(
+                                                                                context,
+                                                                                label: widget.coop.phaseTransition.newPhase.value,
+                                                                                color: AppColors.warning,
+                                                                                isCurrent: false,
+                                                                            ),
+                                                                        ),
+                                                                    ],
+                                                                ),
+                                                                const SizedBox(height: 14),
+                                                                SizedBox(
+                                                                    width: double.infinity,
+                                                                    child: ElevatedButton.icon(
+                                                                        onPressed: () => _showConfirmPhaseTransitionDialog(
+                                                                            context,
+                                                                            widget.coop.phaseTransition.currentPhase.value,
+                                                                            widget.coop.phaseTransition.newPhase.value,
+                                                                            widget.user.id,
+                                                                            widget.farm.id,
+                                                                            widget.coop.id,
+                                                                            widget.coop.phaseTransition.transitionCoops,
+                                                                            () => widget.onCoopUpdated(),
+                                                                        ),
+                                                                        icon: const Icon(Icons.sync_rounded, size: 18),
+                                                                        label: const Text(
+                                                                            'Confirm Transition',
+                                                                            style: TextStyle(
+                                                                                fontSize: 14,
+                                                                                fontWeight: FontWeight.w600,
+                                                                            ),
+                                                                        ),
+                                                                        style: ElevatedButton.styleFrom(
+                                                                            backgroundColor: AppColors.warning,
+                                                                            foregroundColor: Colors.white,
+                                                                            padding: const EdgeInsets.symmetric(vertical: 12),
+                                                                            elevation: 0,
+                                                                            shape: RoundedRectangleBorder(
+                                                                                borderRadius: BorderRadius.circular(10),
+                                                                            ),
+                                                                        ),
+                                                                    ),
+                                                                ),
+                                                            ],
+                                                        ),
                                                     ),
                                                 ],
                                             ),
@@ -608,16 +627,91 @@ class _ExpandableCoopCardState
         );
     }
 
+    Widget _buildPhaseChip(BuildContext context, {
+        required String label,
+        required Color color,
+        required bool isCurrent,
+    }) {
+        return Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+            decoration: BoxDecoration(
+                color: color.withValues(alpha: isCurrent ? 0.14 : 0.08),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: color.withValues(alpha: 0.45), width: 1),
+            ),
+            child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                    Icon(
+                        isCurrent ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
+                        color: color,
+                        size: 15,
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                        label,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: color,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                        isCurrent ? 'Current' : 'Next',
+                        style: TextStyle(
+                            fontSize: 9,
+                            color: color.withValues(alpha: 0.7),
+                            fontWeight: FontWeight.w500,
+                        ),
+                    ),
+                ],
+            ),
+        );
+    }
+
     Widget _buildSectionTitle(BuildContext context, String title, Color color) {
+        final bool isOverdue = title.toLowerCase().contains('overdue');
         return Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: Text(
-                title,
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                ),
+            padding: const EdgeInsets.only(bottom: 10, top: 4),
+            child: Row(
+                children: [
+                    Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                            color: color.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                            isOverdue
+                                ? Icons.warning_amber_rounded
+                                : Icons.notifications_active_rounded,
+                            color: color,
+                            size: 15,
+                        ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                        title,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: color,
+                            letterSpacing: 0.2,
+                        ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                        child: Divider(
+                            color: color.withValues(alpha: 0.3),
+                            thickness: 1,
+                            height: 1,
+                        ),
+                    ),
+                ],
             ),
         );
     }
@@ -898,9 +992,8 @@ class _ExpandableCoopCardState
         List<TransitionCoop> transitionCoops,
         VoidCallback onCoopUpdated,
     ) {
-        final TextEditingController actionCommentController = TextEditingController();
         PoultryPalService service = PoultryPalService();
-        String? selectedCoopId; // To store the selected coop ID
+        String? selectedCoopId; // To store the selected coop ID // To store the selected coop ID
         bool useCurrentCoop = false;
         bool showValidationError = false;
 
@@ -920,32 +1013,113 @@ class _ExpandableCoopCardState
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                             ),
-                            title: const Row(
-                                children: [
-                                    Text(
-                                        'Confirm Phase Transition',
-                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                            titlePadding: EdgeInsets.zero,
+                            title: Container(
+                                padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                                decoration: BoxDecoration(
+                                    color: AppColors.warning.withValues(alpha: 0.10),
+                                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                                    border: Border(
+                                        bottom: BorderSide(
+                                            color: AppColors.warning.withValues(alpha: 0.25),
+                                        ),
                                     ),
-                                ],
+                                ),
+                                child: Row(
+                                    children: [
+                                        Container(
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                                color: AppColors.warning.withValues(alpha: 0.18),
+                                                borderRadius: BorderRadius.circular(10),
+                                            ),
+                                            child: const Icon(Icons.sync_rounded,
+                                                color: AppColors.warning, size: 20),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        const Expanded(
+                                            child: Text(
+                                                'Confirm Phase Transition',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 17,
+                                                ),
+                                            ),
+                                        ),
+                                    ],
+                                ),
                             ),
                             content: SingleChildScrollView(
                                 child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                        Common.buildReadout('Current Growing Phase', currentPhase, context: context),
-                                        const SizedBox(height: 10),
-                                        Common.buildReadout('New Growing Phase', newPhase, context: context),
-                                        const SizedBox(height: 10),
-                                        if (list.isNotEmpty)
-                                        Text(
-                                            'Select Coop for Transition:',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: AppColors.textSecondary(context),
-                                                fontSize: 12,
+                                        // Phase flow summary
+                                        Container(
+                                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+                                            decoration: BoxDecoration(
+                                                color: AppColors.surfaceVariant(context),
+                                                borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            child: Row(
+                                                children: [
+                                                    Expanded(
+                                                        child: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                                Text('Current Phase',
+                                                                    style: TextStyle(
+                                                                        fontSize: 10,
+                                                                        color: AppColors.textTertiary(context),
+                                                                        fontWeight: FontWeight.w500,
+                                                                    )),
+                                                                const SizedBox(height: 3),
+                                                                Text(currentPhase,
+                                                                    style: const TextStyle(
+                                                                        fontSize: 13,
+                                                                        fontWeight: FontWeight.w700,
+                                                                        color: AppColors.success,
+                                                                    )),
+                                                            ],
+                                                        ),
+                                                    ),
+                                                    const Icon(Icons.arrow_forward_rounded,
+                                                        color: AppColors.warning, size: 20),
+                                                    Expanded(
+                                                        child: Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                                            children: [
+                                                                Text('New Phase',
+                                                                    style: TextStyle(
+                                                                        fontSize: 10,
+                                                                        color: AppColors.textTertiary(context),
+                                                                        fontWeight: FontWeight.w500,
+                                                                    )),
+                                                                const SizedBox(height: 3),
+                                                                Text(newPhase,
+                                                                    style: const TextStyle(
+                                                                        fontSize: 13,
+                                                                        fontWeight: FontWeight.w700,
+                                                                        color: AppColors.warning,
+                                                                    )),
+                                                            ],
+                                                        ),
+                                                    ),
+                                                ],
                                             ),
                                         ),
+                                        const SizedBox(height: 16),
+                                        if (list.isNotEmpty) ...[
+                                            Text(
+                                                'Select Destination Coop',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: AppColors.textSecondary(context),
+                                                    fontSize: 13,
+                                                ),
+                                            ),
+                                            const SizedBox(height: 6),
+                                        ],
                                         list.isNotEmpty
                                             ? Container(
                                                 decoration: BoxDecoration(
@@ -975,121 +1149,175 @@ class _ExpandableCoopCardState
                                                     hintText: 'Select a coop',
                                                 ),
                                             )
-                                            : Common.buildReadout2(
-                                                 'No suitable coop is available for the phase transition. '
-                                                 'You can add a new coop on the home page and return here to complete the transition. '
-                                                 'Alternatively, re-use the current coop for this transition.',
-                                                 AppColors.info,
-                                                 context: context,
-                                             ),
-                                        const SizedBox(height: 10),
-                                        Container(
-                                            margin: const EdgeInsets.symmetric(vertical: 6),
-                                            padding: const EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                                 color: AppColors.surfaceVariant(context),
-                                                 borderRadius: BorderRadius.circular(8),
-                                                 boxShadow: [
-                                                     BoxShadow(
-                                                         color: Colors.black.withValues(alpha: 0.15),
-                                                         blurRadius: 2,
-                                                         offset: const Offset(0, 1),
-                                                     ),
-                                                 ],
-                                                 border: Border.all(
-                                                     color: showValidationError && !useCurrentCoop
-                                                         ? AppColors.error
-                                                         : Colors.transparent,
-                                                 ),
+                                            : Container(
+                                                padding: const EdgeInsets.all(12),
+                                                decoration: BoxDecoration(
+                                                    color: AppColors.info.withValues(alpha: 0.08),
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    border: Border.all(
+                                                        color: AppColors.info.withValues(alpha: 0.3)),
+                                                ),
+                                                child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                        const Icon(Icons.info_outline_rounded,
+                                                            color: AppColors.info, size: 16),
+                                                        const SizedBox(width: 8),
+                                                        Expanded(
+                                                            child: Text(
+                                                                'No suitable coop is available. Add a new coop on the home page, or re-use the current coop below.',
+                                                                style: TextStyle(
+                                                                    fontSize: 12,
+                                                                    color: AppColors.textSecondary(context),
+                                                                    height: 1.4,
+                                                                ),
+                                                            ),
+                                                        ),
+                                                    ],
+                                                ),
                                             ),
+                                        const SizedBox(height: 12),
+                                        // Re-use current coop checkbox
+                                        GestureDetector(
+                                            onTap: () {
+                                                setState(() {
+                                                        useCurrentCoop = !useCurrentCoop;
+                                                        if (useCurrentCoop) {
+                                                            selectedCoopId = null;
+                                                            showValidationError = false;
+                                                        }
+                                                    });
+                                            },
+                                            child: AnimatedContainer(
+                                                duration: const Duration(milliseconds: 200),
+                                                padding: const EdgeInsets.all(12),
+                                                decoration: BoxDecoration(
+                                                    color: useCurrentCoop
+                                                        ? AppColors.success.withValues(alpha: 0.10)
+                                                        : AppColors.surfaceVariant(context),
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    border: Border.all(
+                                                        color: showValidationError && !useCurrentCoop
+                                                            ? AppColors.error
+                                                            : useCurrentCoop
+                                                                ? AppColors.success.withValues(alpha: 0.45)
+                                                                : AppColors.border(context),
+                                                        width: 1,
+                                                    ),
+                                                ),
+                                                child: Row(
+                                                    children: [
+                                                        Icon(
+                                                            useCurrentCoop
+                                                                ? Icons.check_box_rounded
+                                                                : Icons.check_box_outline_blank_rounded,
+                                                            color: useCurrentCoop
+                                                                ? AppColors.success
+                                                                : AppColors.textTertiary(context),
+                                                            size: 20,
+                                                        ),
+                                                        const SizedBox(width: 10),
+                                                        Expanded(
+                                                            child: Text(
+                                                                'Re-use the current coop for this transition',
+                                                                style: TextStyle(
+                                                                    fontSize: 13,
+                                                                    fontWeight: FontWeight.w600,
+                                                                    color: useCurrentCoop
+                                                                        ? AppColors.success
+                                                                        : AppColors.textSecondary(context),
+                                                                ),
+                                                            ),
+                                                        ),
+                                                    ],
+                                                ),
+                                            ),
+                                        ),
+                                        if (showValidationError)
+                                        Padding(
+                                            padding: const EdgeInsets.only(top: 8.0),
                                             child: Row(
                                                 children: [
-                                                    Checkbox(
-                                                        value: useCurrentCoop,
-                                                        onChanged: (value) {
-                                                            setState(() {
-                                                                    useCurrentCoop = value ?? false;
-                                                                    if (useCurrentCoop) {
-                                                                        selectedCoopId = null; // Clear dropdown value
-                                                                        showValidationError = false;
-                                                                    }
-                                                                });
-                                                        },
-                                                    ),
-                                                    const SizedBox(width: 8),
+                                                    const Icon(Icons.error_outline,
+                                                        color: AppColors.error, size: 14),
+                                                    const SizedBox(width: 6),
                                                     Expanded(
                                                         child: Text(
-                                                            'Re-use the current coop for this transition.',
-                                                            style: TextStyle(
+                                                            'Please select a coop or check the box above.',
+                                                            style: const TextStyle(
+                                                                color: AppColors.error,
                                                                 fontSize: 12,
-                                                                color: useCurrentCoop
-                                                                    ? AppColors.success
-                                                                    : AppColors.textSecondary(context),
-                                                                fontWeight: FontWeight.bold,
                                                             ),
-                                                            overflow: TextOverflow.clip,
                                                         ),
                                                     ),
                                                 ],
                                             ),
                                         ),
-                                        if (showValidationError)
-                                        const Padding(
-                                            padding: EdgeInsets.only(top: 8.0),
-                                            child: Text(
-                                                'Please select a coop from the dropdown or check the box to re-use the current coop.',
-                                                style: TextStyle(
-                                                    color: AppColors.error,
-                                                    fontSize: 12,
+                                    ],
+                                ),
+                            ),
+                            actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                            actions: [
+                                Row(
+                                    children: [
+                                        Expanded(
+                                            child: OutlinedButton(
+                                                onPressed: () => Navigator.of(context).pop(),
+                                                style: OutlinedButton.styleFrom(
+                                                    foregroundColor: AppColors.error,
+                                                    side: const BorderSide(color: AppColors.error),
+                                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                                    shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(10)),
+                                                ),
+                                                child: const Text('Cancel',
+                                                    style: TextStyle(fontWeight: FontWeight.w600)),
+                                            ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                            flex: 2,
+                                            child: ElevatedButton.icon(
+                                                onPressed: () async {
+                                                    if (selectedCoopId == null && !useCurrentCoop) {
+                                                        setState(() {
+                                                                showValidationError = true;
+                                                            });
+                                                        return;
+                                                    }
+
+                                                    final response = await service.performPhaseTransition(
+                                                        userId: userId,
+                                                        currentCoopId: coopId,
+                                                        farmId: farmId,
+                                                        newCoopId: selectedCoopId ?? coopId,
+                                                        newGrowingPhase: GrowingPhase.fromValue(newPhase),
+                                                    );
+
+                                                    response.success
+                                                        ? _showSuccessSnackBar(
+                                                            "Phase transition completed successfully",
+                                                            onCoopUpdated,
+                                                            context)
+                                                        : _showErrorSnackBar(response.message, context);
+
+                                                    Navigator.of(context).pop();
+                                                    onCoopUpdated();
+                                                },
+                                                icon: const Icon(Icons.sync_rounded, size: 18),
+                                                label: const Text('Confirm',
+                                                    style: TextStyle(fontWeight: FontWeight.w600)),
+                                                style: ElevatedButton.styleFrom(
+                                                    backgroundColor: AppColors.warning,
+                                                    foregroundColor: Colors.white,
+                                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                                    shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(10)),
+                                                    elevation: 0,
                                                 ),
                                             ),
                                         ),
                                     ],
-                                ),
-                            ),
-                            actions: [
-                                TextButton(
-                                    onPressed: () => Navigator.of(context).pop(),
-                                    child:
-                                    const Text('Cancel', style: TextStyle(color: AppColors.error)),
-                                ),
-                                ElevatedButton(
-                                    onPressed: () async {
-                                        if (selectedCoopId == null && !useCurrentCoop) {
-                                            setState(() {
-                                                    showValidationError = true; // Highlight errors
-                                                });
-                                            return;
-                                        }
-
-                                        final response = await service.performPhaseTransition(
-                                            userId: userId,
-                                            currentCoopId: coopId,
-                                            farmId: farmId,
-                                            newCoopId: selectedCoopId ?? coopId,
-                                            newGrowingPhase: GrowingPhase.fromValue(newPhase),
-                                        );
-
-                                        response.success
-                                            ? _showSuccessSnackBar(
-                                                "Phase transition completed successfully",
-                                                onCoopUpdated,
-                                                context)
-                                            : _showErrorSnackBar(response.message, context);
-
-                                        Navigator.of(context).pop();
-                                        onCoopUpdated();
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppColors.adaptivePrimary(context),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                        ),
-                                    ),
-                                    child: const Text(
-                                        'Submit',
-                                        style: TextStyle(color: AppColors.surfaceLight),
-                                    ),
                                 ),
                             ],
                         );
@@ -1154,72 +1382,239 @@ class _ExpandableCoopCardState
 
     void _showDetailsPopup(
         BuildContext context, String type, Map<String, dynamic> details) {
+        // ── Helpers ───────────────────────────────────────────────────────────
         String formatKey(String key) {
-            // Split camel case or lowercase words and capitalize each word
             return key
                 .replaceAllMapped(RegExp(r'[a-z][A-Z]'),
                     (match) => '${match.group(0)![0]} ${match.group(0)![1]}')
                 .capitalize();
         }
 
-        showDialog(
+        // Returns an icon that semantically matches a field key name
+        IconData _fieldIcon(String key) {
+            final k = key.toLowerCase();
+            if (k.contains('date') || k.contains('day') || k.contains('age') )         return Icons.calendar_today_rounded;
+            if (k.contains('name'))         return Icons.label_rounded;
+            if (k.contains('dose') ||
+                k.contains('dosage'))       return Icons.science_rounded;
+            if (k.contains('quantity') ||
+                k.contains('amount'))       return Icons.pin_rounded;
+            if (k.contains('type') ||
+                k.contains('feed'))         return Icons.grass_rounded;
+            if (k.contains('note') ||
+                k.contains('comment'))      return Icons.sticky_note_2_rounded;
+            if (k.contains('status'))       return Icons.flag_rounded;
+            if (k.contains('freq') ||
+                k.contains('interval'))     return Icons.repeat_rounded;
+            return Icons.info_outline_rounded;
+        }
+
+        // Header icon / colour per task type
+        IconData typeIcon;
+        Color typeColor;
+        switch (type) {
+            case 'Medicine':
+                typeIcon = Icons.medication_rounded;
+                typeColor = AppColors.error;
+                break;
+            case 'Vaccine':
+                typeIcon = Icons.vaccines_rounded;
+                typeColor = AppColors.info;
+                break;
+            case 'Feed':
+                typeIcon = Icons.grass_rounded;
+                typeColor = AppColors.success;
+                break;
+            default:
+                typeIcon = Icons.task_alt_rounded;
+                typeColor = AppColors.warning;
+        }
+
+        final visibleEntries = details.entries
+            .where((e) => e.key != 'id')
+            .toList();
+
+        showModalBottomSheet(
             context: context,
+            isScrollControlled: true,
+            useRootNavigator: true,
+            backgroundColor: Colors.transparent,
             builder: (context) {
-                return AlertDialog(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
+                return ConstrainedBox(
+                    // Never taller than 75 % of screen – prevents overflow
+                    constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height * 0.75,
                     ),
-                    title: Text(
-                        '$type Details',
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.adaptivePrimary(context),
+                    child: Container(
+                        decoration: BoxDecoration(
+                            color: AppColors.surface(context),
+                            borderRadius:
+                                const BorderRadius.vertical(top: Radius.circular(24)),
                         ),
-                    ),
-                    content: SingleChildScrollView(
                         child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: details.entries.map((entry) {
-                                    if (entry.key != "id") {
-                                        return Padding(
-                                            padding: const EdgeInsets.symmetric(vertical: 6.0),
-                                            child: RichText(
-                                                text: TextSpan(
-                                                    text: '${formatKey(entry.key)}: ',
-                                                    style: const TextStyle(
-                                                        fontWeight: FontWeight.bold,
-                                                        color: Colors.black,
-                                                        fontSize: 16,
-                                                    ),
+                            children: [
+                                // ── Handle ──────────────────────────────────
+                                Center(
+                                    child: Container(
+                                        margin: const EdgeInsets.only(top: 12, bottom: 4),
+                                        width: 40,
+                                        height: 4,
+                                        decoration: BoxDecoration(
+                                            color: AppColors.border(context),
+                                            borderRadius: BorderRadius.circular(2),
+                                        ),
+                                    ),
+                                ),
+                                // ── Header ──────────────────────────────────
+                                Padding(
+                                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                                    child: Row(
+                                        children: [
+                                            Container(
+                                                padding: const EdgeInsets.all(10),
+                                                decoration: BoxDecoration(
+                                                    color: typeColor.withValues(alpha: 0.12),
+                                                    borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                child: Icon(typeIcon, color: typeColor, size: 22),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                                child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
-                                                        TextSpan(
-                                                            text: '${entry.value}',
+                                                        Text(
+                                                            '$type Details',
                                                             style: TextStyle(
-                                                                fontWeight: FontWeight.normal,
-                                                                color: AppColors.textSecondary(context),
-                                                                fontSize: 16,
+                                                                fontSize: 18,
+                                                                fontWeight: FontWeight.w700,
+                                                                color: AppColors.textPrimary(context),
+                                                            ),
+                                                        ),
+                                                        Text(
+                                                            '${visibleEntries.length} field${visibleEntries.length == 1 ? '' : 's'}',
+                                                            style: TextStyle(
+                                                                fontSize: 12,
+                                                                color: AppColors.textTertiary(context),
                                                             ),
                                                         ),
                                                     ],
                                                 ),
                                             ),
-                                        );
-                                    } else {
-                                        return const SizedBox(height: 0);
-                                    }
-                                }).toList(),
+                                        ],
+                                    ),
+                                ),
+                                const SizedBox(height: 14),
+                                Divider(height: 1, color: AppColors.divider(context)),
+
+                                // ── Scrollable field list ────────────────────
+                                Flexible(
+                                    child: ListView.separated(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 8),
+                                        shrinkWrap: true,
+                                        itemCount: visibleEntries.length,
+                                        separatorBuilder: (_, __) => Divider(
+                                            height: 1,
+                                            color: AppColors.divider(context),
+                                        ),
+                                        itemBuilder: (context, index) {
+                                            final entry = visibleEntries[index];
+                                            final icon = _fieldIcon(entry.key);
+                                            return Padding(
+                                                padding: const EdgeInsets.symmetric(
+                                                    vertical: 10),
+                                                child: Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.center,
+                                                    children: [
+                                                        // Field icon badge
+                                                        Container(
+                                                            padding: const EdgeInsets.all(7),
+                                                            decoration: BoxDecoration(
+                                                                color: typeColor.withValues(
+                                                                    alpha: 0.10),
+                                                                borderRadius:
+                                                                    BorderRadius.circular(9),
+                                                            ),
+                                                            child: Icon(icon,
+                                                                size: 15,
+                                                                color: typeColor),
+                                                        ),
+                                                        const SizedBox(width: 12),
+                                                        // Label + value stacked
+                                                        Expanded(
+                                                            child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment.start,
+                                                                children: [
+                                                                    Text(
+                                                                        formatKey(entry.key),
+                                                                        style: TextStyle(
+                                                                            fontSize: 11,
+                                                                            fontWeight:
+                                                                                FontWeight.w500,
+                                                                            color: AppColors
+                                                                                .textTertiary(
+                                                                                    context),
+                                                                            letterSpacing: 0.3,
+                                                                        ),
+                                                                    ),
+                                                                    const SizedBox(height: 2),
+                                                                    Text(
+                                                                        '${entry.value}',
+                                                                        style: TextStyle(
+                                                                            fontSize: 14,
+                                                                            fontWeight:
+                                                                                FontWeight.w600,
+                                                                            color: AppColors
+                                                                                .textPrimary(
+                                                                                    context),
+                                                                        ),
+                                                                    ),
+                                                                ],
+                                                            ),
+                                                        ),
+                                                    ],
+                                                ),
+                                            );
+                                        },
+                                    ),
+                                ),
+
+                                Divider(height: 1, color: AppColors.divider(context)),
+
+                                // ── Close button ─────────────────────────────
+                                SafeArea(
+                                    top: false,
+                                    child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+                                        child: SizedBox(
+                                            width: double.infinity,
+                                            height: 48,
+                                            child: ElevatedButton(
+                                                onPressed: () => Navigator.of(context).pop(),
+                                                style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        AppColors.adaptivePrimary(context),
+                                                    foregroundColor: Colors.white,
+                                                    shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(12)),
+                                                ),
+                                                child: const Text('Close',
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.w600,
+                                                        fontSize: 15)),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ],
                         ),
                     ),
-                    actions: [
-                        TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: Text(
-                                'Close',
-                                style: TextStyle(color: AppColors.adaptivePrimary(context)),
-                            ),
-                        ),
-                    ],
                 );
             },
         );
@@ -1227,146 +1622,227 @@ class _ExpandableCoopCardState
 }
 
 void _showPhaseTransitionInfoPopup(BuildContext context) {
-    showDialog(
+    final pageController = PageController();
+    int currentPage = 0;
+
+    showModalBottomSheet(
         context: context,
-        builder: (context) => AlertDialog(
-            title: Text(
-                'Phase Transition Information',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.adaptivePrimary(context),
-                ),
-            ),
-            content: SizedBox(
-                height: 300, // Set a fixed height for the scrollable area
-                width: double.maxFinite,
-                child: Column(
-                    children: [
-                        // PageView with categories
-                        Expanded(
-                            child: PageView(
-                                children: [
-                                    Container(
-                                        padding: const EdgeInsets.all(8.0),
-                                        decoration: BoxDecoration(
-                                            color: AppColors.warningLight,
-                                            borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        child: const Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                                Text(
-                                                    'Phase Transition Overview',
-                                                    style: TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight: FontWeight.bold,
-                                                        color: AppColors.warning,
-                                                    ),
-                                                ),
-                                                SizedBox(height: 8),
-                                                Text(
-                                                    'Phase transition is the process of moving chickens between growth stages, such as from brooding to growing or from growing to production. It involves careful planning to ensure the chickens\' health and comfort, including evaluating their readiness, adjusting their environment, and monitoring their health to minimize stress and ensure a smooth transition.',
-                                                ),
-                                            ],
-                                        ),
-                                    ),
-                                    // Phase Information
-                                    Container(
-                                        padding: const EdgeInsets.all(8.0),
-                                        decoration: BoxDecoration(
-                                            color: AppColors.infoLight,
-                                            borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        child: const Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                                Text(
-                                                    'Phase Information',
-                                                    style: TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight: FontWeight.bold,
-                                                        color: AppColors.info,
-                                                    ),
-                                                ),
-                                                SizedBox(height: 8),
-                                                Text(
-                                                    '• Brooding Phase: Focus on warmth, hydration, and vaccination.'),
-                                                Text(
-                                                    '• Growing Phase: Prioritize feed, spacing, and health.'),
-                                                Text(
-                                                    '• Production Phase: Prepare for production or market.'),
-                                            ],
-                                        ),
-                                    ),
-                                    // How to Transition Chickens
-                                    Container(
-                                        padding: const EdgeInsets.all(8.0),
-                                        decoration: BoxDecoration(
-                                            color: AppColors.successLight,
-                                            borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        child: const Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                                Text(
-                                                    'How to Transition Chickens',
-                                                    style: TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight: FontWeight.bold,
-                                                        color: AppColors.success,
-                                                    ),
-                                                ),
-                                                SizedBox(height: 8),
-                                                Text(
-                                                    '1. Evaluate Readiness: Check age, size, and health of chickens.'),
-                                                Text(
-                                                    '2. Prepare Environment: Clean and sanitize the new coop.'),
-                                                Text(
-                                                    '3. Gradual Transition: Move chickens during cooler parts of the day.'),
-                                                Text(
-                                                    '4. Update Records: Log transition details in the app.'),
-                                            ],
-                                        ),
-                                    ),
-                                    // Phase Transition Overview
-                                ],
-                            ),
-                        ),
-                        // Swipe indicator (dots)
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(
-                                3, // Number of pages
-                                (index) => AnimatedContainer(
-                                    duration: const Duration(milliseconds: 300),
-                                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                                    height: 8,
-                                    width: 8,
+        isScrollControlled: true,
+        useRootNavigator: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => StatefulBuilder(
+            builder: (context, setState) {
+                return Container(
+                    decoration: BoxDecoration(
+                        color: AppColors.surface(context),
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                    ),
+                    padding: EdgeInsets.fromLTRB(
+                        20, 0, 20,
+                        MediaQuery.of(context).viewInsets.bottom +
+                            MediaQuery.of(context).viewPadding.bottom +
+                            24),
+                    child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                            // Handle
+                            Center(
+                                child: Container(
+                                    margin: const EdgeInsets.only(top: 12, bottom: 16),
+                                    width: 40,
+                                    height: 4,
                                     decoration: BoxDecoration(
-                                        color: AppColors.info,
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                            color: AppColors.info,
-                                            width: 2,
-                                        ),
+                                        color: AppColors.border(context),
+                                        borderRadius: BorderRadius.circular(2),
                                     ),
                                 ),
                             ),
-                        ),
-                    ],
-                ),
-            ),
-            actions: [
-                TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                        'Close',
-                        style: TextStyle(
-                            color: AppColors.info, fontWeight: FontWeight.bold),
+                            // Header
+                            Row(
+                                children: [
+                                    Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                            color: AppColors.info.withValues(alpha: 0.12),
+                                            borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: const Icon(Icons.info_outline_rounded,
+                                            color: AppColors.info, size: 20),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                        'Phase Transition Guide',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700,
+                                            color: AppColors.textPrimary(context),
+                                        ),
+                                    ),
+                                ],
+                            ),
+                            const SizedBox(height: 16),
+                            // PageView
+                            SizedBox(
+                                height: 230,
+                                child: PageView(
+                                    controller: pageController,
+                                    onPageChanged: (page) =>
+                                        setState(() => currentPage = page),
+                                    children: [
+                                        _buildInfoPage(
+                                            context,
+                                            icon: Icons.sync_rounded,
+                                            color: AppColors.warning,
+                                            title: 'What is Phase Transition?',
+                                            body: 'Phase transition moves chickens between growth stages — Brooding → Growing → Production/Finishing. It requires careful planning to maintain flock health and performance through each stage.',
+                                        ),
+                                        _buildInfoPage(
+                                            context,
+                                            icon: Icons.layers_rounded,
+                                            color: AppColors.info,
+                                            title: 'Growth Phase Overview',
+                                            bulletPoints: [
+                                                '🐣  Brooding Phase — warmth, hydration, and early vaccinations.',
+                                                '🐔  Growing / Rearing — feed, spacing, and health monitoring.',
+                                                '🥚  Production / Finishing — prepare for egg production or market.',
+                                            ],
+                                        ),
+                                        _buildInfoPage(
+                                            context,
+                                            icon: Icons.checklist_rounded,
+                                            color: AppColors.success,
+                                            title: 'How to Transition',
+                                            bulletPoints: [
+                                                '1.  Evaluate readiness — check age, weight, and health.',
+                                                '2.  Prepare environment — clean & sanitise the coop.',
+                                                '3.  Move gradually — transition in cooler parts of the day.',
+                                                '4.  Update records — log all transition details in the app.',
+                                            ],
+                                        ),
+                                    ],
+                                ),
+                            ),
+                            const SizedBox(height: 12),
+                            // Animated pill-dot indicators
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: List.generate(3, (i) {
+                                    final isActive = i == currentPage;
+                                    return AnimatedContainer(
+                                        duration: const Duration(milliseconds: 250),
+                                        curve: Curves.easeInOut,
+                                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                                        height: 8,
+                                        width: isActive ? 24 : 8,
+                                        decoration: BoxDecoration(
+                                            color: isActive
+                                                ? AppColors.adaptivePrimary(context)
+                                                : AppColors.border(context),
+                                            borderRadius: BorderRadius.circular(4),
+                                        ),
+                                    );
+                                }),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                                'Swipe to read more',
+                                style: TextStyle(
+                                    fontSize: 11,
+                                    color: AppColors.textTertiary(context),
+                                ),
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                                width: double.infinity,
+                                height: 48,
+                                child: ElevatedButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.adaptivePrimary(context),
+                                        foregroundColor: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(12)),
+                                    ),
+                                    child: const Text('Got it',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600, fontSize: 15)),
+                                ),
+                            ),
+                        ],
                     ),
-                ),
-            ],
+                );
+            },
+        ),
+    );
+}
+
+Widget _buildInfoPage(
+    BuildContext context, {
+    required IconData icon,
+    required Color color,
+    required String title,
+    String? body,
+    List<String>? bulletPoints,
+}) {
+    return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: color.withValues(alpha: 0.25)),
+        ),
+        child: SingleChildScrollView(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                    Row(
+                        children: [
+                            Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                    color: color.withValues(alpha: 0.15),
+                                    borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(icon, color: color, size: 18),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                                child: Text(
+                                    title,
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        color: color,
+                                    ),
+                                ),
+                            ),
+                        ],
+                    ),
+                    const SizedBox(height: 12),
+                    if (body != null)
+                    Text(
+                        body,
+                        style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.textSecondary(context),
+                            height: 1.5,
+                        ),
+                    ),
+                    if (bulletPoints != null)
+                    ...bulletPoints.map((point) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(
+                            point,
+                            style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textSecondary(context),
+                                height: 1.4,
+                            ),
+                        ),
+                    )),
+                ],
+            ),
         ),
     );
 }
