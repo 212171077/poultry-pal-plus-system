@@ -233,6 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
             pinned: true,
             floating: false,
             snap: false,
+            automaticallyImplyLeading: false,
             forceElevated: innerBoxIsScrolled,
             backgroundColor: AppColors.surface(context),
             foregroundColor: AppColors.adaptivePrimary(context),
@@ -382,7 +383,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Widget _buildQuickStatsRow() {
         return Container(
             color: Theme.of(context).scaffoldBackgroundColor,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Row(
                 children: [
                     _buildStatCard('Coops', '$_totalActiveCoops',

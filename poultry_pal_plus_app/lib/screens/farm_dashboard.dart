@@ -71,7 +71,7 @@ class _FarmDashboardState extends State<FarmDashboard> {
             : 0.0;
 
         return ListView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 96),
             children: [
                 _sectionHeader(context, 'Farm Summary'),
                 const SizedBox(height: 12),
@@ -170,6 +170,7 @@ class _FarmDashboardState extends State<FarmDashboard> {
         final ind = positive ? AppColors.success : AppColors.error;
         return Card(
             elevation: 2,
+            margin: EdgeInsets.zero,
             shadowColor: color.withValues(alpha: 0.25),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             color: AppColors.surface(context),
@@ -510,7 +511,7 @@ class _FarmDashboardState extends State<FarmDashboard> {
             baseColor: dark ? const Color(0xFF243224) : const Color(0xFFE8DDD5),
             highlightColor: dark ? const Color(0xFF3A5230) : const Color(0xFFF5EDE5),
             child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 96),
                 children: [
                     _sBox(w: 130, h: 18),
                     const SizedBox(height: 12),
