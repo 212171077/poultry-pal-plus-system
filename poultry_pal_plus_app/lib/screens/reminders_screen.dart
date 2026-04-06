@@ -1140,33 +1140,24 @@ class _ExpandableCoopCardState
                                             const SizedBox(height: 6),
                                         ],
                                         list.isNotEmpty
-                                            ? Container(
-                                                decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                        color: showValidationError &&
-                                                            selectedCoopId == null &&
-                                                            !useCurrentCoop
-                                                            ? AppColors.error
-                                                            : Colors.transparent,
-                                                    ),
-                                                    borderRadius: BorderRadius.circular(8),
-                                                ),
-                                                child: Common.buildDropdown(
-                                                    selectedValue:
-                                                    useCurrentCoop ? null : selectedCoopId,
-                                                    items: list,
-                                                    onChanged: (value) {
-                                                        setState(() {
-                                                                selectedCoopId = value;
-                                                                if (value != null) {
-                                                                    useCurrentCoop = false;
-                                                                    showValidationError = false;
-                                                                }
-                                                            });
-                                                    },
-                                                    context: context,
-                                                    hintText: 'Select a coop',
-                                                ),
+                                            ? Common.buildDropdown(
+                                                selectedValue:
+                                                useCurrentCoop ? null : selectedCoopId,
+                                                items: list,
+                                                onChanged: (value) {
+                                                    setState(() {
+                                                            selectedCoopId = value;
+                                                            if (value != null) {
+                                                                useCurrentCoop = false;
+                                                                showValidationError = false;
+                                                            }
+                                                        });
+                                                },
+                                                context: context,
+                                                hintText: 'Select a coop',
+                                                showError: showValidationError &&
+                                                    selectedCoopId == null &&
+                                                    !useCurrentCoop,
                                             )
                                             : Container(
                                                 padding: const EdgeInsets.all(12),

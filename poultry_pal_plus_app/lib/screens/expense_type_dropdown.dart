@@ -57,6 +57,13 @@ class ExpenseTypeDropdown extends StatelessWidget {
         };
 
         final isInvalid = value == 'Select expense type' && showErrorOnlyAfterSubmit;
+        final primary = AppColors.adaptivePrimary(context);
+        final errorColor = AppColors.adaptiveError(context);
+
+        final border = OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(color: primary.withAlpha(128)),
+        );
 
         return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,106 +76,125 @@ class ExpenseTypeDropdown extends StatelessWidget {
                             onChanged(val);
                         }
                     },
+                    style: TextStyle(color: AppColors.textPrimary(context), fontSize: 14),
+                    iconStyleData: IconStyleData(
+                        icon: Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.iconPrimary(context)),
+                    ),
                     decoration: InputDecoration(
                         labelText: 'Expense Type',
-                        labelStyle: const TextStyle(fontSize: 14),
+                        labelStyle: TextStyle(fontSize: 14, color: isInvalid ? errorColor : primary),
                         prefixIcon: Padding(
                             padding: const EdgeInsets.only(left: 12),
-                            child: Icon(Icons.category_outlined, color: AppColors.adaptivePrimary(context)),
+                            child: Icon(Icons.receipt_long_outlined, color: primary),
                         ),
                         prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
                         contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: AppColors.adaptivePrimary(context).withAlpha(128)),
+                        filled: true,
+                        fillColor: AppColors.surfaceVariant(context),
+                        border: border,
+                        enabledBorder: border,
+                        focusedBorder: border.copyWith(
+                            borderSide: BorderSide(color: primary, width: 2),
                         ),
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: AppColors.adaptivePrimary(context).withAlpha(128)),
+                        errorBorder: border.copyWith(
+                            borderSide: BorderSide(color: errorColor),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: AppColors.adaptivePrimary(context), width: 2),
+                        focusedErrorBorder: border.copyWith(
+                            borderSide: BorderSide(color: errorColor, width: 2),
                         ),
-                        errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: AppColors.error),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: AppColors.error, width: 2),
-                        ),
-                      errorText: isInvalid ? 'Please select an expense type' : null,
+                        errorText: isInvalid ? 'Please select an expense type' : null,
                     ),
                     dropdownStyleData: DropdownStyleData(
+                        maxHeight: 300,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Theme.of(context).cardColor,
-                            border: Border.all(color: AppColors.adaptivePrimary(context).withAlpha(80)),
+                            borderRadius: BorderRadius.circular(10),
+                            color: AppColors.surface(context),
+                            border: Border.all(color: primary.withAlpha(60)),
                             boxShadow: [
                                 BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 6,
-                                    offset: const Offset(0, 4),
+                                    color: Colors.black.withValues(alpha: 0.08),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 6),
                                 ),
                             ],
                         ),
+                        scrollbarTheme: ScrollbarThemeData(
+                            thumbColor: WidgetStateProperty.all(primary.withAlpha(100)),
+                            thickness: WidgetStateProperty.all(4),
+                            radius: const Radius.circular(4),
+                        ),
+                    ),
+                    menuItemStyleData: const MenuItemStyleData(
+                        height: 48,
+                        padding: EdgeInsets.symmetric(horizontal: 8),
                     ),
                     selectedItemBuilder: (context) {
                         return expenseTypes.keys.map((key) {
-                                return Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                        key,
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: isInvalid ? AppColors.error : Colors.black,
-                                            fontWeight: FontWeight.w400,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
+                            return Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                    key,
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400,
+                                        color: isInvalid
+                                            ? errorColor
+                                            : (key == 'Select expense type'
+                                                ? AppColors.textSecondary(context)
+                                                : AppColors.textPrimary(context)),
                                     ),
-                                );
-                            }).toList();
-                    },
-                    items: expenseTypes.entries.map((entry) {
-                            final hasInfo = entry.key != 'Select expense type' && entry.value.isNotEmpty;
-                            return DropdownMenuItem<String>(
-                                value: entry.key,
-                                enabled: entry.key != 'Select expense type',
-                                child: Row(
-                                    children: [
-                                        if (hasInfo)
-                                        GestureDetector(
-                                            onTap: () {
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (_) => AlertDialog(
-                                                        title: Text(entry.key),
-                                                        content: Text(entry.value),
-                                                        actions: [
-                                                            TextButton(
-                                                                onPressed: () => Navigator.pop(context),
-                                                                child: const Text('Close'),
-                                                            ),
-                                                        ],
-                                                    ),
-                                                );
-                                            },
-                                            child: const Icon(Icons.info_outline, color: AppColors.info, size: 20),
-                                        )
-                                        else
-                                        const SizedBox(width: 20),
-                                        const SizedBox(width: 8),
-                                        Flexible(
-                                            child: Text(
-                                                entry.key,
-                                                overflow: TextOverflow.ellipsis,
-                                            ),
-                                        ),
-                                    ],
+                                    overflow: TextOverflow.ellipsis,
                                 ),
                             );
-                        }).toList(),
+                        }).toList();
+                    },
+                    items: expenseTypes.entries.map((entry) {
+                        final hasInfo = entry.key != 'Select expense type' && entry.value.isNotEmpty;
+                        final isPlaceholder = entry.key == 'Select expense type';
+                        return DropdownMenuItem<String>(
+                            value: entry.key,
+                            enabled: !isPlaceholder,
+                            child: Row(
+                                children: [
+                                    if (hasInfo)
+                                    GestureDetector(
+                                        onTap: () {
+                                            showDialog(
+                                                context: context,
+                                                builder: (_) => AlertDialog(
+                                                    title: Text(entry.key),
+                                                    content: Text(entry.value),
+                                                    actions: [
+                                                        TextButton(
+                                                            onPressed: () => Navigator.pop(context),
+                                                            child: const Text('Close'),
+                                                        ),
+                                                    ],
+                                                ),
+                                            );
+                                        },
+                                        child: const Icon(Icons.info_outline, color: AppColors.info, size: 20),
+                                    )
+                                    else
+                                    SizedBox(width: isPlaceholder ? 0 : 20),
+                                    SizedBox(width: isPlaceholder ? 0 : 8),
+                                    Flexible(
+                                        child: Text(
+                                            entry.key,
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: isPlaceholder ? FontWeight.w400 : FontWeight.w400,
+                                                color: isPlaceholder
+                                                    ? AppColors.textSecondary(context)
+                                                    : AppColors.textPrimary(context),
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        );
+                    }).toList(),
                 ),
             ],
         );

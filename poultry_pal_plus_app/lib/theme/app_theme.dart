@@ -178,6 +178,11 @@ abstract class AppColors {
 
   /// For text on colored backgrounds (e.g. on primary buttons) — always white.
   static const Color onPrimary = Colors.white;
+
+  /// Adaptive error colour — uses the muted Farm Night red in dark mode so
+  /// borders, labels and error messages all render the same shade.
+  static Color adaptiveError(BuildContext context) =>
+      _isDark(context) ? errorFarmNight : error;
 }
 
 // ============================================================================

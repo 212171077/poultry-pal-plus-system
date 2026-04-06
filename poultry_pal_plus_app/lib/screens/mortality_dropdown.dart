@@ -35,6 +35,11 @@ class MortalityDropdown extends StatelessWidget {
             'Toxins & Poisoning': 'Cause: Exposure to toxic plants, pesticides, or chemicals.',
         };
 
+        final isPlaceholderSelected = value == 'Select mortality reason';
+        final isInvalid = isPlaceholderSelected && hasSubmitted;
+        final primary = AppColors.adaptivePrimary(context);
+        final errorColor = AppColors.adaptiveError(context);
+
         final border = OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide(
@@ -59,60 +64,78 @@ class MortalityDropdown extends StatelessWidget {
                 }
             },
             validator: validator,
+            style: TextStyle(color: AppColors.textPrimary(context), fontSize: 14),
+            iconStyleData: IconStyleData(
+                icon: Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.iconPrimary(context)),
+            ),
             decoration: InputDecoration(
                 labelText: 'Mortality Reason',
-                labelStyle: const TextStyle(fontSize: 14),
+                labelStyle: TextStyle(fontSize: 14, color: isInvalid ? errorColor : primary),
                 prefixIcon: Padding(
-                    padding: const EdgeInsets.only(left: 12, right: 0), // tighter spacing
+                    padding: const EdgeInsets.only(left: 12, right: 0),
                     child: Icon(Icons.category_outlined, color: AppColors.adaptivePrimary(context)),
                 ),
                 prefixIconConstraints: const BoxConstraints(
                     minWidth: 0,
                     minHeight: 0,
                 ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8), // reduced horizontal padding
+                contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                filled: true,
+                fillColor: AppColors.surfaceVariant(context),
                 border: border,
                 enabledBorder: border,
                 focusedBorder: focusedBorder,
                 errorBorder: border.copyWith(
-                    borderSide: const BorderSide(color: AppColors.error),
+                    borderSide: BorderSide(color: errorColor),
                 ),
                 focusedErrorBorder: border.copyWith(
-                    borderSide: const BorderSide(color: AppColors.error, width: 2),
+                    borderSide: BorderSide(color: errorColor, width: 2),
                 ),
             ),
             dropdownStyleData: DropdownStyleData(
+                maxHeight: 300,
                 decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.adaptivePrimary(context).withAlpha(80)),
+                    color: AppColors.surface(context),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.adaptivePrimary(context).withAlpha(60)),
                     boxShadow: [
                         BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 6,
-                            offset: const Offset(0, 4),
+                            color: Colors.black.withValues(alpha: 0.08),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
                         ),
                     ],
                 ),
-            ),
-          selectedItemBuilder: (context) {
-            return mortalityReasons.keys.map((key) {
-              final isPlaceholder = key == 'Select mortality reason';
-
-              return Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  key,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: isPlaceholder && hasSubmitted ? AppColors.error : Colors.black,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+                scrollbarTheme: ScrollbarThemeData(
+                    thumbColor: WidgetStateProperty.all(
+                        AppColors.adaptivePrimary(context).withAlpha(100)),
+                    thickness: WidgetStateProperty.all(4),
+                    radius: const Radius.circular(4),
                 ),
-              );
-            }).toList();
-          },
+            ),
+            menuItemStyleData: const MenuItemStyleData(
+                height: 48,
+                padding: EdgeInsets.symmetric(horizontal: 8),
+            ),
+            selectedItemBuilder: (context) {
+                return mortalityReasons.keys.map((key) {
+                    final isPlaceholder = key == 'Select mortality reason';
+                    return Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                            key,
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: isPlaceholder && hasSubmitted
+                                    ? errorColor
+                                    : AppColors.textPrimary(context),
+                                fontWeight: FontWeight.w400,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                        ),
+                    );
+                }).toList();
+            },
             items: mortalityReasons.entries.map((entry) {
                     final hasInfo = entry.key != 'Select mortality reason' && entry.value.isNotEmpty;
                     return DropdownMenuItem<String>(
@@ -145,6 +168,11 @@ class MortalityDropdown extends StatelessWidget {
                                 Flexible(
                                     child: Text(
                                         entry.key,
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                            color: AppColors.textPrimary(context),
+                                        ),
                                         overflow: TextOverflow.ellipsis,
                                     ),
                                 ),

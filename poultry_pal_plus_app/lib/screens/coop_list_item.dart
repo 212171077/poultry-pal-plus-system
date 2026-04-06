@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:poultry_pal_plus_app/models/coop.dart';
@@ -2801,101 +2802,276 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
     }
 
     void _showSaleDetailsDialog(BuildContext context, Sale sale) {
-        final saleDate = DateFormat('yyyy-MM-dd').format(
-            DateTime.parse(sale.saleDate),
-        );
+        final saleDate = DateFormat('MMM d, yyyy').format(DateTime.parse(sale.saleDate));
+        final isPaid = sale.paymentStatus.toUpperCase() == 'PAID';
 
         showDialog(
             context: context,
             builder: (context) {
-                return AlertDialog(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    title: Row(
-                        children: [
-                            Icon(Icons.receipt_long,
-                                color: AppColors.adaptivePrimary(context), size: 25),
-                            const SizedBox(width: 8.0),
-                            Text('Sale Details',
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.adaptivePrimary(context))),
-                        ],
-                    ),
-                    content: SingleChildScrollView(
+                return Dialog(
+                    backgroundColor: Colors.transparent,
+                    insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
                         child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                                _buildDetailRow(Icons.person, 'Buyer:', sale.buyerName),
-                                if (sale.numberOfChickensSold > 0)
-                                _buildDetailRow(Icons.shopping_bag, 'Chickens Sold:',
-                                    '${sale.numberOfChickensSold}'),
-                                if (sale.numberOfDozensSold > 0)
-                                _buildDetailRow(Icons.shopping_bag, 'Number Of Dozens Sold:',
-                                    '${sale.numberOfDozensSold}'),
-                                if (sale.salePricePerDozen > 0)
-                                _buildDetailRow(Icons.attach_money, 'Sale Price Per Dozen:',
-                                    'R${sale.salePricePerDozen}'),
-                                if (sale.salePricePerChicken > 0)
-                                _buildDetailRow(Icons.attach_money, 'Price per Chicken:',
-                                    'R${sale.salePricePerChicken}'),
-                                _buildDetailRow(Icons.money, 'Total Sale Amount:',
-                                    'R${sale.totalSaleAmount}'),
-                                _buildDetailRow(
-                                    sale.paymentStatus.toLowerCase() == 'paid'
-                                        ? Icons.check_circle
-                                        : Icons.error,
-                                    'Payment Status:',
-                                    sale.paymentStatus,
-                                    valueColor: sale.paymentStatus.toLowerCase() == 'paid'
-                                        ? AppColors.success
-                                        : AppColors.error,
+                                // ── Gradient header ───────────────────────────
+                                Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.fromLTRB(20, 20, 16, 20),
+                                    decoration: const BoxDecoration(
+                                        gradient: LinearGradient(
+                                            colors: [AppColors.success, AppColors.successLight],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                        ),
+                                    ),
+                                    child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                            // Title row + close
+                                            Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                    Row(children: [
+                                                        Container(
+                                                            padding: const EdgeInsets.all(7),
+                                                            decoration: BoxDecoration(
+                                                                color: Colors.white.withValues(alpha: 0.25),
+                                                                shape: BoxShape.circle,
+                                                            ),
+                                                            child: const Icon(Icons.receipt_long_rounded,
+                                                                color: Colors.white, size: 18),
+                                                        ),
+                                                        const SizedBox(width: 10),
+                                                        const Text(
+                                                            'Sale Details',
+                                                            style: TextStyle(
+                                                                color: Colors.white,
+                                                                fontSize: 17,
+                                                                fontWeight: FontWeight.w700,
+                                                                letterSpacing: 0.3,
+                                                            ),
+                                                        ),
+                                                    ]),
+                                                    GestureDetector(
+                                                        onTap: () => Navigator.of(context).pop(),
+                                                        child: Container(
+                                                            padding: const EdgeInsets.all(6),
+                                                            decoration: BoxDecoration(
+                                                                color: Colors.white.withValues(alpha: 0.2),
+                                                                shape: BoxShape.circle,
+                                                            ),
+                                                            child: const Icon(Icons.close,
+                                                                color: Colors.white, size: 16),
+                                                        ),
+                                                    ),
+                                                ],
+                                            ),
+                                            const SizedBox(height: 14),
+                                            // Buyer name (prominent)
+                                            Text(
+                                                sale.buyerName,
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 22,
+                                                    fontWeight: FontWeight.bold,
+                                                    letterSpacing: 0.2,
+                                                ),
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                                saleDate,
+                                                style: const TextStyle(
+                                                    color: Colors.white70, fontSize: 13),
+                                            ),
+                                            const SizedBox(height: 14),
+                                            // Amount + payment status badges
+                                            Row(children: [
+                                                Container(
+                                                    padding: const EdgeInsets.symmetric(
+                                                        horizontal: 12, vertical: 6),
+                                                    decoration: BoxDecoration(
+                                                        color: Colors.white.withValues(alpha: 0.22),
+                                                        borderRadius: BorderRadius.circular(20),
+                                                    ),
+                                                    child: Text(
+                                                        'R${sale.totalSaleAmount.toStringAsFixed(2)}',
+                                                        style: const TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 15,
+                                                        ),
+                                                    ),
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Container(
+                                                    padding: const EdgeInsets.symmetric(
+                                                        horizontal: 10, vertical: 6),
+                                                    decoration: BoxDecoration(
+                                                        color: isPaid
+                                                            ? Colors.white.withValues(alpha: 0.9)
+                                                            : AppColors.warning.withValues(alpha: 0.85),
+                                                        borderRadius: BorderRadius.circular(20),
+                                                    ),
+                                                    child: Row(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                            Icon(
+                                                                isPaid
+                                                                    ? Icons.check_circle_rounded
+                                                                    : Icons.schedule_rounded,
+                                                                size: 13,
+                                                                color: isPaid
+                                                                    ? AppColors.success
+                                                                    : Colors.white,
+                                                            ),
+                                                            const SizedBox(width: 4),
+                                                            Text(
+                                                                sale.paymentStatus,
+                                                                style: TextStyle(
+                                                                    fontSize: 12,
+                                                                    fontWeight: FontWeight.w600,
+                                                                    color: isPaid
+                                                                        ? AppColors.success
+                                                                        : Colors.white,
+                                                                ),
+                                                            ),
+                                                        ],
+                                                    ),
+                                                ),
+                                            ]),
+                                        ],
+                                    ),
                                 ),
-                                _buildDetailRow(Icons.calendar_today, 'Sale Date:', saleDate),
+
+                                // ── Details body ──────────────────────────────
+                                Container(
+                                    color: AppColors.surface(context),
+                                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+                                    child: Column(
+                                        children: [
+                                            if (sale.numberOfChickensSold > 0)
+                                                _buildSaleDetailRow(context,
+                                                    Icons.set_meal_rounded,
+                                                    'Chickens Sold',
+                                                    '${sale.numberOfChickensSold}'),
+                                            if (sale.numberOfDozensSold > 0)
+                                                _buildSaleDetailRow(context,
+                                                    Icons.egg_outlined,
+                                                    'Dozens Sold',
+                                                    '${sale.numberOfDozensSold}'),
+                                            if (sale.salePricePerDozen > 0)
+                                                _buildSaleDetailRow(context,
+                                                    Icons.attach_money,
+                                                    'Price per Dozen',
+                                                    'R${sale.salePricePerDozen.toStringAsFixed(2)}'),
+                                            if (sale.salePricePerChicken > 0)
+                                                _buildSaleDetailRow(context,
+                                                    Icons.attach_money,
+                                                    'Price per Chicken',
+                                                    'R${sale.salePricePerChicken.toStringAsFixed(2)}'),
+                                            _buildSaleDetailRow(context,
+                                                Icons.monetization_on_outlined,
+                                                'Total Amount',
+                                                'R${sale.totalSaleAmount.toStringAsFixed(2)}',
+                                                valueColor: AppColors.success),
+                                            _buildSaleDetailRow(context,
+                                                isPaid
+                                                    ? Icons.check_circle_rounded
+                                                    : Icons.schedule_rounded,
+                                                'Payment Status',
+                                                sale.paymentStatus,
+                                                valueColor: isPaid
+                                                    ? AppColors.success
+                                                    : AppColors.warning),
+                                            _buildSaleDetailRow(context,
+                                                Icons.calendar_today_outlined,
+                                                'Sale Date',
+                                                saleDate),
+                                        ],
+                                    ),
+                                ),
+
+                                // ── Close button ──────────────────────────────
+                                Container(
+                                    color: AppColors.surface(context),
+                                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                                    child: SizedBox(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                            onPressed: () => Navigator.of(context).pop(),
+                                            style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    AppColors.adaptivePrimary(context),
+                                                foregroundColor: Colors.white,
+                                                elevation: 0,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(12)),
+                                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                            ),
+                                            child: const Text(
+                                                'Close',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 15,
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                ),
                             ],
                         ),
                     ),
-                    actions: [
-                        TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: Text(
-                                'Close',
-                                style: TextStyle(color: AppColors.adaptivePrimary(context)),
-                            ),
-                        ),
-                    ],
                 );
             },
         );
     }
 
-    Widget _buildDetailRow(IconData icon, String label, String value,
-        {Color? valueColor}) {
+    Widget _buildSaleDetailRow(
+        BuildContext context,
+        IconData icon,
+        String label,
+        String value, {
+        Color? valueColor,
+    }) {
         return Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
+            padding: const EdgeInsets.only(bottom: 12),
             child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                    Icon(icon, size: 20.0, color: AppColors.adaptivePrimary(context)),
-                    const SizedBox(width: 8.0),
+                    Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                            color: AppColors.surfaceVariant(context),
+                            borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(icon,
+                            size: 16, color: AppColors.adaptivePrimary(context)),
+                    ),
+                    const SizedBox(width: 12),
                     Expanded(
-                        child: RichText(
-                            text: TextSpan(
-                                text: '$label ',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, color: Colors.black),
-                                children: [
-                                    TextSpan(
-                                        text: value,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.normal,
-                                            color: valueColor ?? Colors.black,
-                                        ),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                                Text(
+                                    label,
+                                    style: TextStyle(
+                                        fontSize: 11,
+                                        color: AppColors.textSecondary(context),
                                     ),
-                                ],
-                            ),
+                                ),
+                                const SizedBox(height: 1),
+                                Text(
+                                    value,
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: valueColor ??
+                                            AppColors.textPrimary(context),
+                                    ),
+                                ),
+                            ],
                         ),
                     ),
                 ],
@@ -3474,6 +3650,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
             : null;
         bool showCoopTypeError = false;
         bool showGrowthPhaseError = false;
+        bool isLoading = false;
 
         showModalBottomSheet(
             context: context,
@@ -3614,7 +3791,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                     ),
                                                                                     padding: const EdgeInsets.symmetric(vertical: 14),
                                                                                 ),
-                                                                                onPressed: () async {
+                                                                                 onPressed: isLoading ? null : () async {
                                                                                     final isFormValid = formKey.currentState!.validate();
                                                                                     final isCoopTypeValid = coopType.trim().isNotEmpty;
                                                                                     final isGrowthPhaseValid = growthPhase.toString().trim().isNotEmpty;
@@ -3626,10 +3803,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
 
                                                                                     if (!isFormValid || !isCoopTypeValid) return;
 
-                                                                                    await Common.showLottieDialog(
-                                                                                        context,
-                                                                                        lottiePath: 'assets/lottie/loading_animation.json',
-                                                                                    );
+                                                                                    setModalState(() => isLoading = true);
 
                                                                                     final response = await service.updateFarmCoop(
                                                                                         farmId: farmId,
@@ -3641,28 +3815,25 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                         chickenArrivalDate: chickenArrivalDate?.toIso8601String(),
                                                                                     );
 
-                                                                                    if (context.mounted) {
-                                                                                        Navigator.of(context, rootNavigator: true).pop();
-                                                                                    }
+                                                                                    if (!context.mounted) return;
+                                                                                    setModalState(() => isLoading = false);
 
                                                                                     if (response.success) {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath: 'assets/lottie/success_check.json',
-                                                                                            autoCloseAfter: const Duration(seconds: 2),
-                                                                                        );
-                                                                                        if (context.mounted) Navigator.of(context).pop();
+                                                                                        HapticFeedback.mediumImpact();
+                                                                                        Navigator.of(context).pop();
                                                                                         onCoopUpdated();
+                                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            Common.buildSnackBar('Coop updated successfully!', AppColors.success),
+                                                                                        );
                                                                                     } else {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath: 'assets/lottie/error.json',
-                                                                                            message: response.message,
-                                                                                            autoCloseAfter:  Duration(seconds: 5),
+                                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            Common.buildSnackBar(response.message, AppColors.error),
                                                                                         );
                                                                                     }
                                                                                 },
-                                                                                child:  Text(
+                                                                                child: isLoading
+                                                                                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                                                                                    : Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
                                                                                         color: AppColors.surface(context),
@@ -3720,6 +3891,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
         String recordedBy = user.id;
         bool isSaleDateError = false;
         bool showPaymentStatusError = false;
+        bool isLoading = false;
 
         showModalBottomSheet(
             context: context,
@@ -3761,35 +3933,22 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
 
                                                             children: [
                                                                 const SizedBox(height: 24),
-                                                                Common.buildTextField(
+                                                                Common.buildStepperField(
                                                                     label: 'Number Of Chickens Sold',
-                                                                    icon: Icons.fact_check_outlined,
-                                                                    keyboardType: TextInputType.number,
-                                                                    onChanged: (value) =>
-                                                                    numberOfChickensSold = int.tryParse(value) ?? 0,
-                                                                    validator: (value) {
-                                                                        final number = int.tryParse(value!);
-                                                                        return number == null || number <= 0
-                                                                            ? 'Please enter a valid number'
-                                                                            : null;
-                                                                    },
+                                                                    value: numberOfChickensSold,
+                                                                    onChanged: (val) => setModalState(() => numberOfChickensSold = val),
+                                                                    min: 0,
                                                                     context: context,
+                                                                    validator: (val) => val == null || val <= 0
+                                                                        ? 'Please enter number of chickens sold'
+                                                                        : null,
                                                                 ),
 
                                                                 const SizedBox(height: 22),
 
-                                                                Common.buildTextField(
+                                                                Common.buildCurrencyField(
                                                                     label: 'Sale Price Per Chicken',
-                                                                    icon: Icons.attach_money_outlined,
-                                                                    keyboardType: TextInputType.number,
-                                                                    onChanged: (value) =>
-                                                                    salePricePerChicken = double.tryParse(value) ?? 0,
-                                                                    validator: (value) {
-                                                                        final number = double.tryParse(value!);
-                                                                        return number == null || number <= 0
-                                                                            ? 'Please enter a valid number'
-                                                                            : null;
-                                                                    },
+                                                                    onChanged: (value) => salePricePerChicken = value,
                                                                     context: context,
                                                                 ),
 
@@ -3804,46 +3963,34 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                     context: context,
                                                                 ),
 
-                                                                const SizedBox(height: 22),
+                                                                                const SizedBox(height: 22),
 
-                                                                FormField<DateTime>(
-                                                                    validator: (value) {
-                                                                        if (saleDate == null) {
-                                                                            return 'Please select a sale date';
-                                                                        }
-                                                                        return null;
-                                                                    },
-                                                                    builder: (field) {
-                                                                        final hasError = field.hasError;
-                                                                        return Column(
-                                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                                            children: [
-                                                                                Common.buildDateField(
-                                                                                    context: context,
-                                                                                    label: 'Sale Date',
-                                                                                    date: saleDate,
-                                                                                    hasError: hasError, // Pass error status
-                                                                                    onDateSelected: (date) {
-                                                                                        setModalState(() {
-                                                                                                saleDate = date;
-                                                                                                field.didChange(date);
-                                                                                            });
+                                                                                FormField<DateTime>(
+                                                                                    validator: (value) {
+                                                                                        if (saleDate == null) {
+                                                                                            return 'Please select a sale date';
+                                                                                        }
+                                                                                        return null;
+                                                                                    },
+                                                                                    builder: (field) {
+                                                                                        final hasError = field.hasError;
+                                                                                        return Common.buildDateField(
+                                                                                            context: context,
+                                                                                            label: 'Sale Date',
+                                                                                            date: saleDate,
+                                                                                            hasError: hasError,
+                                                                                            errorText: 'Please select a sale date',
+                                                                                            onDateSelected: (date) {
+                                                                                                setModalState(() {
+                                                                                                        saleDate = date;
+                                                                                                        field.didChange(date);
+                                                                                                    });
+                                                                                            },
+                                                                                        );
                                                                                     },
                                                                                 ),
-                                                                                if (hasError)
-                                                                                const Padding(
-                                                                                    padding: EdgeInsets.only(top: 6),
-                                                                                    child: Text(
-                                                                                        'Please select a sale date',
-                                                                                        style: TextStyle(color: AppColors.error, fontSize: 12),
-                                                                                    ),
-                                                                                ),
-                                                                            ],
-                                                                        );
-                                                                    },
-                                                                ),
 
-                                                                const SizedBox(height: 18),
+                                                                                const SizedBox(height: 18),
 
                                                                 Common.buildPaymentStatusSegmentedControl(
                                                                     value: paymentStatus,
@@ -3872,7 +4019,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                     ),
                                                                                     padding: const EdgeInsets.symmetric(vertical: 14),
                                                                                 ),
-                                                                                onPressed: () async {
+                                                                                 onPressed: () async {
 
                                                                                     final isFormValid = formKey.currentState!.validate();
                                                                                     final isPaymentStatusValid = paymentStatus != null && paymentStatus!.trim().isNotEmpty;
@@ -3882,12 +4029,9 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                             isSaleDateError = saleDate == null;
                                                                                         });
 
-                                                                                    if (!isFormValid || !isPaymentStatusValid) return;
+                                                                                    if (!isFormValid || !isPaymentStatusValid || numberOfChickensSold <= 0 || salePricePerChicken <= 0) return;
 
-                                                                                    await Common.showLottieDialog(
-                                                                                        context,
-                                                                                        lottiePath: 'assets/lottie/loading_animation.json',
-                                                                                    );
+                                                                                    setModalState(() => isLoading = true);
 
                                                                                     final response = await service.updateSales(
                                                                                         id: null,
@@ -3903,35 +4047,32 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                         saleDate: saleDate!.toIso8601String(),
                                                                                     );
 
-                                                                                    if (context.mounted) {
-                                                                                        Navigator.of(context, rootNavigator: true).pop();
-                                                                                    }
+                                                                                    if (!context.mounted) return;
+                                                                                    setModalState(() => isLoading = false);
 
                                                                                     if (response.success) {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath: 'assets/lottie/success_check.json',
-                                                                                            autoCloseAfter: const Duration(seconds: 2),
-                                                                                        );
-                                                                                        if (context.mounted) Navigator.of(context).pop();
+                                                                                        HapticFeedback.mediumImpact();
+                                                                                        Navigator.of(context).pop();
                                                                                         onCoopUpdated();
+                                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            Common.buildSnackBar('Sale recorded successfully!', AppColors.success),
+                                                                                        );
                                                                                     } else {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath: 'assets/lottie/error.json',
-                                                                                            message: response.message,
-                                                                                            autoCloseAfter:  Duration(seconds: 5),
+                                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            Common.buildSnackBar(response.message, AppColors.error),
                                                                                         );
                                                                                     }
                                                                                 },
-                                                                                child:  Text(
+                                                                                child: isLoading
+                                                                                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                                                                                    : const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surface(context),
+                                                                                        color: AppColors.surfaceLight,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
-                                                                            ),
+                                                                             ),
                                                                         ),
                                                                         const SizedBox(width: 12),
                                                                         OutlinedButton(
@@ -3984,6 +4125,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
         String recordedBy = user.id;
         bool isSaleDateError = false;
         bool showPaymentStatusError = false;
+        bool isLoading = false;
 
         showModalBottomSheet(
             context: context,
@@ -4053,33 +4195,20 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
 
                                                             children: [
                                                                 const SizedBox(height: 24),
-                                                                Common.buildTextField(
+                                                                Common.buildStepperField(
                                                                     label: 'Number Of Dozens Sold',
-                                                                    icon: Icons.fact_check_outlined,
-                                                                    keyboardType: TextInputType.number,
-                                                                    onChanged: (value) =>
-                                                                    numberOfDozensSold = int.tryParse(value) ?? 0,
-                                                                    validator: (value) {
-                                                                        final number = int.tryParse(value!);
-                                                                        return number == null || number <= 0
-                                                                            ? 'Please enter a valid number'
-                                                                            : null;
-                                                                    },
+                                                                    value: numberOfDozensSold,
+                                                                    onChanged: (val) => setModalState(() => numberOfDozensSold = val),
+                                                                    min: 0,
                                                                     context: context,
+                                                                    validator: (val) => val == null || val <= 0
+                                                                        ? 'Please enter number of dozens sold'
+                                                                        : null,
                                                                 ),
                                                                 const SizedBox(height: 22),
-                                                                Common.buildTextField(
+                                                                Common.buildCurrencyField(
                                                                     label: 'Sale Price Per Dozen',
-                                                                    icon: Icons.fact_check_outlined,
-                                                                    keyboardType: TextInputType.number,
-                                                                    onChanged: (value) =>
-                                                                    salePricePerDozen = double.tryParse(value) ?? 0,
-                                                                    validator: (value) {
-                                                                        final number = int.tryParse(value!);
-                                                                        return number == null || number <= 0
-                                                                            ? 'Please enter a valid number'
-                                                                            : null;
-                                                                    },
+                                                                    onChanged: (value) => salePricePerDozen = value,
                                                                     context: context,
                                                                 ),
                                                                 const SizedBox(height: 22),
@@ -4093,44 +4222,32 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                     context: context,
                                                                 ),
 
-                                                                const SizedBox(height: 22),
-                                                                FormField<DateTime>(
-                                                                    validator: (value) {
-                                                                        if (saleDate == null) {
-                                                                            return 'Please select a sale date';
-                                                                        }
-                                                                        return null;
-                                                                    },
-                                                                    builder: (field) {
-                                                                        final hasError = field.hasError;
-                                                                        return Column(
-                                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                                            children: [
-                                                                                Common.buildDateField(
-                                                                                    context: context,
-                                                                                    label: 'Sale Date',
-                                                                                    date: saleDate,
-                                                                                    hasError: hasError, // Pass error status
-                                                                                    onDateSelected: (date) {
-                                                                                        setModalState(() {
-                                                                                                saleDate = date;
-                                                                                                field.didChange(date);
-                                                                                            });
+                                                                                const SizedBox(height: 22),
+                                                                                FormField<DateTime>(
+                                                                                    validator: (value) {
+                                                                                        if (saleDate == null) {
+                                                                                            return 'Please select a sale date';
+                                                                                        }
+                                                                                        return null;
+                                                                                    },
+                                                                                    builder: (field) {
+                                                                                        final hasError = field.hasError;
+                                                                                        return Common.buildDateField(
+                                                                                            context: context,
+                                                                                            label: 'Sale Date',
+                                                                                            date: saleDate,
+                                                                                            hasError: hasError,
+                                                                                            errorText: 'Please select a sale date',
+                                                                                            onDateSelected: (date) {
+                                                                                                setModalState(() {
+                                                                                                        saleDate = date;
+                                                                                                        field.didChange(date);
+                                                                                                    });
+                                                                                            },
+                                                                                        );
                                                                                     },
                                                                                 ),
-                                                                                if (hasError)
-                                                                                const Padding(
-                                                                                    padding: EdgeInsets.only(top: 6),
-                                                                                    child: Text(
-                                                                                        'Please select a sale date',
-                                                                                        style: TextStyle(color: AppColors.error, fontSize: 12),
-                                                                                    ),
-                                                                                ),
-                                                                            ],
-                                                                        );
-                                                                    },
-                                                                ),
-                                                                const SizedBox(height: 18),
+                                                                                const SizedBox(height: 18),
 
                                                                 Common.buildPaymentStatusSegmentedControl(
                                                                     value: paymentStatus,
@@ -4159,7 +4276,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                     ),
                                                                                     padding: const EdgeInsets.symmetric(vertical: 14),
                                                                                 ),
-                                                                                onPressed: () async {
+                                                                                 onPressed: isLoading ? null : () async {
 
                                                                                     final isFormValid = formKey.currentState!.validate();
                                                                                     final isPaymentStatusValid = paymentStatus != null && paymentStatus!.trim().isNotEmpty;
@@ -4171,12 +4288,9 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
 
                                                                                     if (!isFormValid || !isPaymentStatusValid) return;
 
-                                                                                    await Common.showLottieDialog(
-                                                                                        context,
-                                                                                        lottiePath: 'assets/lottie/loading_animation.json',
-                                                                                    );
+                                                                                    setModalState(() => isLoading = true);
 
-                                                                                    final response = await service.updateSales(
+                                                                                     final response = await service.updateSales(
                                                                                         id: null,
                                                                                         farmId: farmId,
                                                                                         coopId: coop.id,
@@ -4190,31 +4304,28 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                         saleDate: saleDate!.toIso8601String(),
                                                                                     );
 
-                                                                                    if (context.mounted) {
-                                                                                        Navigator.of(context, rootNavigator: true).pop();
-                                                                                    }
+                                                                                    if (!context.mounted) return;
+                                                                                    setModalState(() => isLoading = false);
 
                                                                                     if (response.success) {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath: 'assets/lottie/success_check.json',
-                                                                                            autoCloseAfter: const Duration(seconds: 2),
-                                                                                        );
-                                                                                        if (context.mounted) Navigator.of(context).pop();
+                                                                                        HapticFeedback.mediumImpact();
+                                                                                        Navigator.of(context).pop();
                                                                                         onCoopUpdated();
+                                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            Common.buildSnackBar('Sale recorded successfully!', AppColors.success),
+                                                                                        );
                                                                                     } else {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath: 'assets/lottie/error.json',
-                                                                                            message: response.message,
-                                                                                            autoCloseAfter:  Duration(seconds: 5),
+                                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            Common.buildSnackBar(response.message, AppColors.error),
                                                                                         );
                                                                                     }
                                                                                 },
-                                                                                child:  Text(
+                                                                                child: isLoading
+                                                                                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                                                                                    : const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surface(context),
+                                                                                        color: AppColors.surfaceLight,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -4269,6 +4380,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
         bool showBoxSizeError = false;
         String additionalInfo = '';
         DateTime? recordingDate = DateTime.now();
+        bool isLoading = false;
 
         showModalBottomSheet(
             context: context,
@@ -4338,19 +4450,15 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
 
                                                             children: [
                                                                 const SizedBox(height: 24),
-                                                                Common.buildTextField(
-                                                                    label: 'Number of boxes',
-                                                                    icon: Icons.library_books_sharp,
-                                                                    keyboardType: TextInputType.number,
-                                                                    onChanged: (value) =>
-                                                                    numberOfBoxes = int.tryParse(value) ?? 0,
-                                                                    validator: (value) {
-                                                                        final number = int.tryParse(value!);
-                                                                        return number == null || number <= 0
-                                                                            ? 'Please enter a valid number'
-                                                                            : null;
-                                                                    },
+                                                                Common.buildStepperField(
+                                                                    label: 'Number of Boxes',
+                                                                    value: numberOfBoxes,
+                                                                    onChanged: (val) => setModalState(() => numberOfBoxes = val),
+                                                                    min: 0,
                                                                     context: context,
+                                                                    validator: (val) => val == null || val <= 0
+                                                                        ? 'Please enter number of boxes'
+                                                                        : null,
                                                                 ),
 
                                                                 const SizedBox(height: 8),
@@ -4417,7 +4525,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                     ),
                                                                                     padding: const EdgeInsets.symmetric(vertical: 14),
                                                                                 ),
-                                                                                onPressed: () async {
+                                                                                 onPressed: isLoading ? null : () async {
 
                                                                                     final isFormValid = formKey.currentState!.validate();
 
@@ -4426,12 +4534,9 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                             showBoxSizeError = boxSize == null;
                                                                                         });
 
-                                                                                    if (!isFormValid) return;
+                                                                                    if (!isFormValid || numberOfBoxes <= 0) return;
 
-                                                                                    await Common.showLottieDialog(
-                                                                                        context,
-                                                                                        lottiePath: 'assets/lottie/loading_animation.json',
-                                                                                    );
+                                                                                    setModalState(() => isLoading = true);
 
                                                                                     final response = await service.recordPackaging(
                                                                                         userId: user.id,
@@ -4444,31 +4549,28 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                         createdDate: recordingDate?.toIso8601String(),
                                                                                     );
 
-                                                                                    if (context.mounted) {
-                                                                                        Navigator.of(context, rootNavigator: true).pop();
-                                                                                    }
+                                                                                    if (!context.mounted) return;
+                                                                                    setModalState(() => isLoading = false);
 
                                                                                     if (response.success) {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath: 'assets/lottie/success_check.json',
-                                                                                            autoCloseAfter: const Duration(seconds: 2),
-                                                                                        );
-                                                                                        if (context.mounted) Navigator.of(context).pop();
+                                                                                        HapticFeedback.mediumImpact();
+                                                                                        Navigator.of(context).pop();
                                                                                         onCoopUpdated();
+                                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            Common.buildSnackBar('Eggs recorded successfully!', AppColors.success),
+                                                                                        );
                                                                                     } else {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath: 'assets/lottie/error.json',
-                                                                                            message: response.message,
-                                                                                            autoCloseAfter:  Duration(seconds: 5),
+                                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            Common.buildSnackBar(response.message, AppColors.error),
                                                                                         );
                                                                                     }
                                                                                 },
-                                                                                child:  Text(
+                                                                                child: isLoading
+                                                                                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                                                                                    : const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surface(context),
+                                                                                        color: AppColors.surfaceLight,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -4522,6 +4624,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
         String recordedBy = user.id;
         bool isSaleDateError = false;
         bool hasSubmitted = false;
+        bool isLoading = false;
 
         showModalBottomSheet(
             context: context,
@@ -4591,57 +4694,40 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
 
                                                             children: [
                                                                 const SizedBox(height: 24),
-                                                                Common.buildTextField(
+                                                                Common.buildStepperField(
                                                                     label: 'Number Of Deaths',
-                                                                    icon: Icons.fact_check_outlined,
-                                                                    keyboardType: TextInputType.number,
-                                                                    onChanged: (value) =>
-                                                                    numberOfDeaths = int.tryParse(value) ?? 0,
-                                                                    validator: (value) {
-                                                                        final number = int.tryParse(value!);
-                                                                        return number == null || number <= 0
-                                                                            ? 'Please enter a valid number'
-                                                                            : null;
-                                                                    },
+                                                                    value: numberOfDeaths,
+                                                                    onChanged: (val) => setModalState(() => numberOfDeaths = val),
+                                                                    min: 0,
                                                                     context: context,
+                                                                    validator: (val) => val == null || val <= 0
+                                                                        ? 'Please enter number of deaths'
+                                                                        : null,
                                                                 ),
                                                                 const SizedBox(height: 22),
-                                                                FormField<DateTime>(
-                                                                    validator: (value) {
-                                                                        if (dateOccurred == null) {
-                                                                            return 'Please select date';
-                                                                        }
-                                                                        return null;
-                                                                    },
-                                                                    builder: (field) {
-                                                                        final hasError = field.hasError;
-                                                                        return Column(
-                                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                                            children: [
-                                                                                Common.buildDateField(
-                                                                                    context: context,
-                                                                                    label: 'When did this occurred?',
-                                                                                    date: dateOccurred,
-                                                                                    hasError: hasError, // Pass error status
-                                                                                    onDateSelected: (date) {
-                                                                                        setModalState(() {
-                                                                                                dateOccurred = date;
-                                                                                                field.didChange(date);
-                                                                                            });
+                                                                                FormField<DateTime>(
+                                                                                    validator: (value) {
+                                                                                        if (dateOccurred == null) {
+                                                                                            return 'Please select date';
+                                                                                        }
+                                                                                        return null;
+                                                                                    },
+                                                                                    builder: (field) {
+                                                                                        return Common.buildDateField(
+                                                                                            context: context,
+                                                                                            label: 'When did this occurred?',
+                                                                                            date: dateOccurred,
+                                                                                            hasError: field.hasError,
+                                                                                            errorText: 'Please select a date',
+                                                                                            onDateSelected: (date) {
+                                                                                                setModalState(() {
+                                                                                                        dateOccurred = date;
+                                                                                                        field.didChange(date);
+                                                                                                    });
+                                                                                            },
+                                                                                        );
                                                                                     },
                                                                                 ),
-                                                                                if (hasError)
-                                                                                const Padding(
-                                                                                    padding: EdgeInsets.only(top: 6),
-                                                                                    child: Text(
-                                                                                        'Please select a sale date',
-                                                                                        style: TextStyle(color: AppColors.error, fontSize: 12),
-                                                                                    ),
-                                                                                ),
-                                                                            ],
-                                                                        );
-                                                                    },
-                                                                ),
                                                                 const SizedBox(height: 22),
                                                                 MortalityDropdown(
                                                                     value: reason,
@@ -4674,7 +4760,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                     ),
                                                                                     padding: const EdgeInsets.symmetric(vertical: 14),
                                                                                 ),
-                                                                                onPressed: () async {
+                                                                                 onPressed: isLoading ? null : () async {
 
                                                                                     hasSubmitted = true;
                                                                                     final isFormValid = formKey.currentState!.validate();
@@ -4683,12 +4769,9 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                             isSaleDateError = dateOccurred == null;
                                                                                         });
 
-                                                                                    if (!isFormValid) return;
+                                                                                    if (!isFormValid || numberOfDeaths <= 0) return;
 
-                                                                                    await Common.showLottieDialog(
-                                                                                        context,
-                                                                                        lottiePath: 'assets/lottie/loading_animation.json',
-                                                                                    );
+                                                                                    setModalState(() => isLoading = true);
 
                                                                                     final response = await service.updateMortality(
                                                                                         id: null,
@@ -4701,31 +4784,28 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                         recordedBy: recordedBy,
                                                                                     );
 
-                                                                                    if (context.mounted) {
-                                                                                        Navigator.of(context, rootNavigator: true).pop();
-                                                                                    }
+                                                                                    if (!context.mounted) return;
+                                                                                    setModalState(() => isLoading = false);
 
                                                                                     if (response.success) {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath: 'assets/lottie/success_check.json',
-                                                                                            autoCloseAfter: const Duration(seconds: 2),
-                                                                                        );
-                                                                                        if (context.mounted) Navigator.of(context).pop();
+                                                                                        HapticFeedback.mediumImpact();
+                                                                                        Navigator.of(context).pop();
                                                                                         onCoopUpdated();
+                                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            Common.buildSnackBar('Mortality recorded successfully!', AppColors.success),
+                                                                                        );
                                                                                     } else {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath: 'assets/lottie/error.json',
-                                                                                            message: response.message,
-                                                                                            autoCloseAfter:  Duration(seconds: 5),
+                                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            Common.buildSnackBar(response.message, AppColors.error),
                                                                                         );
                                                                                     }
                                                                                 },
-                                                                                child:  Text(
+                                                                                child: isLoading
+                                                                                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                                                                                    : const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surface(context),
+                                                                                        color: AppColors.surfaceLight,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),
@@ -4780,6 +4860,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
         String recordedBy = user.id;
         bool isSaleDateError = false;
         bool hasSubmitted = false;
+        bool isLoading = false;
 
         showModalBottomSheet(
             context: context,
@@ -4855,57 +4936,36 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                     showErrorOnlyAfterSubmit: hasSubmitted,
                                                                 ),
                                                                 const SizedBox(height: 22),
-                                                                Common.buildTextField(
+                                                                Common.buildCurrencyField(
                                                                     label: 'Amount',
-                                                                    icon: Icons.fact_check_outlined,
-                                                                    keyboardType: TextInputType.number,
-                                                                    onChanged: (value) =>
-                                                                    amount = double.tryParse(value) ?? 0,
-                                                                    validator: (value) {
-                                                                        final number = int.tryParse(value!);
-                                                                        return number == null || number <= 0
-                                                                            ? 'Please enter a valid number'
-                                                                            : null;
-                                                                    },
+                                                                    onChanged: (value) => amount = value,
                                                                     context: context,
                                                                 ),
 
                                                                 const SizedBox(height: 22),
-                                                                FormField<DateTime>(
-                                                                    validator: (value) {
-                                                                        if (expenseDate == null) {
-                                                                            return 'Please select date';
-                                                                        }
-                                                                        return null;
-                                                                    },
-                                                                    builder: (field) {
-                                                                        return Column(
-                                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                                            children: [
-                                                                                Common.buildDateField(
-                                                                                    context: context,
-                                                                                    label: 'Date of Expense',
-                                                                                    date: expenseDate,
-                                                                                    onDateSelected: (date) {
-                                                                                        setState(() {
-                                                                                                expenseDate = date;
-                                                                                                field.didChange(date);
-                                                                                            });
+                                                                                FormField<DateTime>(
+                                                                                    validator: (value) {
+                                                                                        if (expenseDate == null) {
+                                                                                            return 'Please select date';
+                                                                                        }
+                                                                                        return null;
                                                                                     },
-                                                                                    hasError: isSaleDateError,
+                                                                                    builder: (field) {
+                                                                                        return Common.buildDateField(
+                                                                                            context: context,
+                                                                                            label: 'Date of Expense',
+                                                                                            date: expenseDate,
+                                                                                            hasError: field.hasError,
+                                                                                            errorText: 'Please select a date of expense',
+                                                                                            onDateSelected: (date) {
+                                                                                                setState(() {
+                                                                                                        expenseDate = date;
+                                                                                                        field.didChange(date);
+                                                                                                    });
+                                                                                            },
+                                                                                        );
+                                                                                    },
                                                                                 ),
-                                                                                if (isSaleDateError)
-                                                                                const Padding(
-                                                                                    padding: EdgeInsets.only(top: 6),
-                                                                                    child: Text(
-                                                                                        'Please select a sale date',
-                                                                                        style: TextStyle(color: AppColors.error, fontSize: 12),
-                                                                                    ),
-                                                                                ),
-                                                                            ],
-                                                                        );
-                                                                    },
-                                                                ),
                                                                 const SizedBox(height: 22),
                                                                 Common.buildTextField(
                                                                     label: 'Additional Info (Optional)',
@@ -4928,7 +4988,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                     ),
                                                                                     padding: const EdgeInsets.symmetric(vertical: 14),
                                                                                 ),
-                                                                                onPressed: () async {
+                                                                                 onPressed: isLoading ? null : () async {
 
                                                                                     hasSubmitted = true;
                                                                                     final isFormValid = formKey.currentState!.validate();
@@ -4937,12 +4997,9 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                             isSaleDateError = expenseDate == null;
                                                                                         });
 
-                                                                                    if (!isFormValid) return;
+                                                                                    if (!isFormValid || amount <= 0) return;
 
-                                                                                    await Common.showLottieDialog(
-                                                                                        context,
-                                                                                        lottiePath: 'assets/lottie/loading_animation.json',
-                                                                                    );
+                                                                                    setModalState(() => isLoading = true);
 
                                                                                     final response =
                                                                                         await service.updateExpenses(
@@ -4957,31 +5014,28 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                             recordedBy: recordedBy,
                                                                                         );
 
-                                                                                    if (context.mounted) {
-                                                                                        Navigator.of(context, rootNavigator: true).pop();
-                                                                                    }
+                                                                                    if (!context.mounted) return;
+                                                                                    setModalState(() => isLoading = false);
 
                                                                                     if (response.success) {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath: 'assets/lottie/success_check.json',
-                                                                                            autoCloseAfter: const Duration(seconds: 2),
-                                                                                        );
-                                                                                        if (context.mounted) Navigator.of(context).pop();
+                                                                                        HapticFeedback.mediumImpact();
+                                                                                        Navigator.of(context).pop();
                                                                                         onCoopUpdated();
+                                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            Common.buildSnackBar('Expense recorded successfully!', AppColors.success),
+                                                                                        );
                                                                                     } else {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath: 'assets/lottie/error.json',
-                                                                                            message: response.message,
-                                                                                            autoCloseAfter:  Duration(seconds: 5),
+                                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            Common.buildSnackBar(response.message, AppColors.error),
                                                                                         );
                                                                                     }
                                                                                 },
-                                                                                child:  Text(
+                                                                                child: isLoading
+                                                                                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                                                                                    : const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
-                                                                                        color: AppColors.surface(context),
+                                                                                        color: AppColors.surfaceLight,
                                                                                         fontWeight: FontWeight.w600,
                                                                                     ),
                                                                                 ),

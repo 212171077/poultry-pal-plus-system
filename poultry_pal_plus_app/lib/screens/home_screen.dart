@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -500,6 +500,7 @@ class _HomeScreenState extends State<HomeScreen> {
         DateTime? chickenArrivalDate;
         bool showCoopTypeError = false;
         bool showGrowthPhaseError = false;
+        bool isLoading = false;
 
         showModalBottomSheet(
             context: context,
@@ -578,165 +579,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                     context: context,
                                                                 ),
                                                                 const SizedBox(height: 10),
-                                                                Padding(
-                                                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                                                    child: Column(
-                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                        children: [
-                                                                            Text(
-                                                                                'Select Coop Type',
-                                                                                style: TextStyle(
-                                                                                    fontSize: 14,
-                                                                                    fontWeight: FontWeight.w500,
-                                                                                    color: showCoopTypeError ? AppColors.error : AppColors.adaptivePrimary(context),
-                                                                                ),
-                                                                            ),
-                                                                            const SizedBox(height: 3),
-                                                                            Container(
-                                                                                width: double.infinity, // Expand horizontally
-                                                                                decoration: BoxDecoration(
-                                                                                    border: Border.all(
-                                                                                        color: showCoopTypeError ? AppColors.error : AppColors.adaptivePrimary(context).withAlpha(128),
-                                                                                        width: 1,
-                                                                                    ),
-                                                                                    borderRadius: BorderRadius.circular(8),
-                                                                                ),
-                                                                                padding: const EdgeInsets.all(4),
-                                                                                child: CupertinoSegmentedControl<String>(
-                                                                                    padding: const EdgeInsets.all(4),
-                                                                                    groupValue: coopType,
-                                                                                    onValueChanged: (val) => setModalState(() {
-                                                                                            coopType = val;
-                                                                                            showCoopTypeError = false; // Hide error once selected
-                                                                                        }),
-                                                                                    children: {
-                                                                                        'Broiler': Padding(
-                                                                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                                                                            child: Text(
-                                                                                                'Broiler',
-                                                                                                style: TextStyle(
-                                                                                                    color: coopType == 'Broiler' ? Colors.white : AppColors.textPrimary(context),
-                                                                                                ),
-                                                                                            ),
-                                                                                        ),
-                                                                                        'Layers': Padding(
-                                                                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                                                                            child: Text(
-                                                                                                'Layers',
-                                                                                                style: TextStyle(
-                                                                                                    color: coopType == 'Layers' ? Colors.white : AppColors.textPrimary(context),
-                                                                                                ),
-                                                                                            ),
-                                                                                        ),
-                                                                                    },
-                                                                                    borderColor: AppColors.border(context),
-                                                                                    selectedColor: AppColors.adaptivePrimary(context),
-                                                                                    unselectedColor: AppColors.surface(context),
-                                                                                    pressedColor: AppColors.surfaceVariant(context),
-                                                                                ),
-                                                                            ),
-                                                                            if (showCoopTypeError)
-                                                                            const Padding(
-                                                                                padding: EdgeInsets.only(top: 6),
-                                                                                child: Text(
-                                                                                    'Please select a coop type',
-                                                                                    style: TextStyle(
-                                                                                        color: AppColors.error,
-                                                                                        fontSize: 12,
-                                                                                    ),
-                                                                                ),
-                                                                            ),
-                                                                        ],
-                                                                    ),
+                                                                Common.buildCoopTypeSegmentedControl(
+                                                                    selectedCoopType: coopType,
+                                                                    showError: showCoopTypeError,
+                                                                    context: context,
+                                                                    onChanged: (val) => setModalState(() {
+                                                                        coopType = val;
+                                                                        showCoopTypeError = false;
+                                                                    }),
                                                                 ),
-                                                                const SizedBox(height: 0),
-                                                                Padding(
-                                                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                                                    child: Column(
-                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                        children: [
-                                                                            Text(
-                                                                                'Select Growing Phase',
-                                                                                style: TextStyle(
-                                                                                    fontSize: 14,
-                                                                                    fontWeight: FontWeight.w500,
-                                                                                    color: showGrowthPhaseError ? AppColors.error : AppColors.adaptivePrimary(context),
-                                                                                ),
-                                                                            ),
-                                                                            const SizedBox(height: 3),
-                                                                            Container(
-                                                                                width: double.infinity,
-                                                                                decoration: BoxDecoration(
-                                                                                    border: Border.all(
-                                                                                        color: showGrowthPhaseError
-                                                                                            ? AppColors.error
-                                                                                            : AppColors.adaptivePrimary(context).withAlpha(128),
-                                                                                        width: 1,
-                                                                                    ),
-                                                                                    borderRadius: BorderRadius.circular(8),
-                                                                                ),
-                                                                                padding: const EdgeInsets.all(4),
-                                                                                child: CupertinoSegmentedControl<GrowingPhase>(
-                                                                                    padding: const EdgeInsets.all(4),
-                                                                                    groupValue: growthPhase,
-                                                                                    onValueChanged: (val) => setModalState(() {
-                                                                                            growthPhase = val;
-                                                                                            showGrowthPhaseError = false;
-                                                                                        }),
-                                                                                    children: {
-                                                                                        GrowingPhase.BROODING_PHASE: Padding(
-                                                                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                                                                            child: Text(
-                                                                                                'Brooding',
-                                                                                                style: TextStyle(
-                                                                                                    color: growthPhase == GrowingPhase.BROODING_PHASE
-                                                                                                        ? Colors.white
-                                                                                                        : AppColors.textPrimary(context),
-                                                                                                ),
-                                                                                            ),
-                                                                                        ),
-                                                                                        GrowingPhase.GROWING_REARING_PHASE: Padding(
-                                                                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                                                                            child: Text(
-                                                                                                'Growing',
-                                                                                                style: TextStyle(
-                                                                                                    color: growthPhase == GrowingPhase.GROWING_REARING_PHASE
-                                                                                                        ? Colors.white
-                                                                                                        : AppColors.textPrimary(context),
-                                                                                                ),
-                                                                                            ),
-                                                                                        ),
-                                                                                        GrowingPhase.PRODUCTION_FINISHING_PHASE: Padding(
-                                                                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                                                                            child: Text(
-                                                                                                'Production',
-                                                                                                style: TextStyle(
-                                                                                                    color: growthPhase == GrowingPhase.PRODUCTION_FINISHING_PHASE
-                                                                                                        ? Colors.white
-                                                                                                        : AppColors.textPrimary(context),
-                                                                                                ),
-                                                                                            ),
-                                                                                        ),
-                                                                                    },
-                                                                                    borderColor: AppColors.border(context),
-                                                                                    selectedColor: AppColors.adaptivePrimary(context),
-                                                                                    unselectedColor: AppColors.surface(context),
-                                                                                    pressedColor: AppColors.surfaceVariant(context),
-                                                                                ),
-                                                                            ),
-                                                                            if (showGrowthPhaseError)
-                                                                            const Padding(
-                                                                                padding: EdgeInsets.only(top: 6),
-                                                                                child: Text(
-                                                                                    'Please select a growth phase',
-                                                                                    style: TextStyle(
-                                                                                        color: AppColors.error,
-                                                                                        fontSize: 12,
-                                                                                    ),
-                                                                                ),
-                                                                            ),
-                                                                        ],
-                                                                    ),
+                                                                const SizedBox(height: 10),
+                                                                Common.buildGrowthPhaseSegmentedControl(
+                                                                    growthPhase: growthPhase,
+                                                                    showError: showGrowthPhaseError,
+                                                                    onChanged: (val) => setModalState(() {
+                                                                        growthPhase = val;
+                                                                        showGrowthPhaseError = false;
+                                                                    }),
+                                                                    context: context,
                                                                 ),
                                                                 const SizedBox(height: 18),
                                                                 Common.buildTextField(
@@ -774,7 +634,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                     ),
                                                                                     padding: const EdgeInsets.symmetric(vertical: 14),
                                                                                 ),
-                                                                                onPressed: () async {
+                                                                                 onPressed: isLoading ? null : () async {
                                                                                     final isFormValid = formKey.currentState!.validate();
                                                                                     final isCoopTypeValid = coopType != null && coopType!.trim().isNotEmpty;
                                                                                     final isGrowthPhaseValid = growthPhase != null && growthPhase!.toString().trim().isNotEmpty;
@@ -786,10 +646,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                                                                     if (!isFormValid || !isCoopTypeValid) return;
 
-                                                                                    await Common.showLottieDialog(
-                                                                                        context,
-                                                                                        lottiePath: 'assets/lottie/loading_animation.json',
-                                                                                    );
+                                                                                    setModalState(() => isLoading = true);
 
                                                                                     final response = await service.updateFarmCoop(
                                                                                         farmId: farm!.id,
@@ -801,30 +658,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                         chickenArrivalDate: chickenArrivalDate?.toIso8601String(),
                                                                                     );
 
-                                                                                    if (context.mounted) {
-                                                                                        Navigator.of(context, rootNavigator: true).pop();
-                                                                                    }
-
                                                                                     if (!context.mounted) return;
+                                                                                    setModalState(() => isLoading = false);
 
                                                                                     if (response.success) {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath: 'assets/lottie/success_check.json',
-                                                                                            autoCloseAfter: const Duration(seconds: 2),
-                                                                                        );
-                                                                                        if (context.mounted) Navigator.of(context).pop();
+                                                                                        HapticFeedback.mediumImpact();
+                                                                                        Navigator.of(context).pop();
                                                                                         _initializeData();
+                                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            Common.buildSnackBar('Coop added successfully!', AppColors.success),
+                                                                                        );
                                                                                     } else {
-                                                                                        await Common.showLottieDialog(
-                                                                                            context,
-                                                                                            lottiePath: 'assets/lottie/error.json',
-                                                                                            message: response.message,
-                                                                                            autoCloseAfter: const Duration(seconds: 5),
+                                                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                                                            Common.buildSnackBar(response.message, AppColors.error),
                                                                                         );
                                                                                     }
                                                                                 },
-                                                                                child: const Text(
+                                                                                child: isLoading
+                                                                                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
+                                                                                    : const Text(
                                                                                     'Submit',
                                                                                     style: TextStyle(
                                                                                         color: AppColors.surfaceLight,
