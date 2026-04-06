@@ -218,6 +218,25 @@ class _ExpandableCoopCardState
                                                     hasPhaseTransition: hasPhaseTransition,
                                                 ),
                                             ),
+                                            // Online/offline status dot
+                                            Positioned(
+                                                bottom: 2,
+                                                right: 2,
+                                                child: Container(
+                                                    width: 14,
+                                                    height: 14,
+                                                    decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
+                                                        color: widget.coop.active
+                                                            ? AppColors.success
+                                                            : AppColors.textTertiary(context),
+                                                        border: Border.all(
+                                                            color: AppColors.surface(context),
+                                                            width: 2,
+                                                        ),
+                                                    ),
+                                                ),
+                                            ),
                                         ],
                                     )
                                     ,
