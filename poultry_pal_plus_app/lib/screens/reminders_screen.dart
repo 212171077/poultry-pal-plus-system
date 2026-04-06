@@ -1590,7 +1590,7 @@ class _ExpandableCoopCardState
                                 SafeArea(
                                     top: false,
                                     child: Padding(
-                                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+                                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 34),
                                         child: SizedBox(
                                             width: double.infinity,
                                             height: 48,
@@ -1612,6 +1612,7 @@ class _ExpandableCoopCardState
                                         ),
                                     ),
                                 ),
+
                             ],
                         ),
                     ),
