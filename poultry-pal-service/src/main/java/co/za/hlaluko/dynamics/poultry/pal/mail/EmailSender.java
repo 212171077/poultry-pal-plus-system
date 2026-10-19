@@ -125,11 +125,39 @@ public class EmailSender {
       }
       logger.error(ERROR_LOG, e);
       throw new MailSenderException(
-          "We are unable to send email at the moment. Error Message: ".concat(e.getMessage()));
+          "We are unable to send email at the moment. Error Message: ".concat(e.getMessage()), e);
     }
   }
 
+
+  private volatile boolean emailSendingBlocked = false;
+
+  private static boolean isNonRetryableMailError(Throwable error) {
+    for (Throwable t = error; t != null; t = t.getCause()) {
+      String name = t.getClass().getName();
+      String msg = t.getMessage();
+      if (name.endsWith("AuthenticationFailedException")
+          || name.endsWith("MailAuthenticationException")
+          || (msg != null
+              && (msg.contains("AuthenticationFailedException")
+                  || msg.contains("Too many login attempts")))) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private void blockEmailSending(Exception e) {
+    emailSendingBlocked = true;
+    logger.error(
+        "Non-retryable email error. Email scheduler blocked until application restart: "
+            + e.getMessage());
+  }
+
   public void sendEmailContent() {
+    if (emailSendingBlocked) {
+      return;
+    }
     try {
       List<EmailContent> emailContentList = emailContentService.findTop100OrderByIdDesc();
       List<EmailContent> sentEmailContentList = new ArrayList<>();
@@ -137,6 +165,9 @@ public class EmailSender {
         for (EmailContent emailContent : emailContentList) {
           Email email = buildMail(emailContent);
           sendEmail(emailContent, email, sentEmailContentList);
+          if (emailSendingBlocked) {
+            break;
+          }
         }
         emailContentService.deleteAllEmailContent(sentEmailContentList);
         deleteFarmTempFiles();
@@ -176,7 +207,13 @@ public class EmailSender {
       sentEmailContentList.add(emailContent);
     } catch (Exception e) {
       logger.info(
-          "Error when sending email with ID " + emailContent.getId() + ": ".concat(e.getMessage()));
+          "Error when sending email with ID "
+              + emailContent.getId()
+              + ": ".concat(String.valueOf(e.getMessage())));
+      if (isNonRetryableMailError(e)) {
+        blockEmailSending(e);
+        return;
+      }
       if (e.getMessage() != null && e.getMessage().contains("is not a valid RFC-5321 address")) {
         EmailLog emailLog =
             new EmailLog(

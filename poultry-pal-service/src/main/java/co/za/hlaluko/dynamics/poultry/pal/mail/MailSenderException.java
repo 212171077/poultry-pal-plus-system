@@ -4,4 +4,8 @@ public class MailSenderException extends Exception {
   public MailSenderException(String errorMessage) {
     super(errorMessage);
   }
+
+  public MailSenderException(String errorMessage, Throwable cause) {
+    super(errorMessage, cause);
+  }
 }
