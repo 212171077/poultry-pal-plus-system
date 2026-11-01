@@ -1,0 +1,50 @@
+:host {
+  display: block;
+  height: 100dvh;
+}
+
+.container {
+  height: 100%;
+  background: var(--mat-sys-surface);
+}
+
+.drawer {
+  width: var(--pp-sidenav-width);
+  border-right: 1px solid var(--pp-border);
+  border-radius: 0;
+  background: var(--mat-sys-surface-container-low);
+
+  &.rail {
+    width: var(--pp-rail-width);
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1 0 auto;
+  outline: none;
+}
+
+:host([data-layout='handset']) .main {
+  padding-bottom: calc(var(--pp-bottom-nav-height) + env(safe-area-inset-bottom));
+}
+
+.skip-link {
+  position: fixed;
+  top: var(--pp-space-sm);
+  left: var(--pp-space-sm);
+  z-index: 1000;
+  padding: var(--pp-space-sm) var(--pp-space-md);
+  border-radius: var(--pp-radius-sm);
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  transform: translateY(-200%);
+
+  &:focus {
+    transform: none;
+  }
+}

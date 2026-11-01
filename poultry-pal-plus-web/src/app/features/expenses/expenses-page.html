@@ -1,0 +1,74 @@
+<div class="pp-page">
+  <app-page-header heading="Expenses" subtitle="Feed, medicine, utilities and more.">
+    <button mat-flat-button type="button" (click)="openForm()">
+      <mat-icon>add</mat-icon>
+      Add expense
+    </button>
+  </app-page-header>
+
+  @if (!loading()) {
+    @if (rows().length > 0) {
+      <section class="summary pp-surface-card" aria-label="Summary">
+        <div>
+          <span class="summary-label">This month</span>
+          <strong class="summary-value">{{ monthTotal() }}</strong>
+        </div>
+        <div>
+          <span class="summary-label">Records</span>
+          <strong class="summary-value">{{ rows().length }}</strong>
+        </div>
+      </section>
+
+      <ul class="list pp-surface-card" aria-label="Expenses">
+        @for (row of rows(); track row.expense.id) {
+          <li class="item" data-testid="expense-row">
+            <span class="icon" aria-hidden="true">
+              <mat-icon>{{ row.icon }}</mat-icon>
+            </span>
+            <div class="main">
+              <span class="title">{{ row.expense.expenseType }}</span>
+              <span class="meta">{{ row.coopName }} · {{ row.date }}</span>
+              @if (row.expense.additionalInfo) {
+                <span class="notes">{{ row.expense.additionalInfo }}</span>
+              }
+            </div>
+            <div class="side">
+              <strong class="amount">{{ row.amount }}</strong>
+              <app-sync-chip [status]="row.expense.syncStatus" [compact]="true" />
+            </div>
+            <button
+              mat-icon-button
+              type="button"
+              [matMenuTriggerFor]="menu"
+              [attr.aria-label]="'More actions for ' + row.expense.expenseType"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+              <button mat-menu-item type="button" (click)="openForm(row.expense)">
+                <mat-icon>edit</mat-icon>
+                Edit
+              </button>
+              <button mat-menu-item type="button" (click)="remove(row.expense)">
+                <mat-icon>delete</mat-icon>
+                Delete
+              </button>
+            </mat-menu>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="pp-surface-card">
+        <app-empty-state
+          icon="receipt_long"
+          heading="No expenses yet"
+          [message]="
+            coops().length > 0
+              ? 'Record feed, medicine and other costs. They save on this device and sync when you are online.'
+              : 'Expenses belong to a coop. Your coops appear here after the first sync.'
+          "
+        />
+      </div>
+    }
+  }
+</div>

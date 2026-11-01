@@ -4,6 +4,8 @@ import co.za.hlaluko.dynamics.poultry.pal.model.dto.ERole;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.Role;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.lookups.AppConfig;
 import co.za.hlaluko.dynamics.poultry.pal.repository.AppConfigRepository;
+import co.za.hlaluko.dynamics.poultry.pal.service.AdminUserInitializer;
+import co.za.hlaluko.dynamics.poultry.pal.service.AppConfigValues;
 import co.za.hlaluko.dynamics.poultry.pal.repository.RoleRepository;
 import co.za.hlaluko.dynamics.poultry.pal.utils.ConstantUtil;
 import java.util.Date;
@@ -32,6 +34,7 @@ public class PoultryPalApplication implements CommandLineRunner {
 
   private final RoleRepository roleRepository;
   private final AppConfigRepository appConfigRepository;
+  private final AdminUserInitializer adminUserInitializer;
 
   public static void main(String[] args) {
     SpringApplication.run(PoultryPalApplication.class, args);
@@ -40,6 +43,20 @@ public class PoultryPalApplication implements CommandLineRunner {
   @Override
   public void run(String... args) throws Exception {
     initializeRoles();
+    ensureDefaultConfig(AppConfigValues.ADMIN_EMAIL, ConstantUtil.MAIL_USER);
+    ensureDefaultConfig(AppConfigValues.APP_BASE_URL, AppConfigValues.DEFAULT_APP_BASE_URL);
+    adminUserInitializer.ensureAdminUser();
+  }
+
+  private void ensureDefaultConfig(String code, String value) {
+    if (appConfigRepository.findByCode(code) == null) {
+      AppConfig config = new AppConfig();
+      config.setCode(code);
+      config.setDescription(value);
+      config.setCreateDate(new Date());
+      config.setLastUpdateDate(new Date());
+      appConfigRepository.save(config);
+    }
   }
 
   private void initializeRoles() {

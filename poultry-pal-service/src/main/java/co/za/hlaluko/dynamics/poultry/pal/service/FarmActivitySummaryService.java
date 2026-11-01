@@ -205,7 +205,9 @@ public class FarmActivitySummaryService {
         StringBuilder sb = new StringBuilder();
         switch (activity) {
             case Sale sale -> sb.append("<strong>Sale:</strong> Amount: R").append(String.format("%.2f", sale.getTotalSaleAmount()))
-                .append(", Buyer: ").append(sale.getBuyerName())
+                .append(", Info: ").append(sale.getAdditionalInfo())
+                .append(", Eggs: ").append(sale.getQuantitySold()).append(" x ").append(sale.getEggPackaging())
+                .append(" (").append(sale.getEggSize()).append(")")
                 .append(", Dozens Sold: ").append(sale.getNumberOfDozensSold())
                 .append(", Chickens Sold: ").append(sale.getNumberOfChickensSold())
                 .append(", Payment Status: ").append(sale.getPaymentStatus())

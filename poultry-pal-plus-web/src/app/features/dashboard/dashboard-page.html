@@ -1,0 +1,114 @@
+<div class="pp-page">
+  <app-page-header [heading]="greeting()" [subtitle]="today">
+    <a mat-flat-button routerLink="/eggs" [queryParams]="{ action: 'new' }">
+      <mat-icon>add</mat-icon>
+      Log eggs
+    </a>
+  </app-page-header>
+
+  <app-range-filter class="range" [(value)]="rangeKey" />
+
+  <section class="kpis" aria-label="Key figures">
+    @for (kpi of kpis(); track kpi.label) {
+      <app-kpi-card
+        [label]="kpi.label"
+        [icon]="kpi.icon"
+        [tone]="kpi.tone"
+        [value]="kpi.value"
+        [hint]="kpi.hint"
+        [loading]="loading()"
+      />
+    }
+  </section>
+
+  <div class="columns">
+    <section class="pp-surface-card panel" aria-labelledby="money-title">
+      <h2 id="money-title" class="panel-title">Sales and expenses</h2>
+      @if (hasActivityInRange()) {
+        <app-bar-chart
+          [labels]="chartLabels()"
+          [series]="moneySeries()"
+          summary="Sales and expenses over the selected period"
+        />
+      } @else {
+        <app-empty-state icon="bar_chart" heading="No records in this period" />
+      }
+    </section>
+
+    <section class="pp-surface-card panel" aria-labelledby="losses-title">
+      <h2 id="losses-title" class="panel-title">Losses</h2>
+      @if (hasActivityInRange()) {
+        <app-bar-chart
+          [labels]="chartLabels()"
+          [series]="lossSeries()"
+          summary="Deaths recorded over the selected period"
+        />
+      } @else {
+        <app-empty-state icon="monitor_heart" heading="No records in this period" />
+      }
+    </section>
+  </div>
+
+  <div class="columns">
+    <section class="pp-surface-card panel" aria-labelledby="quick-actions-title">
+      <h2 id="quick-actions-title" class="panel-title">Quick actions</h2>
+      <div class="actions">
+        @for (action of quickActions(); track action.path) {
+          <a class="action" [routerLink]="action.path" [queryParams]="{ action: 'new' }">
+            <mat-icon aria-hidden="true">{{ action.icon }}</mat-icon>
+            <span>{{ action.label }}</span>
+          </a>
+        }
+      </div>
+    </section>
+
+    <section class="pp-surface-card panel" aria-labelledby="reminders-title">
+      <h2 id="reminders-title" class="panel-title">Reminders</h2>
+      @if (dueReminders().length > 0) {
+        <ul class="rows">
+          @for (item of dueReminders(); track item.reminder.id) {
+            <li class="row" data-testid="due-reminder">
+              <mat-icon aria-hidden="true">{{ item.overdue ? 'warning' : 'event' }}</mat-icon>
+              <span class="row-main">
+                <span class="row-title">{{ item.reminder.name }}</span>
+                <span class="row-meta" [class.overdue]="item.overdue">
+                  {{ item.coopName }} · {{ item.overdue ? 'Overdue' : 'Due today' }}
+                </span>
+              </span>
+            </li>
+          }
+        </ul>
+        <a mat-button routerLink="/reminders"> See all ({{ dueCount() }}) </a>
+      } @else {
+        <app-empty-state
+          icon="event_available"
+          heading="Nothing due today"
+          message="Vaccination, feeding and medication reminders will appear here."
+        />
+      }
+    </section>
+  </div>
+
+  <section class="pp-surface-card panel" aria-labelledby="activity-title">
+    <h2 id="activity-title" class="panel-title">Recent activity</h2>
+    @if (activity().length > 0) {
+      <ul class="rows">
+        @for (item of activity(); track item.id) {
+          <li class="row">
+            <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
+            <span class="row-main">
+              <span class="row-title">{{ item.title }}</span>
+              <span class="row-meta">{{ item.coopName }} · {{ item.when }}</span>
+            </span>
+          </li>
+        }
+      </ul>
+    } @else {
+      <app-empty-state
+        icon="history"
+        heading="No activity yet"
+        message="Sales, egg collections and other records you add will show up here — even when you're offline."
+      />
+    }
+  </section>
+</div>

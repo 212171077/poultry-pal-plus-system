@@ -22,8 +22,8 @@ class PoultryPalService {
     //final String authBaseUrl = 'http://192.168.1.106:8090/api/auth';
     //final String farmBaseUrl = 'http://192.168.1.106:8090/api/farm';
 
-    final String authBaseUrl = 'http://154.0.166.216:8090/api/auth';
-    final String farmBaseUrl = 'http://154.0.166.216:8090/api/farm';
+    final String authBaseUrl = 'https://tertiaryverify.dedicated.co.za:8091/api/auth';
+    final String farmBaseUrl = 'https://tertiaryverify.dedicated.co.za:8091/api/farm';
 
 
     //final String authBaseUrl = 'https://tertiaryverify.dedicated.co.za:8090/api/auth';
@@ -89,6 +89,39 @@ class PoultryPalService {
                 success: false, message: "Error during signup: $e");
         }
     }
+
+    Future<MessageResponse> _postMessage(
+        String path, Map<String, dynamic> body) async {
+        try {
+            final response = await http.post(
+                Uri.parse('$authBaseUrl/$path'),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'accept': '*/*',
+                },
+                body: jsonEncode(body),
+            );
+            if (response.statusCode == 200 || response.statusCode == 400) {
+                return MessageResponse.fromJson(jsonDecode(response.body));
+            }
+            return MessageResponse(
+                success: false, message: "An unknown error occurred.");
+        } catch (e) {
+            return MessageResponse(
+                success: false, message: "Could not reach the server: $e");
+        }
+    }
+
+    Future<MessageResponse> forgotPassword(String email) =>
+        _postMessage('forgot-password', {"email": email});
+
+    Future<MessageResponse> resetPassword({
+        required String email,
+        required String code,
+        required String newPassword,
+    }) =>
+        _postMessage('reset-password',
+            {"email": email, "code": code, "newPassword": newPassword});
 
     Future<User> login(String email, String password) async {
         try {
@@ -308,10 +341,14 @@ class PoultryPalService {
         required double? salePricePerDozen,
         required int? numberOfChickensSold,
         required double? salePricePerChicken,
-        required String buyerName,
+        required String additionalInfo,
         required String recordedBy,
         required String paymentStatus,
         required String saleDate,
+        String? eggSize,
+        String? eggPackaging,
+        int? quantitySold,
+        double? pricePerUnit,
     }) async {
         final Map<String, dynamic> requestBody = {
             "id": id,
@@ -319,9 +356,13 @@ class PoultryPalService {
             "coopId": coopId,
             "numberOfDozensSold": numberOfDozensSold,
             "salePricePerDozen": salePricePerDozen,
+            "eggSize": eggSize,
+            "eggPackaging": eggPackaging,
+            "quantitySold": quantitySold,
+            "pricePerUnit": pricePerUnit,
             "numberOfChickensSold": numberOfChickensSold,
             "salePricePerChicken": salePricePerChicken,
-            "buyerName": buyerName,
+            "additionalInfo": additionalInfo,
             "recordedBy": recordedBy,
             "paymentStatus": paymentStatus.toUpperCase(),
             "saleDate": saleDate,

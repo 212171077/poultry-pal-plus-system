@@ -1,0 +1,126 @@
+<div class="pp-page">
+  <app-page-header
+    heading="Sync center"
+    subtitle="See what is waiting to sync and resolve anything that needs your attention."
+  >
+    <button mat-flat-button type="button" [disabled]="syncing() || !online()" (click)="syncNow()">
+      <mat-icon>sync</mat-icon>
+      Sync now
+    </button>
+  </app-page-header>
+
+  <section class="pp-surface-card status" [class]="state()" aria-live="polite">
+    <div class="status-icon" aria-hidden="true">
+      <mat-icon [class.spin]="state() === 'syncing'">{{ copy().icon }}</mat-icon>
+    </div>
+    <div class="status-text">
+      <h2>{{ copy().title }}</h2>
+      <p>{{ copy().message }}</p>
+      <p class="meta">
+        @if (lastSynced(); as lastSynced) {
+          Last synced {{ lastSynced }}
+        } @else {
+          Not synced on this device yet
+        }
+      </p>
+      @if (lastError(); as error) {
+        <p class="error"><mat-icon aria-hidden="true">error</mat-icon> {{ error }}</p>
+      }
+      @if (authRequired()) {
+        <button mat-flat-button type="button" class="sign-in" (click)="signIn()">
+          <mat-icon>login</mat-icon>
+          Sign in again
+        </button>
+      }
+    </div>
+    @if (syncing()) {
+      <mat-progress-bar mode="indeterminate" aria-label="Syncing" />
+    }
+  </section>
+
+  @if (attentionCount() > 0) {
+    <section class="pp-surface-card panel" aria-labelledby="attention-title">
+      <h2 id="attention-title" class="panel-title">
+        Needs your attention <span class="count">{{ attentionCount() }}</span>
+      </h2>
+      <ul class="items">
+        @for (item of conflictItems(); track item.op.opId) {
+          <li class="item conflict">
+            <mat-icon class="item-icon" aria-hidden="true">merge_type</mat-icon>
+            <div class="item-text">
+              <strong>{{ item.op.label }}</strong>
+              <span>{{ item.conflict?.message ?? item.op.lastError }}</span>
+            </div>
+            <div class="item-actions">
+              <button mat-stroked-button type="button" (click)="review(item.op, item.conflict)">
+                Review
+              </button>
+            </div>
+          </li>
+        }
+        @for (op of failed(); track op.opId) {
+          <li class="item failed">
+            <mat-icon class="item-icon" aria-hidden="true">error</mat-icon>
+            <div class="item-text">
+              <strong>{{ op.label }}</strong>
+              <span>{{ op.lastError }}</span>
+              @for (error of op.errors ?? []; track error) {
+                <span class="detail">{{ error }}</span>
+              }
+            </div>
+            <div class="item-actions">
+              <button mat-button type="button" (click)="discard(op)">Discard</button>
+              <button mat-stroked-button type="button" (click)="retry(op)">Retry</button>
+            </div>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <section class="pp-surface-card panel" aria-labelledby="waiting-title">
+    <h2 id="waiting-title" class="panel-title">
+      Waiting to sync <span class="count">{{ waiting().length }}</span>
+    </h2>
+    @if (waiting().length > 0) {
+      <ul class="items">
+        @for (op of waiting(); track op.opId) {
+          <li class="item">
+            <mat-icon class="item-icon" aria-hidden="true">
+              {{ op.status === 'inflight' ? 'upload' : 'schedule' }}
+            </mat-icon>
+            <div class="item-text">
+              <strong>{{ op.label }}</strong>
+              <span>{{ verb(op) }} · {{ age(op) }}</span>
+            </div>
+          </li>
+        }
+      </ul>
+    } @else if (!loading()) {
+      <app-empty-state
+        icon="task_alt"
+        heading="Nothing waiting"
+        message="Changes you make — even offline — appear here until they reach the server."
+      />
+    }
+  </section>
+
+  <section class="pp-surface-card panel" aria-labelledby="device-title">
+    <h2 id="device-title" class="panel-title">This device</h2>
+    @if (storage(); as storage) {
+      <p class="muted">Using {{ storage.used }} of {{ storage.quota }} available storage.</p>
+    }
+    <p class="muted">
+      If records look out of date, download a fresh copy. Unsynced changes are never deleted.
+    </p>
+    <button
+      mat-stroked-button
+      type="button"
+      [disabled]="syncing() || !online()"
+      (click)="redownload()"
+    >
+      <mat-icon>cloud_download</mat-icon>
+      Download fresh copy
+    </button>
+  </section>
+</div>

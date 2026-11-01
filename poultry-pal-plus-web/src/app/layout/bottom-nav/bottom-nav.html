@@ -1,0 +1,33 @@
+<nav class="bar" aria-label="Main">
+  <a class="tab" routerLink="/dashboard" routerLinkActive="active" ariaCurrentWhenActive="page">
+    <mat-icon aria-hidden="true">space_dashboard</mat-icon>
+    <span>Home</span>
+  </a>
+  <a class="tab" routerLink="/coops" routerLinkActive="active" ariaCurrentWhenActive="page">
+    <mat-icon aria-hidden="true">home_work</mat-icon>
+    <span>Coops</span>
+  </a>
+
+  <div class="fab-slot">
+    <button mat-fab type="button" class="fab" [matMenuTriggerFor]="quickAdd" aria-label="Quick add">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+  <mat-menu #quickAdd="matMenu" yPosition="above">
+    @for (action of quickActions(); track action.path) {
+      <a mat-menu-item [routerLink]="action.path" [queryParams]="{ action: 'new' }">
+        <mat-icon>{{ action.icon }}</mat-icon>
+        <span>{{ action.label }}</span>
+      </a>
+    }
+  </mat-menu>
+
+  <a class="tab" routerLink="/reminders" routerLinkActive="active" ariaCurrentWhenActive="page">
+    <mat-icon aria-hidden="true">notifications_active</mat-icon>
+    <span>Reminders</span>
+  </a>
+  <button class="tab" type="button" (click)="moreClick.emit()">
+    <mat-icon aria-hidden="true">menu</mat-icon>
+    <span>More</span>
+  </button>
+</nav>

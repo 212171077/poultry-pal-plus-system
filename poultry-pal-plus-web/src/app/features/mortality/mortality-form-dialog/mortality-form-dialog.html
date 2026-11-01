@@ -1,0 +1,66 @@
+<h2 mat-dialog-title>{{ editing ? 'Edit mortality record' : 'Record mortality' }}</h2>
+<form [formGroup]="form" (ngSubmit)="save()" novalidate>
+  <mat-dialog-content class="fields">
+    <mat-form-field>
+      <mat-label>Coop</mat-label>
+      <mat-select formControlName="coopId">
+        @for (coop of coops; track coop.id) {
+          <mat-option [value]="coop.id">{{ coop.coopName }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>Choose the coop</mat-error>
+    </mat-form-field>
+
+    <div class="row">
+      <mat-form-field>
+        <mat-label>Number of deaths</mat-label>
+        <input
+          matInput
+          type="number"
+          inputmode="numeric"
+          min="1"
+          step="1"
+          formControlName="numberOfDeaths"
+        />
+        <mat-error>Enter a number greater than 0</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="dateOccurredPicker" formControlName="dateOccurred" [max]="today" />
+        <mat-datepicker-toggle matIconSuffix [for]="dateOccurredPicker" />
+        <mat-datepicker #dateOccurredPicker />
+        <mat-error>Enter the date</mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field>
+      <mat-label>Reason</mat-label>
+      <input
+        matInput
+        maxlength="200"
+        autocomplete="off"
+        formControlName="reason"
+        [matAutocomplete]="reasonOptions"
+      />
+      <mat-autocomplete #reasonOptions="matAutocomplete">
+        @for (reason of reasons(); track reason) {
+          <mat-option [value]="reason">{{ reason }}</mat-option>
+        }
+      </mat-autocomplete>
+      <mat-hint>Pick a common cause or type your own</mat-hint>
+      <mat-error>Enter the reason</mat-error>
+    </mat-form-field>
+
+    @if (error(); as message) {
+      <p class="error" role="alert">{{ message }}</p>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button type="submit" [disabled]="saving()">
+      {{ editing ? 'Save changes' : 'Save record' }}
+    </button>
+  </mat-dialog-actions>
+</form>

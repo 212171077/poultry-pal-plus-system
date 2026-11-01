@@ -1,0 +1,32 @@
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<mat-sidenav-container class="container" autosize>
+  <mat-sidenav
+    class="drawer"
+    [class.rail]="mode() === 'tablet'"
+    [mode]="drawerMode()"
+    [opened]="drawerOpen()"
+    [disableClose]="mode() !== 'handset'"
+    (openedChange)="onDrawerOpenedChange($event)"
+  >
+    <app-side-nav [collapsed]="mode() === 'tablet'" (navigated)="onNavigated()" />
+  </mat-sidenav>
+
+  <mat-sidenav-content class="content">
+    <app-top-bar
+      [showBrand]="mode() === 'handset'"
+      [compact]="mode() === 'handset'"
+      [quickAdd]="mode() !== 'handset'"
+    />
+    <app-connectivity-banner />
+    <app-session-notice />
+
+    <main id="main-content" class="main" tabindex="-1">
+      <router-outlet />
+    </main>
+
+    @if (mode() === 'handset') {
+      <app-bottom-nav (moreClick)="openDrawer()" />
+    }
+  </mat-sidenav-content>
+</mat-sidenav-container>

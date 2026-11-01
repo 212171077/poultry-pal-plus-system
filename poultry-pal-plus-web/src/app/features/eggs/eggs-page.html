@@ -1,0 +1,78 @@
+<div class="pp-page">
+  <app-page-header heading="Egg production" subtitle="Packaged eggs from your layer coops.">
+    <button mat-flat-button type="button" (click)="openForm()">
+      <mat-icon>add</mat-icon>
+      Log eggs
+    </button>
+  </app-page-header>
+
+  @if (!loading()) {
+    @if (rows().length > 0) {
+      <section class="summary pp-surface-card" aria-label="Summary">
+        <div>
+          <span class="summary-label">Eggs today</span>
+          <strong class="summary-value">{{ summary().today }}</strong>
+        </div>
+        <div>
+          <span class="summary-label">Eggs, last 7 days</span>
+          <strong class="summary-value">{{ summary().week }}</strong>
+        </div>
+        <div>
+          <span class="summary-label">Boxes, last 7 days</span>
+          <strong class="summary-value">{{ summary().boxes }}</strong>
+        </div>
+      </section>
+
+      <ul class="list pp-surface-card" aria-label="Egg packaging records">
+        @for (row of rows(); track row.record.id) {
+          <li class="item" data-testid="egg-row">
+            <span class="icon" aria-hidden="true">
+              <mat-icon>egg</mat-icon>
+            </span>
+            <div class="main">
+              <span class="title">{{ row.title }}</span>
+              <span class="meta">{{ row.meta }}</span>
+              <span class="notes">{{ row.detail }}</span>
+            </div>
+            <div class="side">
+              @if (row.record.eggSize) {
+                <span class="chip">{{ row.record.eggSize }}</span>
+              }
+              <app-sync-chip [status]="row.record.syncStatus" [compact]="true" />
+            </div>
+            <button
+              mat-icon-button
+              type="button"
+              [matMenuTriggerFor]="menu"
+              [attr.aria-label]="'More actions for ' + row.title"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+              <button mat-menu-item type="button" (click)="openForm(row.record)">
+                <mat-icon>edit</mat-icon>
+                Edit
+              </button>
+              <button mat-menu-item type="button" (click)="remove(row.record)">
+                <mat-icon>delete</mat-icon>
+                Delete
+              </button>
+            </mat-menu>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="pp-surface-card">
+        <app-empty-state
+          icon="egg"
+          heading="No eggs logged yet"
+          [message]="
+            hasLayers()
+              ? 'Log packaged eggs each day. The egg count is worked out from the boxes.'
+              : 'Egg packaging is recorded for layer coops. Your layer coops appear here after the first sync.'
+          "
+        />
+      </div>
+    }
+  }
+</div>

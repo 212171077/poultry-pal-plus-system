@@ -1,0 +1,192 @@
+<app-auth-layout
+  heading="Create your farm account"
+  subheading="Set up your farm in a minute. You can invite your team afterwards."
+  [wide]="true"
+>
+  @if (!online()) {
+    <p class="notice" role="status">
+      <mat-icon>cloud_off</mat-icon>
+      <span>You are offline. Creating an account needs an internet connection.</span>
+    </p>
+  }
+
+  @if (submitted()) {
+    <p class="notice" role="status">
+      <mat-icon>hourglass_top</mat-icon>
+      <span>
+        Your account was created and is awaiting approval by the administrator. We emailed you a
+        welcome message and will email you again once a decision is made.
+      </span>
+    </p>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <h2 class="section-title">Your farm</h2>
+      <mat-form-field>
+        <mat-label>Farm name</mat-label>
+        <input matInput formControlName="farmName" autocomplete="organization" />
+        <mat-icon matPrefix>agriculture</mat-icon>
+        <mat-error>Enter your farm's name</mat-error>
+      </mat-form-field>
+
+      <mat-expansion-panel class="address">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Farm address <small>&nbsp;(optional)</small></mat-panel-title>
+        </mat-expansion-panel-header>
+        <mat-form-field>
+          <mat-label>Address line 1</mat-label>
+          <input matInput formControlName="farmAddressLine1" autocomplete="address-line1" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Address line 2</mat-label>
+          <input matInput formControlName="farmAddressLine2" autocomplete="address-line2" />
+        </mat-form-field>
+        <div class="row">
+          <mat-form-field>
+            <mat-label>City / town</mat-label>
+            <input matInput formControlName="farmCity" autocomplete="address-level2" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Province / state</mat-label>
+            <input matInput formControlName="farmState" autocomplete="address-level1" />
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field>
+            <mat-label>Postal code</mat-label>
+            <input matInput formControlName="farmPostalCode" autocomplete="postal-code" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Country</mat-label>
+            <input matInput formControlName="farmCountry" autocomplete="country-name" />
+          </mat-form-field>
+        </div>
+      </mat-expansion-panel>
+
+      <h2 class="section-title">About you</h2>
+      <div class="row">
+        <mat-form-field>
+          <mat-label>First name</mat-label>
+          <input matInput formControlName="name" autocomplete="given-name" />
+          @if (serverError('name'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          } @else {
+            <mat-error>Enter 2–50 characters</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Surname</mat-label>
+          <input matInput formControlName="surname" autocomplete="family-name" />
+          @if (serverError('surname'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          } @else {
+            <mat-error>Enter 2–50 characters</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      <div class="row">
+        <mat-form-field>
+          <mat-label>Email</mat-label>
+          <input
+            matInput
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            inputmode="email"
+            autocapitalize="none"
+          />
+          <mat-icon matPrefix>mail</mat-icon>
+          @if (serverError('email'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          } @else if (form.controls.email.hasError('required')) {
+            <mat-error>Enter your email</mat-error>
+          } @else {
+            <mat-error>Enter a valid email address</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Phone number</mat-label>
+          <input
+            matInput
+            type="tel"
+            formControlName="phoneNumber"
+            autocomplete="tel"
+            inputmode="tel"
+          />
+          <mat-icon matPrefix>call</mat-icon>
+          @if (serverError('phoneNumber'); as message) {
+            <mat-error>{{ message }}</mat-error>
+          } @else {
+            <mat-error>Enter 7–15 digits</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <h2 class="section-title">Password</h2>
+      <div class="row">
+        <mat-form-field>
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="new-password"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="showPassword.set(!showPassword())"
+            [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+            [attr.aria-pressed]="showPassword()"
+          >
+            <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-hint>At least 6 characters</mat-hint>
+          <mat-error>Use at least 6 characters</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Confirm password</mat-label>
+          <input
+            matInput
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="confirmPassword"
+            autocomplete="new-password"
+          />
+          @if (form.controls.confirmPassword.hasError('mismatch')) {
+            <mat-error>Passwords don't match</mat-error>
+          } @else {
+            <mat-error>Repeat your password</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      @if (strength(); as s) {
+        <div class="strength" aria-live="polite">
+          <div class="bars" aria-hidden="true">
+            @for (bar of bars; track bar) {
+              <span class="bar {{ s.level }}" [class.on]="bar <= s.score"></span>
+            }
+          </div>
+          <span>Strength: {{ s.label }}</span>
+        </div>
+      }
+
+      @if (error(); as message) {
+        <p class="error" role="alert">{{ message }}</p>
+      }
+
+      <button mat-flat-button class="submit" type="submit" [disabled]="submitting() || !online()">
+        @if (submitting()) {
+          <mat-spinner diameter="20" />
+          <span>Creating your farm…</span>
+        } @else {
+          <span>Create account</span>
+        }
+      </button>
+    </form>
+  }
+
+  <p class="switch">
+    Already have an account?
+    <a routerLink="/login">Sign in</a>
+  </p>
+</app-auth-layout>

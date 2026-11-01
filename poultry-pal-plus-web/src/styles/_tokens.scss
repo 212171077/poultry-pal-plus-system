@@ -1,0 +1,104 @@
+// Brand design tokens, mirrored from the Flutter app (poultry_pal_plus_app/lib/theme/app_theme.dart).
+// Components use these CSS custom properties (or Material's --mat-sys-* variables), never raw hex values.
+
+@mixin light {
+  --pp-brand: #8b5a2b;
+  --pp-brand-strong: #6b4320;
+  --pp-accent: #f4a623;
+  --pp-accent-strong: #d4890f;
+
+  --pp-success: #15803d;
+  --pp-success-container: #dcfce7;
+  --pp-warning: #b45309;
+  --pp-warning-container: #fef3c7;
+  --pp-error: #b91c1c;
+  --pp-error-container: #fee2e2;
+  --pp-info: #1d4ed8;
+  --pp-info-container: #dbeafe;
+
+  --pp-surface-warm: #f4ede5;
+  --pp-border: #e5d9ce;
+  --pp-shadow: 0 1px 2px rgb(60 40 20 / 6%), 0 2px 8px rgb(60 40 20 / 6%);
+  --pp-shadow-lg: 0 4px 12px rgb(60 40 20 / 10%), 0 12px 32px rgb(60 40 20 / 8%);
+  --pp-skeleton: #ede4d8;
+  --pp-skeleton-shine: #f8f3ee;
+  --pp-focus-ring: var(--pp-accent);
+}
+
+// "Sunlight" high-contrast palette for reading screens outdoors. Text and key colours reach
+// WCAG AAA (7:1) on white; borders are solid so cards and inputs stay visible in glare.
+@mixin sunlight {
+  --pp-brand: #5a3104;
+  --pp-brand-strong: #3d1f00;
+  --pp-accent: #f4a623;
+  --pp-accent-strong: #6b3d00;
+
+  --pp-success: #0b5a26;
+  --pp-success-container: #ffffff;
+  --pp-warning: #7a3500;
+  --pp-warning-container: #ffffff;
+  --pp-error: #8a0f0f;
+  --pp-error-container: #ffffff;
+  --pp-info: #0b3a9e;
+  --pp-info-container: #ffffff;
+
+  --pp-surface-warm: #ffffff;
+  --pp-border: #1a1a1a;
+  --pp-shadow: none;
+  --pp-shadow-lg: 0 0 0 2px #000000;
+  --pp-skeleton: #d4d4d4;
+  --pp-skeleton-shine: #ececec;
+  --pp-focus-ring: #000000;
+}
+
+// "Farm Night" dark palette from the Flutter app.
+@mixin dark {
+  --pp-brand: #6faf5b;
+  --pp-brand-strong: #4d8f3b;
+  --pp-accent: #e6b800;
+  --pp-accent-strong: #c2a878;
+
+  --pp-success: #6fcf6f;
+  --pp-success-container: #1f3a1f;
+  --pp-warning: #ffaa44;
+  --pp-warning-container: #3d2c12;
+  --pp-error: #f28b9b;
+  --pp-error-container: #3d1a20;
+  --pp-info: #7fb3e0;
+  --pp-info-container: #17283a;
+
+  --pp-surface-warm: #243224;
+  --pp-border: #2a3f2a;
+  --pp-shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 2px 8px rgb(0 0 0 / 25%);
+  --pp-shadow-lg: 0 4px 12px rgb(0 0 0 / 35%), 0 12px 32px rgb(0 0 0 / 30%);
+  --pp-skeleton: #243224;
+  --pp-skeleton-shine: #2e3f2e;
+  --pp-focus-ring: var(--pp-accent);
+}
+
+// Theme-independent tokens.
+@mixin static {
+  --pp-space-xs: 4px;
+  --pp-space-sm: 8px;
+  --pp-space-md: 16px;
+  --pp-space-lg: 24px;
+  --pp-space-xl: 32px;
+  --pp-space-xxl: 48px;
+
+  --pp-radius-sm: 8px;
+  --pp-radius-md: 12px;
+  --pp-radius-lg: 16px;
+  --pp-radius-xl: 20px;
+  --pp-radius-pill: 999px;
+
+  --pp-touch-target: 48px;
+  --pp-content-max-width: 1280px;
+  --pp-topbar-height: 64px;
+  --pp-bottom-nav-height: 64px;
+  --pp-sidenav-width: 264px;
+  --pp-rail-width: 80px;
+
+  --pp-font-brand: 'Poppins', system-ui, sans-serif;
+  --pp-font-body: 'Inter', system-ui, sans-serif;
+  --pp-transition: 160ms cubic-bezier(0.2, 0, 0, 1);
+}

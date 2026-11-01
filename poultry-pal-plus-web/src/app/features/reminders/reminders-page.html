@@ -1,0 +1,103 @@
+<div class="pp-page">
+  <app-page-header heading="Reminders" subtitle="Vaccination, feeding and medication tasks.">
+    @if (notifications.supported && notifications.permission() === 'default') {
+      <button mat-stroked-button type="button" (click)="enableNotifications()">
+        <mat-icon>notifications</mat-icon>
+        Turn on notifications
+      </button>
+    }
+  </app-page-header>
+
+  @if (!loading()) {
+    <mat-button-toggle-group
+      class="tabs"
+      hideSingleSelectionIndicator
+      aria-label="Show reminders"
+      [value]="tab()"
+      (change)="tab.set($event.value)"
+    >
+      <mat-button-toggle value="attention">
+        Needs attention ({{ counts().attention }})
+      </mat-button-toggle>
+      <mat-button-toggle value="upcoming">Upcoming ({{ counts().upcoming }})</mat-button-toggle>
+      <mat-button-toggle value="done">Completed ({{ counts().done }})</mat-button-toggle>
+    </mat-button-toggle-group>
+
+    @if (rows().length > 0) {
+      <ul class="list pp-surface-card" aria-label="Reminders">
+        @for (row of rows(); track row.reminder.id) {
+          <li class="item" data-testid="reminder-row">
+            <span class="icon" aria-hidden="true"
+              ><mat-icon>{{ row.icon }}</mat-icon></span
+            >
+            <div class="main">
+              <span class="title">{{ row.reminder.name }}</span>
+              <span class="meta">{{ row.kind }} · {{ row.coopName }}</span>
+              <span class="meta" [class.overdue]="row.bucket === 'overdue'">
+                @switch (row.bucket) {
+                  @case ('overdue') {
+                    Overdue · {{ row.due }}
+                  }
+                  @case ('today') {
+                    Due today
+                  }
+                  @case ('done') {
+                    {{ row.reminder.action }} · {{ doneOn(row.reminder) }}
+                  }
+                  @default {
+                    Due {{ row.due }}
+                  }
+                }
+              </span>
+              @if (row.reminder.purpose) {
+                <span class="notes">{{ row.reminder.purpose }}</span>
+              }
+              @if (row.reminder.actionComment) {
+                <span class="notes">“{{ row.reminder.actionComment }}”</span>
+              }
+            </div>
+            @if (row.bucket === 'done') {
+              <app-sync-chip [status]="row.reminder.syncStatus" [compact]="true" />
+            } @else {
+              <div class="buttons">
+                <button
+                  mat-flat-button
+                  type="button"
+                  [attr.aria-label]="'Complete ' + row.reminder.name"
+                  (click)="act(row.reminder, 'completed')"
+                >
+                  Complete
+                </button>
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [attr.aria-label]="'Mark ' + row.reminder.name + ' not applicable'"
+                  (click)="act(row.reminder, 'notApplicable')"
+                >
+                  N/A
+                </button>
+                <button
+                  mat-stroked-button
+                  class="remove"
+                  type="button"
+                  [attr.aria-label]="'Remove ' + row.reminder.name"
+                  (click)="act(row.reminder, 'removed')"
+                >
+                  Remove
+                </button>
+              </div>
+            }
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="pp-surface-card">
+        <app-empty-state
+          icon="event_available"
+          [heading]="empty().heading"
+          [message]="empty().message"
+        />
+      </div>
+    }
+  }
+</div>

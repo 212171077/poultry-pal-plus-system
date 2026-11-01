@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:poultry_pal_plus_app/theme/app_theme.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lottie/lottie.dart';
 import 'package:poultry_pal_plus_app/models/message_response.dart';
 import 'package:poultry_pal_plus_app/screens/login_screen.dart';
@@ -26,36 +27,28 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
+  String? _inlineError;
+  String _passwordValue = '';
 
-  late final AnimationController _animationController;
-  late final Animation<double> _fadeAnimation;
-  late final Animation<double> _fadeAnimation2;
-  late final Animation<double> _fadeAnimation3;
+  late final AnimationController _gradientController;
 
   @override
   void initState() {
     super.initState();
-    _animationController =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 1000));
-    _fadeAnimation = CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
-    );
-    _fadeAnimation2 = CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.5, 0.75, curve: Curves.easeIn),
-    );
-    _fadeAnimation3 = CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.75, 1.0, curve: Curves.easeIn),
-    );
+    _gradientController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 6),
+    )..repeat(reverse: true);
 
-    _animationController.forward();
+    _passwordController.addListener(() {
+      setState(() => _passwordValue = _passwordController.text);
+    });
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _gradientController.dispose();
     _nameController.dispose();
     _surnameController.dispose();
     _emailController.dispose();
@@ -66,35 +59,97 @@ class _RegisterScreenState extends State<RegisterScreen>
     super.dispose();
   }
 
+  // ── 3. Password strength logic ──────────────────────────────────
+  int _passwordStrength(String p) {
+    if (p.isEmpty) return 0;
+    int score = 0;
+    if (p.length >= 8) score++;
+    if (p.length >= 12) score++;
+    if (RegExp(r'[A-Z]').hasMatch(p)) score++;
+    if (RegExp(r'[0-9]').hasMatch(p)) score++;
+    if (RegExp(r'[!@#\$%^&*(),.?":{}|<>_\-]').hasMatch(p)) score++;
+    return score; // 0–5
+  }
+
+  String _strengthLabel(int s) {
+    if (s <= 1) return 'Weak';
+    if (s <= 3) return 'Medium';
+    return 'Strong';
+  }
+
+  Color _strengthColor(int s) {
+    if (s <= 1) return AppColors.error;
+    if (s <= 3) return AppColors.warning;
+    return AppColors.success;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final primary = AppColors.adaptivePrimary(context);
+    final strength = _passwordStrength(_passwordValue);
+
     return Scaffold(
-      body: SafeArea(
-        child: FadeTransition(
-          opacity: _fadeAnimation,
+      body: AnimatedBuilder(
+        animation: _gradientController,
+        builder: (context, child) {
+          final t = _gradientController.value;
+          return Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: isDark
+                    ? [
+                        Color.lerp(const Color(0xFF121A12),
+                            const Color(0xFF1C2A1C), t)!,
+                        Color.lerp(const Color(0xFF1B251B),
+                            const Color(0xFF0E180E), t)!,
+                      ]
+                    : [
+                        Color.lerp(const Color(0xFFFFF8F0),
+                            const Color(0xFFF8EEE0), t)!,
+                        Color.lerp(const Color(0xFFF0E8DC),
+                            const Color(0xFFE8D5C0), t)!,
+                      ],
+              ),
+            ),
+            child: child,
+          );
+        },
+        child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
               child: Form(
                 key: _formKey,
                 child: Column(
-                  children: <Widget>[
+                  children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 24, horizontal: 20),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Theme.of(context).colorScheme.outline),
+                        color: theme.colorScheme.surface
+                            .withValues(alpha: 0.96),
+                        borderRadius: BorderRadius.circular(28),
+                        border: Border.all(
+                            color: theme.colorScheme.outline
+                                .withValues(alpha: 0.6),
+                            width: 1),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
+                            color: Colors.black
+                                .withValues(alpha: isDark ? 0.35 : 0.10),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
                           ),
                         ],
                       ),
                       child: Column(
-                        children: <Widget>[
+                        children: [
+                          // Hero logo
                           Hero(
                             tag: 'register-avatar',
                             child: Container(
@@ -102,12 +157,21 @@ class _RegisterScreenState extends State<RegisterScreen>
                               height: 88,
                               padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
-                                color: AppColors.adaptivePrimary(context),
+                                color: primary,
                                 shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                        primary.withValues(alpha: 0.30),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
                               ),
                               child: const CircleAvatar(
                                 radius: 40,
-                                backgroundImage: AssetImage('assets/register.png'),
+                                backgroundImage:
+                                    AssetImage('assets/register.png'),
                                 backgroundColor: Colors.transparent,
                               ),
                             ),
@@ -118,137 +182,219 @@ class _RegisterScreenState extends State<RegisterScreen>
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.adaptivePrimary(context),
-                              height: 1.3,
+                              color: primary,
                             ),
-                          ),
-                          const SizedBox(height: 24),
-                          _buildTextFormField(
+                          ).animate().fadeIn(duration: 500.ms).moveY(
+                              begin: 20),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Join Poultry Pal Plus today',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: isDark
+                                  ? AppColors.textSecondaryDark
+                                  : AppColors.textSecondaryLight,
+                            ),
+                          ).animate().fadeIn(
+                              duration: 500.ms, delay: 100.ms),
+                          const SizedBox(height: 20),
+
+                          // Form fields
+                          _buildField(
                             controller: _farmNameController,
-                            labelText: 'Farm Name',
+                            label: 'Farm Name',
                             icon: Icons.agriculture_outlined,
-                            validator: (value) => value == null || value.isEmpty
+                            delay: 150,
+                            validator: (v) => v == null || v.isEmpty
                                 ? 'Please enter your farm name'
                                 : null,
                           ),
-                          _buildTextFormField(
+                          _buildField(
                             controller: _nameController,
-                            labelText: 'Your Name',
+                            label: 'Your Name',
                             icon: Icons.person_outline,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) return 'Please enter your name';
-                              if (value.length < 2 || value.length > 50) return 'Name must be between 2 and 50 characters';
+                            delay: 200,
+                            validator: (v) {
+                              if (v == null || v.isEmpty) { return 'Please enter your name'; }
+                              if (v.length < 2 || v.length > 50) { return 'Name must be 2–50 characters'; }
                               return null;
                             },
                           ),
-                          _buildTextFormField(
+                          _buildField(
                             controller: _surnameController,
-                            labelText: 'Your Surname',
+                            label: 'Your Surname',
                             icon: Icons.person,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) return 'Please enter your surname';
-                              if (value.length < 2 || value.length > 50) return 'Surname must be between 2 and 50 characters';
+                            delay: 230,
+                            validator: (v) {
+                              if (v == null || v.isEmpty) { return 'Please enter your surname'; }
+                              if (v.length < 2 || v.length > 50) { return 'Surname must be 2–50 characters'; }
                               return null;
                             },
                           ),
-                          _buildTextFormField(
+                          _buildField(
                             controller: _emailController,
-                            labelText: 'Your Email',
+                            label: 'Your Email',
                             icon: Icons.email_outlined,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) return 'Please enter your email';
-                              if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) return 'Enter a valid email';
-                              if (value.length > 50) return 'Email must not exceed 50 characters';
+                            delay: 260,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (v) {
+                              if (v == null || v.isEmpty) { return 'Please enter your email'; }
+                              if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(v)) { return 'Enter a valid email'; }
+                              if (v.length > 50) { return 'Email must not exceed 50 characters'; }
                               return null;
                             },
                           ),
-                          _buildTextFormField(
+                          _buildField(
                             controller: _phoneNumberController,
-                            labelText: 'Phone Number',
+                            label: 'Phone Number',
                             icon: Icons.phone,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) return 'Please enter your phone number';
-                              if (value.length > 15) return 'Phone number too long';
-                              if (!RegExp(r'^[0-9]+$').hasMatch(value)) return 'Only digits allowed';
+                            delay: 290,
+                            keyboardType: TextInputType.phone,
+                            validator: (v) {
+                              if (v == null || v.isEmpty) { return 'Please enter your phone number'; }
+                              if (v.length > 15) { return 'Phone number too long'; }
+                              if (!RegExp(r'^[0-9]+$').hasMatch(v)) { return 'Only digits allowed'; }
                               return null;
                             },
                           ),
-                          _buildTextFormField(
-                            controller: _passwordController,
-                            labelText: 'Your Password',
-                            obscureText: _obscurePassword,
-                            icon: Icons.lock_outline,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword ? Icons.visibility : Icons.visibility_off,
-                              ),
-                              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) return 'Please enter your password';
-                              if (value.length < 6 || value.length > 120) return 'Password must be 6-120 characters';
-                              return null;
-                            },
-                          ),
-                          _buildTextFormField(
-                            controller: _confirmPasswordController,
-                            labelText: 'Confirm Your Password',
-                            obscureText: _obscureConfirmPassword,
-                            icon: Icons.lock,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
-                              ),
-                              onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
-                            ),
-                            validator: (value) {
-                              if (value != _passwordController.text) return 'Passwords do not match';
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 24),
 
-                          // Register button with animation
-                          FadeTransition(
-                            opacity: _fadeAnimation2,
+                          // ── 4. Password with show/hide + 3. strength indicator ──
+                          _buildField(
+                            controller: _passwordController,
+                            label: 'Your Password',
+                            icon: Icons.lock_outline,
+                            delay: 320,
+                            obscureText: _obscurePassword,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                color: primary,
+                              ),
+                              onPressed: () => setState(() =>
+                                  _obscurePassword = !_obscurePassword),
+                            ),
+                            validator: (v) {
+                              if (v == null || v.isEmpty) { return 'Please enter your password'; }
+                              if (v.length < 6 || v.length > 120) { return 'Password must be 6–120 characters'; }
+                              return null;
+                            },
+                          ),
+
+                          // ── 3. Password strength bar ──
+                          if (_passwordValue.isNotEmpty)
+                            _PasswordStrengthBar(
+                              strength: strength,
+                              label: _strengthLabel(strength),
+                              color: _strengthColor(strength),
+                            ).animate().fadeIn(duration: 300.ms),
+
+                          // ── 4. Confirm password with show/hide ──
+                          _buildField(
+                            controller: _confirmPasswordController,
+                            label: 'Confirm Your Password',
+                            icon: Icons.lock,
+                            delay: 350,
+                            obscureText: _obscureConfirmPassword,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureConfirmPassword
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                color: primary,
+                              ),
+                              onPressed: () => setState(() =>
+                                  _obscureConfirmPassword =
+                                      !_obscureConfirmPassword),
+                            ),
+                            validator: (v) {
+                              if (v != _passwordController.text) { return 'Passwords do not match'; }
+                              return null;
+                            },
+                          ),
+
+                          // ── 7. Inline error ──
+                          if (_inlineError != null)
+                            Container(
+                              margin: const EdgeInsets.only(top: 8),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: AppColors.error
+                                    .withValues(alpha: 0.10),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                    color: AppColors.error
+                                        .withValues(alpha: 0.4)),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.error_outline,
+                                      color: AppColors.error, size: 16),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      _inlineError!,
+                                      style: const TextStyle(
+                                          color: AppColors.error,
+                                          fontSize: 13),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                                .animate()
+                                .fadeIn(duration: 300.ms)
+                                .shakeX(duration: 400.ms),
+
+                          const SizedBox(height: 20),
+
+                          // ── 5. Register button with loading state ──
+                          SizedBox(
+                            width: double.infinity,
+                            height: 52,
                             child: ElevatedButton(
-                              onPressed: _register,
+                              onPressed: _isLoading ? null : _register,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.adaptivePrimary(context),
-                                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16),
+                                backgroundColor: primary,
+                                disabledBackgroundColor:
+                                    primary.withValues(alpha: 0.6),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
+                                    borderRadius:
+                                        BorderRadius.circular(20)),
                                 elevation: 2,
                               ),
-                              child: const Text(
-                                'Register',
-                                style: TextStyle(
-                                    color: AppColors.surfaceLight,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600),
-                              ),
+                              child: _isLoading
+                                  ? const SizedBox(
+                                      width: 22,
+                                      height: 22,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2.5,
+                                      ),
+                                    )
+                                  : const Text(
+                                      'Create Account',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
                             ),
-                          ),
+                          ).animate().scale(delay: 380.ms),
 
                           const SizedBox(height: 12),
-
-                          // Navigate to Login
-                          FadeTransition(
-                            opacity: _fadeAnimation3,
-                            child: TextButton(
-                              child: const Text(
-                                'Already have an account? Login',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (context) => const LoginScreen()),
-                                );
-                              },
+                          TextButton(
+                            onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (_) => const LoginScreen()),
                             ),
-                          ),
+                            child: const Text(
+                              'Already have an account? Login',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ).animate().fadeIn(delay: 420.ms),
                         ],
                       ),
                     ),
@@ -262,72 +408,83 @@ class _RegisterScreenState extends State<RegisterScreen>
     );
   }
 
-  Widget _buildTextFormField({
+  Widget _buildField({
     required TextEditingController controller,
-    required String labelText,
+    required String label,
+    required IconData icon,
+    required int delay,
     bool obscureText = false,
-    IconData? icon,
     Widget? suffixIcon,
+    TextInputType? keyboardType,
     required String? Function(String?) validator,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primary = AppColors.adaptivePrimary(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 7),
       child: TextFormField(
         controller: controller,
         obscureText: obscureText,
-        style: TextStyle(fontSize: 16, color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight),
+        keyboardType: keyboardType,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        style: TextStyle(
+            fontSize: 15,
+            color: isDark
+                ? AppColors.textPrimaryDark
+                : AppColors.textPrimaryLight),
         decoration: InputDecoration(
-          prefixIcon: icon != null ? Icon(icon, color: AppColors.adaptivePrimary(context)) : null,
+          prefixIcon:
+              Icon(icon, color: primary),
           suffixIcon: suffixIcon,
-          labelText: labelText,
+          labelText: label,
           labelStyle: TextStyle(
-            color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+            color: isDark
+                ? AppColors.textSecondaryDark
+                : AppColors.textSecondaryLight,
             fontWeight: FontWeight.w500,
           ),
           filled: true,
-          fillColor: isDark ? AppColors.surfaceVariantDark : AppColors.surfaceVariantLight,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          fillColor: isDark
+              ? AppColors.surfaceVariantDark
+              : AppColors.surfaceVariantLight,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: Colors.transparent),
+            borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: Colors.transparent),
+            borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(color: AppColors.adaptivePrimary(context), width: 1.5),
+            borderSide: BorderSide(color: primary, width: 1.5),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide:
+                const BorderSide(color: AppColors.error, width: 1),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide:
+                const BorderSide(color: AppColors.error, width: 1.5),
           ),
         ),
         validator: validator,
       ),
-    );
+    ).animate().fadeIn(duration: 400.ms, delay: Duration(milliseconds: delay));
   }
 
   void _register() async {
-    if (_formKey.currentState!.validate()) {
-      // Show loading animation
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => ScaleTransition(
-          scale: _fadeAnimation,
-          child: Dialog(
-            backgroundColor: Colors.transparent,
-            child: SizedBox(
-              width: 200,
-              height: 200,
-              child: Lottie.asset('assets/lottie/loading_animation.json', repeat: true),
-            ),
-          ),
-        ),
-      );
+    setState(() => _inlineError = null);
+    if (!_formKey.currentState!.validate()) return;
 
+    setState(() => _isLoading = true);
 
-
-      MessageResponse result = await _service.signup(
+    try {
+      final MessageResponse result = await _service.signup(
         name: _nameController.text,
         surname: _surnameController.text,
         email: _emailController.text,
@@ -336,54 +493,119 @@ class _RegisterScreenState extends State<RegisterScreen>
         farmName: _farmNameController.text,
       );
 
-      Navigator.of(context).pop(); // Close loading dialog
+      if (!mounted) return;
 
       if (result.success) {
-        // Show success animation
-        showDialog(
+        await showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (_) => ScaleTransition(
-            scale: _fadeAnimation,
-            child: Dialog(
-              backgroundColor: Colors.transparent,
-              child: SizedBox(
-                width: 200,
-                height: 200,
-                child: Lottie.asset('assets/lottie/success_check.json', repeat: false),
+          builder: (_) => Dialog(
+            backgroundColor: Colors.transparent,
+            child: SizedBox(
+              width: 150,
+              height: 150,
+              child: Lottie.asset(
+                'assets/lottie/success_check.json',
+                repeat: false,
+                onLoaded: (composition) async {
+                  await Future.delayed(composition.duration);
+                  if (mounted) Navigator.of(context).pop();
+                },
               ),
             ),
           ),
         );
 
+        if (!mounted) return;
+        await showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Awaiting approval'),
+            content: const Text(
+                'Your account was created and is awaiting approval by the administrator. '
+                'We emailed you a welcome message and will email you again once a decision is made.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
 
-        await Future.delayed(const Duration(seconds: 2));
-        Navigator.of(context).pop(); // Close success dialog
+        if (!mounted) return;
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
         );
       } else {
-        final snackBar = SnackBar(
-          content: Row(
+        // ── 7. Inline error instead of SnackBar ──
+        setState(() => _inlineError = result.message);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _inlineError =
+            'Registration failed. Please check your details and try again.');
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────
+// 3. Password Strength Bar Widget
+// ──────────────────────────────────────────────────────────────────
+
+class _PasswordStrengthBar extends StatelessWidget {
+  final int strength; // 0–5
+  final String label;
+  final Color color;
+
+  const _PasswordStrengthBar({
+    required this.strength,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fraction = (strength / 5.0).clamp(0.0, 1.0);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: fraction),
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeOut,
+              builder: (_, value, __) => LinearProgressIndicator(
+                value: value,
+                minHeight: 6,
+                backgroundColor: Colors.grey.withValues(alpha: 0.2),
+                valueColor: AlwaysStoppedAnimation<Color>(color),
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Row(
             children: [
-              const Icon(Icons.error, color: AppColors.surfaceLight),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  result.message,
-                  style: const TextStyle(color: AppColors.surfaceLight),
+              const Icon(Icons.shield_outlined, size: 12),
+              const SizedBox(width: 4),
+              Text(
+                'Password strength: $label',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: color,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
           ),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
-    }
+        ],
+      ),
+    );
   }
 }

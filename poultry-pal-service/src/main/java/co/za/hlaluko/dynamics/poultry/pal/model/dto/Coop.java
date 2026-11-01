@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Coop {
+public class Coop implements SyncTracked {
   private String id;
   private String coopName;
   private CoopType coopType;
@@ -28,4 +28,9 @@ public class Coop {
   private PhaseTransition phaseTransition;
   private List<String> responsibleUserIds;
   private boolean active;
+
+  // Sync metadata, maintained by FarmChangeTracker
+  private Long version;
+  private Date updatedAt;
+  private String updatedBy;
 }

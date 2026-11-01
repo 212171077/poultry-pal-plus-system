@@ -1,0 +1,12 @@
+node_modules
+config
+dist
+.angular
+.vscode
+coverage
+test-results
+playwright-report
+e2e
+*.md
+Dockerfile
+.dockerignore

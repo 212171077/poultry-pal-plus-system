@@ -31,7 +31,7 @@ public class EmailConfig {
 
     mailSender.setHost("smtp.gmail.com");
     mailSender.setPort(587);
-    mailSender.setUsername(
+/*    mailSender.setUsername(
         Optional.ofNullable(repository.findByCode("MAIL_USER"))
             .map(AppConfig::getDescription)
             .orElse(ConstantUtil.MAIL_USER)
@@ -40,7 +40,10 @@ public class EmailConfig {
     mailSender.setPassword(
             Optional.ofNullable(repository.findByCode("MAIL_PASS"))
                     .map(AppConfig::getDescription)
-                    .orElse(ConstantUtil.MAIL_PASS));
+                    .orElse(ConstantUtil.MAIL_PASS));*/
+      mailSender.setUsername(ConstantUtil.MAIL_USER);
+
+    mailSender.setPassword(ConstantUtil.MAIL_PASS);
 
     Properties javaMailProperties = new Properties();
     javaMailProperties.put("mail.smtp.starttls.enable", "true");

@@ -1,0 +1,14 @@
+<div class="icon" aria-hidden="true">
+  <mat-icon>{{ icon() }}</mat-icon>
+</div>
+<div class="body">
+  <p class="label">{{ label() }}</p>
+  @if (loading()) {
+    <app-skeleton width="6rem" height="2rem" />
+  } @else {
+    <p class="value">{{ value() ?? '—' }}</p>
+  }
+  @if (hint()) {
+    <p class="hint">{{ hint() }}</p>
+  }
+</div>

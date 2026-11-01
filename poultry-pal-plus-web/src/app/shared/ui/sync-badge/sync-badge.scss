@@ -1,0 +1,46 @@
+.badge {
+  --tone: var(--pp-success);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 var(--pp-space-sm);
+  border-radius: var(--pp-radius-pill);
+  background: color-mix(in srgb, var(--tone) 12%, transparent);
+  color: var(--tone);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+
+  &[data-state='pending'],
+  &[data-state='syncing'] {
+    --tone: var(--pp-info);
+  }
+
+  &[data-state='offline'],
+  &[data-state='auth-required'] {
+    --tone: var(--pp-warning);
+  }
+
+  &[data-state='attention'] {
+    --tone: var(--pp-error);
+  }
+}
+
+.spin {
+  animation: pp-spin 1.2s linear infinite;
+}
+
+@keyframes pp-spin {
+  to {
+    transform: rotate(-360deg);
+  }
+}

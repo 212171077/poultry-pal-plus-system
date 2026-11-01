@@ -21,7 +21,7 @@
         <reactor.version>3.6.0</reactor.version>
         <reactor-spring.version>1.0.1.RELEASE</reactor-spring.version>
 
-        <testcontainers.version>1.17.6</testcontainers.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
         <cucumber.version>7.10.1</cucumber.version>
         <junit-platform.version>1.9.1</junit-platform.version>
         <cucumber.version>7.10.1</cucumber.version>

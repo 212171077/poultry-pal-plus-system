@@ -1,0 +1,143 @@
+@use '@angular/material' as mat;
+@use 'palette-light' as light;
+@use 'palette-dark' as dark;
+@use 'tokens';
+
+$_typography: (
+  plain-family: (
+    Inter,
+    system-ui,
+    sans-serif,
+  ),
+  brand-family: (
+    Poppins,
+    system-ui,
+    sans-serif,
+  ),
+  bold-weight: 600,
+  medium-weight: 500,
+  regular-weight: 400,
+);
+
+@mixin _dark {
+  color-scheme: dark;
+  @include mat.theme(
+    (
+      color: (
+        primary: dark.$primary-palette,
+        tertiary: dark.$tertiary-palette,
+        theme-type: dark,
+      ),
+    )
+  );
+  @include tokens.dark;
+}
+
+// High-contrast light theme for bright sunlight: pure white surfaces, near-black text and
+// solid outlines. Builds on the light theme and only overrides colours.
+@mixin _sunlight {
+  color-scheme: light;
+  @include mat.theme-overrides(
+    (
+      primary: #5a3104,
+      on-primary: #ffffff,
+      primary-container: #5a3104,
+      on-primary-container: #ffffff,
+      secondary: #3d1f00,
+      on-secondary: #ffffff,
+      secondary-container: #ffe0b8,
+      on-secondary-container: #000000,
+      tertiary: #6b3d00,
+      on-tertiary: #ffffff,
+      tertiary-container: #ffe0b8,
+      on-tertiary-container: #000000,
+      error: #8a0f0f,
+      on-error: #ffffff,
+      error-container: #ffffff,
+      on-error-container: #8a0f0f,
+      background: #ffffff,
+      on-background: #000000,
+      surface: #ffffff,
+      surface-bright: #ffffff,
+      surface-dim: #e6e6e6,
+      surface-container-lowest: #ffffff,
+      surface-container-low: #ffffff,
+      surface-container: #ffffff,
+      surface-container-high: #f2f2f2,
+      surface-container-highest: #e6e6e6,
+      surface-variant: #f2f2f2,
+      on-surface: #000000,
+      on-surface-variant: #1a1a1a,
+      outline: #000000,
+      outline-variant: #4d4d4d,
+      inverse-surface: #000000,
+      inverse-on-surface: #ffffff,
+      inverse-primary: #ffb878,
+    )
+  );
+  @include tokens.sunlight;
+}
+
+// The theme follows the OS by default. ThemeService adds `theme-light`, `theme-dark` or
+// `theme-sunlight` to <html> when the user picks a theme manually.
+@mixin apply {
+  html {
+    color-scheme: light;
+    @include mat.theme(
+      (
+        color: (
+          primary: light.$primary-palette,
+          tertiary: light.$tertiary-palette,
+          theme-type: light,
+        ),
+        typography: $_typography,
+        density: 0,
+      )
+    );
+    @include tokens.static;
+    @include tokens.light;
+
+    // Rounder, friendlier components that match the mobile app.
+    @include mat.card-overrides(
+      (
+        elevated-container-shape: var(--pp-radius-lg),
+        outlined-container-shape: var(--pp-radius-lg),
+      )
+    );
+    @include mat.button-overrides(
+      (
+        filled-container-shape: var(--pp-radius-md),
+        outlined-container-shape: var(--pp-radius-md),
+        text-container-shape: var(--pp-radius-md),
+        protected-container-shape: var(--pp-radius-md),
+        filled-container-height: 44px,
+        outlined-container-height: 44px,
+        protected-container-height: 44px,
+      )
+    );
+    @include mat.dialog-overrides(
+      (
+        container-shape: var(--pp-radius-xl),
+      )
+    );
+    @include mat.snack-bar-overrides(
+      (
+        container-shape: var(--pp-radius-md),
+      )
+    );
+  }
+
+  html.theme-dark {
+    @include _dark;
+  }
+
+  html.theme-sunlight {
+    @include _sunlight;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html:not(.theme-light):not(.theme-sunlight) {
+      @include _dark;
+    }
+  }
+}

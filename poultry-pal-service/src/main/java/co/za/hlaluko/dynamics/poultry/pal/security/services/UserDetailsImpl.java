@@ -1,5 +1,6 @@
 package co.za.hlaluko.dynamics.poultry.pal.security.services;
 
+import co.za.hlaluko.dynamics.poultry.pal.model.dto.ApprovalStatus;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serial;
@@ -26,6 +27,8 @@ public class UserDetailsImpl implements UserDetails {
   private String farmId;
   private boolean isFarmOwner;
   private boolean isActive;
+  private boolean removed;
+  private ApprovalStatus approvalStatus;
   private Date createdDate;
   private final String email;
   private final Collection<? extends GrantedAuthority> authorities;
@@ -45,6 +48,8 @@ public class UserDetailsImpl implements UserDetails {
         .farmId(user.getFarmId())
         .isFarmOwner(user.isFarmOwner())
         .isActive(user.isActive())
+        .removed(user.isRemoved())
+        .approvalStatus(user.getApprovalStatus())
         .createdDate(user.getCreatedDate())
         .email(user.getEmail())
         .password(user.getPassword())
@@ -84,6 +89,8 @@ public class UserDetailsImpl implements UserDetails {
 
   @Override
   public boolean isEnabled() {
-    return true;
+    return (isActive || isFarmOwner)
+        && !removed
+        && (approvalStatus == null || approvalStatus == ApprovalStatus.APPROVED);
   }
 }

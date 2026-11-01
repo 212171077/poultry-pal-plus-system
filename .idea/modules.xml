@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../tertiary-verify-system/tertiary-verify-service/.mvn/.mvn.iml" filepath="$PROJECT_DIR$/../tertiary-verify-system/tertiary-verify-service/.mvn/.mvn.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/poultry-pal-plus-system.iml" filepath="$PROJECT_DIR$/.idea/poultry-pal-plus-system.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/poultry-pal-service.iml" filepath="$PROJECT_DIR$/.idea/poultry-pal-service.iml" />
     </modules>

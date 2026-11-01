@@ -1,0 +1,72 @@
+<div class="pp-page">
+  <app-page-header
+    heading="Archived batches"
+    subtitle="Past flocks, archived when a new batch was started."
+  >
+    <a mat-stroked-button routerLink="/coops">
+      <mat-icon>arrow_back</mat-icon>
+      Coops
+    </a>
+  </app-page-header>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" aria-label="Loading archived batches" />
+  }
+
+  @if (error(); as message) {
+    <app-empty-state icon="cloud_off" heading="Can't show archived batches" [message]="message">
+      <button mat-flat-button type="button" (click)="load()">Try again</button>
+    </app-empty-state>
+  } @else if (batches(); as list) {
+    @if (list.length === 0) {
+      <app-empty-state
+        icon="inventory_2"
+        heading="No archived batches"
+        message="Batches appear here after you start a new batch in a coop."
+      />
+    } @else {
+      <ul class="list" aria-label="Archived batches">
+        @for (batch of list; track batch.id) {
+          <li class="pp-surface-card batch" data-testid="archived-batch">
+            <header>
+              <h2>{{ batch.coopName }}</h2>
+              <span class="muted">
+                Archived {{ batch.archivedDate | date: 'mediumDate' }}
+              </span>
+            </header>
+            <p class="muted">
+              {{ batch.numberOfChickens }} birds
+              @if (batch.chickenArrivalDate) {
+                · arrived {{ batch.chickenArrivalDate | date: 'mediumDate' }}
+              }
+            </p>
+            <dl>
+              <div>
+                <dt>Sales</dt>
+                <dd>{{ money(batch.totalSales) }}</dd>
+              </div>
+              <div>
+                <dt>Expenses</dt>
+                <dd>{{ money(batch.totalExpenses) }}</dd>
+              </div>
+              <div>
+                <dt>Profit</dt>
+                <dd [class.loss]="profit(batch) < 0">{{ money(profit(batch)) }}</dd>
+              </div>
+              <div>
+                <dt>Deaths</dt>
+                <dd>{{ batch.totalDeaths }} ({{ mortality(batch) }}%)</dd>
+              </div>
+              @if (batch.totalEggs > 0) {
+                <div>
+                  <dt>Eggs</dt>
+                  <dd>{{ batch.totalEggs }}</dd>
+                </div>
+              }
+            </dl>
+          </li>
+        }
+      </ul>
+    }
+  }
+</div>

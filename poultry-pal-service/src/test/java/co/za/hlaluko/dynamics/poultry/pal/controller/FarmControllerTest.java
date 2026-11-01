@@ -478,7 +478,7 @@ class FarmControllerTest extends ContainerBase {
     request.setCoopId("test_coopId");
     request.setNumberOfDozensSold(10);
     request.setSalePricePerDozen(50D);
-    request.setBuyerName("Chrisopher Sibiya");
+    request.setAdditionalInfo("Chrisopher Sibiya");
     request.setRecordedBy(UUID.randomUUID().toString());
     request.setPaymentStatus(PaymentStatus.PAID);
     request.setSaleDate(new Date());
@@ -556,7 +556,7 @@ class FarmControllerTest extends ContainerBase {
     request.setCoopId("test_coopId");
     request.setNumberOfDozensSold(10);
     request.setSalePricePerDozen(50D);
-    request.setBuyerName("Chrisopher Sibiya");
+    request.setAdditionalInfo("Chrisopher Sibiya");
     request.setRecordedBy(UUID.randomUUID().toString());
     request.setPaymentStatus(PaymentStatus.PAID);
     request.setSaleDate(new Date());
@@ -673,7 +673,7 @@ class FarmControllerTest extends ContainerBase {
     request.setCoopId("test_coopId");
     request.setNumberOfDozensSold(10);
     request.setSalePricePerDozen(50D);
-    request.setBuyerName("Chrisopher Sibiya");
+    request.setAdditionalInfo("Chrisopher Sibiya");
     request.setRecordedBy(UUID.randomUUID().toString());
     request.setPaymentStatus(PaymentStatus.PAID);
     request.setSaleDate(new Date());
@@ -891,7 +891,7 @@ class FarmControllerTest extends ContainerBase {
     request.setCoopId(coop.getId());
     request.setNumberOfChickensSold(10);
     request.setSalePricePerChicken(85D);
-    request.setBuyerName("Chrisopher Sibiya");
+    request.setAdditionalInfo("Chrisopher Sibiya");
     request.setRecordedBy(UUID.randomUUID().toString());
     request.setPaymentStatus(PaymentStatus.PAID);
     request.setSaleDate(new Date());
@@ -912,7 +912,7 @@ class FarmControllerTest extends ContainerBase {
     assertNotNull(sale.getCreatedDate());
     assertEquals(request.getNumberOfChickensSold(), sale.getNumberOfChickensSold());
     assertEquals(request.getSalePricePerChicken(), sale.getSalePricePerChicken());
-    assertEquals(request.getBuyerName(), sale.getBuyerName());
+    assertEquals(request.getAdditionalInfo(), sale.getAdditionalInfo());
     assertEquals(request.getPaymentStatus(), sale.getPaymentStatus());
     assertEquals(request.getSaleDate(), sale.getSaleDate());
     assertEquals(850, sale.getTotalSaleAmount());
@@ -957,7 +957,7 @@ class FarmControllerTest extends ContainerBase {
     request.setCoopId(coop.getId());
     request.setNumberOfDozensSold(10);
     request.setSalePricePerDozen(85D);
-    request.setBuyerName("Chrisopher Sibiya");
+    request.setAdditionalInfo("Chrisopher Sibiya");
     request.setRecordedBy(UUID.randomUUID().toString());
     request.setPaymentStatus(PaymentStatus.PAID);
     request.setSaleDate(new Date());
@@ -979,7 +979,7 @@ class FarmControllerTest extends ContainerBase {
     assertNotNull(sale.getCreatedDate());
     assertEquals(request.getNumberOfDozensSold(), sale.getNumberOfDozensSold());
     assertEquals(request.getSalePricePerDozen(), sale.getSalePricePerDozen());
-    assertEquals(request.getBuyerName(), sale.getBuyerName());
+    assertEquals(request.getAdditionalInfo(), sale.getAdditionalInfo());
     assertEquals(request.getPaymentStatus(), sale.getPaymentStatus());
     assertEquals(request.getSaleDate(), sale.getSaleDate());
     assertEquals(850, sale.getTotalSaleAmount());
@@ -1012,7 +1012,7 @@ class FarmControllerTest extends ContainerBase {
     request.setCoopId(coop.getId());
     request.setNumberOfDozensSold(100);
     request.setSalePricePerDozen(80D);
-    request.setBuyerName("Chrisoph Sibiya");
+    request.setAdditionalInfo("Chrisoph Sibiya");
     request.setRecordedBy(UUID.randomUUID().toString());
     request.setPaymentStatus(PaymentStatus.PENDING);
     request.setSaleDate(new Date());
@@ -1034,7 +1034,7 @@ class FarmControllerTest extends ContainerBase {
     assertEquals(sale.getCreatedDate(), updatedSale.getCreatedDate());
     assertEquals(request.getNumberOfDozensSold(), updatedSale.getNumberOfDozensSold());
     assertEquals(request.getSalePricePerDozen(), updatedSale.getSalePricePerDozen());
-    assertEquals(request.getBuyerName(), updatedSale.getBuyerName());
+    assertEquals(request.getAdditionalInfo(), updatedSale.getAdditionalInfo());
     assertEquals(request.getPaymentStatus(), updatedSale.getPaymentStatus());
     assertEquals(request.getSaleDate(), updatedSale.getSaleDate());
     assertEquals(8000, updatedSale.getTotalSaleAmount());

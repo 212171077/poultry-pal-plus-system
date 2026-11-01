@@ -1,0 +1,74 @@
+<div class="pp-page">
+  <app-page-header heading="App config" subtitle="System settings shared by every farm. Visible to system administrators only.">
+    <button mat-flat-button type="button" [disabled]="!connectivity.online()" (click)="formOpen() ? closeForm() : openCreate()">
+      <mat-icon>{{ formOpen() ? 'close' : 'add' }}</mat-icon>
+      {{ formOpen() ? 'Cancel' : 'Add entry' }}
+    </button>
+  </app-page-header>
+
+  @if (!connectivity.online()) {
+    <p class="notice" role="status">Configuration can only be managed while online.</p>
+  }
+  @if (loadError(); as message) {
+    <p class="notice" role="alert">{{ message }}</p>
+  }
+
+  @if (formOpen()) {
+    <form class="pp-surface-card panel form" [formGroup]="form" (ngSubmit)="save()">
+      <h2>{{ editing() ? 'Edit ' + editing()?.code : 'Add a configuration entry' }}</h2>
+      <div class="fields">
+        <mat-form-field>
+          <mat-label>Code</mat-label>
+          <input matInput formControlName="code" autocomplete="off" />
+          <mat-hint>Letters, digits and underscores; stored in upper case.</mat-hint>
+          @if (form.controls.code.invalid && form.controls.code.touched) {
+            <mat-error>Enter a code (letters, digits, underscores).</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Value</mat-label>
+          <input
+            matInput
+            formControlName="description"
+            [type]="editing()?.sensitive ? 'password' : 'text'"
+            autocomplete="off"
+          />
+          @if (editing()?.sensitive) {
+            <mat-hint>Leave blank to keep the current secret.</mat-hint>
+          }
+          @if (form.controls.description.invalid && form.controls.description.touched) {
+            <mat-error>Enter a value (up to 250 characters).</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      <button mat-flat-button type="submit" [disabled]="saving() || !connectivity.online()">Save</button>
+    </form>
+  }
+
+  @if (entries().length === 0 && !loading()) {
+    <app-empty-state icon="tune" heading="No configuration entries" message="Add an entry to get started." />
+  } @else {
+    <ul class="entries" aria-label="Configuration entries">
+      @for (entry of entries(); track entry.id) {
+        <li class="pp-surface-card entry">
+          <div>
+            <h2>{{ entry.code }}</h2>
+            <p class="value">{{ entry.description }}</p>
+          </div>
+          <div class="actions">
+            <button mat-button type="button" [disabled]="saving() || !connectivity.online()" (click)="openEdit(entry)" [attr.aria-label]="'Edit ' + entry.code">
+              <mat-icon>edit</mat-icon>
+              Edit
+            </button>
+            @if (!entry.protectedEntry) {
+              <button mat-button class="remove" type="button" [disabled]="saving() || !connectivity.online()" (click)="remove(entry)" [attr.aria-label]="'Delete ' + entry.code">
+                <mat-icon>delete</mat-icon>
+                Delete
+              </button>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</div>

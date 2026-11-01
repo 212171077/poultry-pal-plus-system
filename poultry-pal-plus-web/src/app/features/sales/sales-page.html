@@ -1,0 +1,85 @@
+<div class="pp-page">
+  <app-page-header heading="Sales" subtitle="Egg and chicken sales, and who still owes you.">
+    <button mat-flat-button type="button" (click)="openForm()">
+      <mat-icon>add</mat-icon>
+      Record sale
+    </button>
+  </app-page-header>
+
+  @if (!loading()) {
+    @if (rows().length > 0) {
+      <section class="summary pp-surface-card" aria-label="Summary">
+        <div>
+          <span class="summary-label">This month</span>
+          <strong class="summary-value">{{ summary().month }}</strong>
+        </div>
+        <div>
+          <span class="summary-label">Awaiting payment</span>
+          <strong class="summary-value">{{ summary().unpaid }}</strong>
+        </div>
+        <div>
+          <span class="summary-label">Records</span>
+          <strong class="summary-value">{{ rows().length }}</strong>
+        </div>
+      </section>
+
+      <ul class="list pp-surface-card" aria-label="Sales">
+        @for (row of rows(); track row.sale.id) {
+          <li class="item" data-testid="sale-row">
+            <span class="icon" aria-hidden="true">
+              <mat-icon>{{ row.icon }}</mat-icon>
+            </span>
+            <div class="main">
+              <span class="title">{{ row.title }}</span>
+              <span class="meta">{{ row.meta }}</span>
+              <span class="notes">{{ row.detail }}</span>
+            </div>
+            <div class="side">
+              <strong class="amount">{{ row.total }}</strong>
+              @if (row.pending) {
+                <span class="chip warn">Payment pending</span>
+              }
+              <app-sync-chip [status]="row.sale.syncStatus" [compact]="true" />
+            </div>
+            <button
+              mat-icon-button
+              type="button"
+              [matMenuTriggerFor]="menu"
+              [attr.aria-label]="'More actions for ' + row.title"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+              @if (row.pending) {
+                <button mat-menu-item type="button" (click)="markPaid(row.sale)">
+                  <mat-icon>paid</mat-icon>
+                  Mark as paid
+                </button>
+              }
+              <button mat-menu-item type="button" (click)="openForm(row.sale)">
+                <mat-icon>edit</mat-icon>
+                Edit
+              </button>
+              <button mat-menu-item type="button" (click)="remove(row.sale)">
+                <mat-icon>delete</mat-icon>
+                Delete
+              </button>
+            </mat-menu>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="pp-surface-card">
+        <app-empty-state
+          icon="point_of_sale"
+          heading="No sales yet"
+          [message]="
+            coops().length > 0
+              ? 'Record egg and chicken sales. They save on this device and sync when you are online.'
+              : 'Sales belong to a coop. Your coops appear here after the first sync.'
+          "
+        />
+      </div>
+    }
+  }
+</div>

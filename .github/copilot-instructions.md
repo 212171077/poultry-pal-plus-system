@@ -24,6 +24,7 @@ The system helps farmers manage daily operations such as:
 This is a monorepo for Poultry Pal Plus:
 - poultry-pal-service (Spring Boot backend)
 - poultry_pal_plus_app (Flutter mobile app)
+- poultry-pal-plus-web (Angular 20 offline-first PWA; see WEB_APP_ROADMAP.md)
 
 ## Global Rules
 - You are a senior full-stack engineer (Spring Boot + Flutter + Web-ready architecture)
@@ -35,7 +36,8 @@ Cross-System Rule (CRITICAL)
 Whenever endpoints or DTOs change:
 1. Update backend
 2. Update Flutter (API layer, models, UI)
-3. Ensure no breaking changes
+3. Update the Angular web app (`core/http` types, repositories, UI) when it consumes the endpoint
+4. Ensure no breaking changes
 
 
 ### Backend (Spring Boot)
@@ -56,6 +58,24 @@ Whenever endpoints or DTOs change:
 - Handle nulls safely
 - Feature-based structure
 - Separate UI, state, and services
+
+### Web (Angular, `poultry-pal-plus-web`)
+- Node 22 (`>=20.19`); Angular 20 + Angular Material 3. Commands: `npm run lint`, `npm run test:ci`, `npm run build`, `npm run e2e`
+- Offline-first: the UI reads/writes the local store (Dexie, Phase 2); only the sync engine talks to the API. Never cache API responses in the service worker
+- Data layer (`src/app/data/`): components read via `liveSignal()`/repositories and write only through repository commands (`create`/`update`/`remove`), which store the record and its outbox op in one Dexie transaction. Never call `/api/v1/sync` or write to Dexie tables from features
+- New synced entities: add an `EntityDef` in `data/sync/entities.ts`, a repository in `data/repositories/`, and a new Dexie `version(n)` (never edit an existing one); keep `payloadFields` in sync with the backend `*Payload` DTOs
+- Auth (`core/auth/`): read the session from `AuthService` signals (`user`, `signedIn`, `canManageFarm`). Protect routes with `authGuard`/`permissionGuard('FARM_MANAGER')`, and hide manager-only actions with `*appCan="'FARM_MANAGER'"`. API calls outside sync use `unwrapApi()` and get an `ApiError`
+- Keep the initial bundle under the 800 kB warning budget: lazy-load dialogs (`MatDialog`, confirm and re-auth) from shell, top-bar or nav code with `await import()` + `Injector.get`
+- Record pages (sales, mortality, eggs, …) extend `RecordListPage` (`shared/records/record-page.ts`) so `?action=new&coop=<id>` opens the form; quick actions live in `QUICK_ACTIONS` (`layout/navigation.ts`)
+- Coop batch/phase changes go through `CoopRepository.startNewBatch()`/`transitionPhase()` (a `COOP` `ACTION` sync op); coop rules (growth phases, mortality rate) live in `data/models/coop-rules.ts`
+- Show per-record sync state with `<app-sync-chip>`; send users to the Sync Center (`/sync`) for failures and conflicts
+- Structure: `core/` (singleton services), `layout/` (shell, navigation), `shared/ui/` (reusable presentational components), `features/<name>/` (lazy routes via `<name>.routes.ts`)
+- Standalone components (do NOT set `standalone: true`), `ChangeDetectionStrategy.OnPush`, `input()`/`output()`, signals + `computed()` for state (never `mutate`)
+- Use `inject()`, `providedIn: 'root'` for singleton services, and the `host` object instead of `@HostBinding`/`@HostListener`
+- Native control flow (`@if`, `@for`, `@switch`); class/style bindings instead of `ngClass`/`ngStyle`; `NgOptimizedImage` for static images
+- Reactive forms; strict typing (no `any`, use `unknown`)
+- Styling: use `--pp-*` design tokens and `--mat-sys-*` variables (never raw hex in components); keep component styles under the 4 kB budget
+- Accessibility: WCAG AA contrast, visible focus, ARIA labels on icon-only buttons, 48px touch targets
 
 ## API Contract
 All responses:
@@ -89,6 +109,7 @@ All responses:
 ## Testing
 - Backend: Unit + Integration + REST Assured
 - Mobile: Service + UI tests
+- Web: Jasmine/Karma unit tests for services and components, Playwright e2e (including offline)
 
 ## Sync & Consistency
 - Handle duplicates

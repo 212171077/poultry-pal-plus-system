@@ -43,6 +43,7 @@ public class AuthControllerServiceImpl implements AuthControllerService {
   PasswordEncoder encoder;
   JwtUtils jwtUtils;
   private FarmRepository farmRepository;
+  private AccountApprovalService approvalService;
 
   @Override
   public ResponseEntity<Object> authenticateUser(LoginRequest loginRequest)
@@ -141,9 +142,14 @@ public class AuthControllerServiceImpl implements AuthControllerService {
               .farmOwner(true)
               .build();
 
+      String approvalToken = approvalService.markPending(user);
       userRepository.save(user);
+      approvalService.notifyRegistration(user, request.getFarmName(), approvalToken);
 
-      return ResponseEntity.ok(new MessageResponse(true, "Profile created successfully!"));
+      return ResponseEntity.ok(
+          new MessageResponse(
+              true,
+              "Profile created successfully! Your account is awaiting approval by the administrator."));
 
     } catch (Exception e) {
       logger.error("Unable to register user: ", e);

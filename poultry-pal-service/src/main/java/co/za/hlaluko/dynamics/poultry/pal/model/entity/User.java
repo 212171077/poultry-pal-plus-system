@@ -1,5 +1,6 @@
 package co.za.hlaluko.dynamics.poultry.pal.model.entity;
 
+import co.za.hlaluko.dynamics.poultry.pal.model.dto.ApprovalStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -48,6 +49,12 @@ public class User {
     private String rolesUpdatedByUserId;
     private String removedByUserId;
     private boolean removed;
+    /** Null means a legacy account that never needed approval. */
+    private ApprovalStatus approvalStatus;
+    private String approvalTokenHash;
+    private String passwordResetCodeHash;
+    private Date passwordResetExpiry;
+    private int passwordResetAttempts;
 
     public User() {
     }

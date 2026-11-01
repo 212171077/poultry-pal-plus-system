@@ -1,5 +1,142 @@
 # PoultryPal Application Documentation
 
+## HTTPS and HTTP switching
+
+`src/main/resources/keystore/keystore.p12` was renewed in October 2026 for
+`tertiaryverify.dedicated.co.za`, expiring on 9 May 2027. It retains alias
+`tomcat` and the existing configured password. Keep keystores out of commits.
+HTTPS is enabled by default on port 8090. Set `TLS_KEY_STORE_PASSWORD` to the
+existing keystore password; `TLS_KEY_STORE` optionally overrides the classpath
+keystore location. A local ignored `.env` contains the existing password.
+Do not commit that file. Spring Boot does not load `.env` automatically:
+
+```bash
+# From poultry-pal-service; requires Java 21.
+set -a; . ./.env; set +a
+./mvnw spring-boot:run
+# HTTP instead, on the same port:
+TLS_ENABLED=false ./mvnw spring-boot:run
+```
+
+For Docker Compose, set `JWT_SECRET` in the environment or local `.env`, then:
+
+```bash
+./mvnw package -DskipTests
+docker compose up -d --build
+# Switch both backend and Angular/Nginx to HTTP, without changing ports:
+TLS_ENABLED=false docker compose up -d
+# Switch both back to HTTPS:
+TLS_ENABLED=true docker compose up -d
+```
+
+Compose loads `.env` automatically. The web container mounts the renewed PEM
+files from `../poultry-pal-plus-web/config` read-only; private keys are not
+baked into its image. Access the web app at
+`https://tertiaryverify.dedicated.co.za:8080` and the API at
+`https://tertiaryverify.dedicated.co.za:8090`.
+The certificate does not cover `localhost` or IP addresses. For local browser
+HTTPS access, map `tertiaryverify.dedicated.co.za` to `127.0.0.1` in your hosts
+file (remove the mapping when accessing the remote deployment).
+
+`COOKIE_SECURE` follows `TLS_ENABLED` unless explicitly overridden; remove any
+fixed `COOKIE_SECURE=true` override before switching to HTTP. Clear existing
+site cookies after changing protocols. HTTP on a non-localhost origin disables
+service workers/offline PWA support. See the Angular README for dev-server commands.
+
+## Building and pushing the combined image
+
+From the repository root, run `./push-image.sh` (tag `latest`) or
+`./push-image.sh v1.0.0`. The script prompts for **HTTPS** (Enter or `1`) or
+**HTTP** (`2`), builds both Angular and Spring Boot inside Docker, then pushes
+`212171077/poultry-pal:<tag>` using your existing `docker login`.
+No local Node or Java installation is needed. `DOCKER_USER` and
+`DOCKER_REGISTRY` optionally change the destination. Nothing is pushed until
+the build succeeds. Use distinct tags when retaining both HTTP and HTTPS builds.
+Builds reuse Docker layers and a BuildKit Maven dependency cache. Maven resolves
+dependencies during packaging rather than running the extra `dependency:go-offline`
+plugin. If a repository returns a transient 502, rerun the script; completed
+downloads are retained and a failed build is never pushed.
+
+The choice sets the image's default protocol for both ports. Runtime
+`TLS_ENABLED=true` or `TLS_ENABLED=false` overrides it without rebuilding.
+The combined image listens on port **8086** for the web app and **8090** for the
+backend. Publish backend port **8091** to retain the hosted mobile service's port.
+MongoDB remains a separate service. Unlike the standalone backend image,
+the combined image excludes private keys and keystores from its build context;
+HTTPS needs read-only mounts at runtime.
+Both nginx and Spring Boot use the same mounted `fullchain.pem` and unencrypted
+`privkey.pem`. Spring Boot uses a PEM SSL bundle: the combined image does **not**
+require a PKCS12 keystore or `TLS_KEY_STORE_PASSWORD`. Standalone backend startup
+still uses its existing keystore configuration.
+
+For Let's Encrypt certificates, mount the **entire** `/etc/letsencrypt` directory
+at `/etc/letsencrypt` read-only and set
+`TLS_CERT_DIR=/etc/letsencrypt/live/tertiaryverify.dedicated.co.za`.
+Do not also mount its `live` directory at `/etc/nginx/tls`: relative symlinks to
+`../../archive` would break. `TLS_CERT_DIR` defaults to `/etc/nginx/tls` for
+deployments using regular PEM files rather than Let's Encrypt symlinks.
+The combined image health check verifies the web page and proxied v1 API over
+HTTPS with certificate verification; `docker compose up --wait` waits for it.
+
+The shared `deployment-dc.yml` instead mounts regular PEM files from
+`./poultry-pal-tls` on the deployment server (override with `POULTRY_TLS_DIR`).
+Copy the renewed full chain and matching unencrypted private key there as
+`fullchain.pem` and `privkey.pem`, keeping the key readable only by the deployment
+administrator. Do not copy Let’s Encrypt symlinks into this directory. The local
+ignored `poultry-pal-plus-web/config` directory contains the prepared renewal
+files; they are not included in the Docker image. Updating the files requires
+restarting Poultry Pal so both nginx and Spring Boot reload them.
+The deployment script validates expiry, hostname and key matching before its
+existing cleanup sequence; other services retain their certificate configuration.
+
+Example from the repository root, with an existing MongoDB on the Docker host:
+
+```bash
+# Set JWT_SECRET and MongoDB credentials
+# through your deployment environment; do not put them in this script.
+set -a; . poultry-pal-service/.env; set +a
+docker run -d --name poultry-pal-combined \
+  -p 8086:8086 -p 8091:8090 \
+  --add-host host.docker.internal:host-gateway \
+  -e TLS_ENABLED=true -e JWT_SECRET \
+  -e SPRING_DATA_MONGODB_HOST=host.docker.internal \
+  -e SPRING_DATA_MONGODB_PORT=27017 \
+  -e SPRING_DATA_MONGODB_DATABASE=poultry-pal-db \
+  -e SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE=admin \
+  -e SPRING_DATA_MONGODB_USERNAME -e SPRING_DATA_MONGODB_PASSWORD \
+  -v "$PWD/poultry-pal-plus-web/config:/etc/nginx/tls:ro" \
+  212171077/poultry-pal:latest
+```
+
+Use the existing deployment's MongoDB host, port, database, authentication database
+and credentials; the values above are examples. Do not start a fresh MongoDB or
+change its volume when replacing the backend. Stop the old backend container
+before binding its existing host port 8091.
+
+Open `https://tertiaryverify.dedicated.co.za:8086`. Nginx forwards `/api` to the
+backend inside this container; the deployed web app does not use `proxy.hosted.json`.
+The mobile app must use `https://tertiaryverify.dedicated.co.za:8091/api/auth` and
+`https://tertiaryverify.dedicated.co.za:8091/api/farm` for this HTTPS deployment.
+Its current `http://154.0.166.216:8091` URL cannot talk HTTP to an HTTPS listener.
+Allow inbound ports 8086 and 8091 in the host firewall.
+
+To build locally without pushing:
+
+```bash
+docker build --build-arg TLS_ENABLED=true -f Dockerfile.combined \
+  -t 212171077/poultry-pal:latest .
+```
+
+Run that build command from the repository root. Push only when ready with
+`docker push 212171077/poultry-pal:latest`. Certificate files,
+keystores and `.env` files remain excluded from the build context.
+
+For HTTP, recreate the container with `-e TLS_ENABLED=false`; TLS mounts
+can then be omitted. Remove any fixed `COOKIE_SECURE`
+override when changing protocols. Keep the same MongoDB and JWT configuration.
+The existing Compose file still deploys separate backend and frontend images;
+this combined image replaces those two containers, not MongoDB.
+
 ## 1. Application Overview
 
 PoultryPal is a comprehensive poultry farm management application designed to streamline and
@@ -164,6 +301,54 @@ The application
     *   **Authorization**: Role-Based
  Access Control (RBAC) implemented using Spring Security's `@PreAuthorize` annotation, restricting access to endpoints based on user roles (e.g., `hasRole('ADMIN')`, `hasRole('FARM_MANAGER')`).
 
+### 6.1 Web/offline API (`/api/v1`)
+
+The `/api/v1` endpoints serve the offline-first web app. Legacy `/api/auth/*` and `/api/farm/*` keep their existing contract for the Flutter app.
+
+Every v1 response uses one envelope:
+
+```json
+{ "success": true, "message": "string", "data": {}, "errorCode": "VALIDATION_ERROR", "errors": [{ "field": "x", "message": "..." }] }
+```
+
+`errorCode` and `errors` appear only on failures. The codes are `VALIDATION_ERROR`, `BAD_REQUEST`, `UNAUTHORIZED`, `INVALID_CREDENTIALS`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT`, `DUPLICATE`, `UNSUPPORTED_OPERATION` and `INTERNAL_ERROR`.
+
+**Auth (`/api/v1/auth`)**
+
+Auth uses HttpOnly cookies only; no tokens appear in response bodies.
+
+| Endpoint | Description |
+|---|---|
+| `POST /signin` | Sets the access cookie `poultry-pal` (1 h, path `/api`) and the refresh cookie `poultry-pal-refresh` (30 days, path `/api/v1/auth`). With `"rememberMe": false` the refresh cookie is a browser-session cookie; refresh keeps this choice |
+| `POST /signup` | Registers a farm owner and their farm. A duplicate email returns `409 CONFLICT` |
+| `POST /refresh` | Rotates the refresh token. If a revoked token is reused more than 30 s after rotation, all of that user's sessions are revoked |
+| `POST /logout` | Revokes the refresh token and clears both cookies |
+| `GET /me` | Returns the current user |
+
+**Sync (`/api/v1/sync`)**
+
+All sync data is scoped to the caller's farm. Workers only see the coops they are responsible for.
+
+| Endpoint | Description |
+|---|---|
+| `POST /push` | Accepts `{operations:[{opId, entityType, operation, entityId, coopId, baseVersion, payload}]}`, with 1–200 operations per request. Each operation returns `APPLIED`, `CONFLICT` (stale `baseVersion`, includes `serverRecord`) or `REJECTED` (validation or permission). Replaying an `opId` returns the original result with `duplicate=true` |
+| `GET /changes?since=&limit=` | Returns records and tombstones with `version > since`, plus `cursor`, `hasMore` and `resetRequired`. If `resetRequired` is true, the client must re-bootstrap |
+| `GET /bootstrap` | Returns the user, a full farm snapshot, the team and settings |
+
+- **Entity types:** `FARM`, `COOP`, `SALE`, `MORTALITY`, `EXPENSE`, `EGG_PACKAGING` and `REMINDER` (`ACTION` marks a reminder as done).
+- **Coop lifecycle actions:** a `COOP` `ACTION` operation runs one of two lifecycle changes. Its payload is `{action, batch?, newGrowthPhase?, targetCoopId?}`, and `baseVersion` is ignored.
+  - `NEW_BATCH` is for farm managers only. It archives the coop and all its records to `coop_archives`, clears the coop's records (they come back as tombstones), and then applies `batch` (a full coop payload).
+  - `PHASE_TRANSITION` sets `newGrowthPhase`. If `targetCoopId` names another coop, the flock (chicken count, arrival date and reminder) and all of its records move into that coop, and the source coop is reset to brooding with 0 chickens. The target coop must be the same type and must be empty.
+- **Client-generated IDs:** clients create record IDs themselves, so creates are idempotent.
+
+**Versioning model**
+
+- **Farm version:** the `Farm` document has an optimistic-lock `@Version`.
+- **Record stamping:** on every save, including legacy saves, `FarmChangeTracker` gives each changed record `version` (equal to the farm version), `updatedAt` and `updatedBy`.
+- **Deletes:** deleting a record creates a tombstone. Tombstones are pruned after 90 days.
+- **Migration:** on startup, `SyncDatabaseInitializer` sets `version=1` on any farm that has no version, and creates TTL indexes for `sync_operations` (30 days) and `refresh_tokens`.
+- **Concurrent saves:** two concurrent saves of the same farm, including legacy saves, can no longer silently overwrite each other. The losing save fails with `OptimisticLockingFailureException`. v1 push retries up to 3 times.
+
 ## 7. Configuration & Environment
 
 Application settings are managed through property files and environment variables.
@@ -180,8 +365,22 @@ Application settings are managed through property files and environment variable
     *   Swagger UI paths.
     *   Mail user and password (currently hardcoded in `ConstantUtil
 ` and potentially overridden by `AppConfig`).
+*   **Environment variables**:
+
+    | Variable | Default | Purpose |
+    |---|---|---|
+    | `JWT_SECRET` | *(random per start, with a warning)* | Base64 HMAC key, at least 64 bytes. **Required in production** (`docker-compose` refuses to start without it). Generate one with `openssl rand -base64 64` |
+    | `JWT_ACCESS_EXPIRATION_MS` | `3600000` | Lifetime of the v1 access cookie |
+    | `JWT_REFRESH_EXPIRATION_MS` | `2592000000` | Lifetime of the v1 refresh cookie (30 days) |
+    | `TLS_ENABLED` | `true` | Set to `false` to serve HTTP on the same port (also switches Angular/Nginx in Compose) |
+    | `TLS_KEY_STORE_PASSWORD` | *(required for HTTPS)* | Password of the renewed PKCS12 keystore |
+    | `COOKIE_SECURE` | follows `TLS_ENABLED` | Optional override for the auth cookie Secure flag |
+    | `COOKIE_SAME_SITE` | `Lax` | `SameSite` attribute of the auth cookies |
+    | `CORS_ALLOWED_ORIGINS` | HTTPS localhost/domain on port 4200, HTTP localhost on port 4200 | Comma-separated list of browser origins allowed to send credentials |
+
+    The legacy token lifetime (`poultry.pal.app.jwt.expiration.ms`, 24 h) is unchanged.
 *   **Security and secrets handling**:
-    *   Sensitive information like JWT secrets and database credentials are configured in `application.properties` and are designed to be overridden by environment variables in production deployments (as seen in `docker-compose.yml`).
+    *   The JWT secret is supplied only through `JWT_SECRET`. Database credentials are configured in `application.properties` and are designed to be overridden by environment variables in production deployments (as seen in `docker-compose.yml`).
     *
    Mail credentials are also present in `ConstantUtil.java` and initialized via `AppConfigRepository` if not present in the database.
 

@@ -44,9 +44,11 @@ class Common {
         required BuildContext context,
         String? initialValue,
         bool isPassword = false,
+        String? hintText,
     }) {
         return _AppTextField(
             label: label,
+            hintText: hintText,
             icon: icon,
             onChanged: onChanged,
             validator: validator,
@@ -761,9 +763,9 @@ class Common {
         required ValueChanged<BoxSize> onChanged,
         required BuildContext context,
     }) {
-        final boxSizes = [BoxSize.THIRTY_EGGS_BOX, BoxSize.EIGHTEEN_EGGS_BOX, BoxSize.TWELVE_EGGS_BOX, BoxSize.SIX_EGGS_BOX];
+        final boxSizes = [BoxSize.SIXTY_EGGS_BOX, BoxSize.THIRTY_EGGS_BOX, BoxSize.EIGHTEEN_EGGS_BOX, BoxSize.TWELVE_EGGS_BOX, BoxSize.SIX_EGGS_BOX];
         final boxSizeLabels = {
-            BoxSize.THIRTY_EGGS_BOX: '30 Eggs', BoxSize.EIGHTEEN_EGGS_BOX: '18 Eggs',
+            BoxSize.SIXTY_EGGS_BOX: '60 Eggs', BoxSize.THIRTY_EGGS_BOX: '30 Eggs', BoxSize.EIGHTEEN_EGGS_BOX: '18 Eggs',
             BoxSize.TWELVE_EGGS_BOX: '12 Eggs', BoxSize.SIX_EGGS_BOX: '6 Eggs',
         };
         final scrollController = ScrollController();
@@ -1067,8 +1069,10 @@ class _AppTextField extends StatefulWidget {
     final TextInputType? keyboardType;
     final String? initialValue;
     final bool isPassword;
+    final String? hintText;
 
     const _AppTextField({
+        this.hintText,
         required this.label,
         required this.icon,
         required this.onChanged,
@@ -1122,6 +1126,7 @@ class _AppTextFieldState extends State<_AppTextField> {
             validator: widget.validator,
             decoration: InputDecoration(
                 labelText: widget.label,
+                hintText: widget.hintText,
                 labelStyle: TextStyle(
                     fontSize: 14,
                     color: _isValid == true ? AppColors.success : null,

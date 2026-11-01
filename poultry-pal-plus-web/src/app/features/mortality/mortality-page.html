@@ -1,0 +1,75 @@
+<div class="pp-page">
+  <app-page-header heading="Mortality" subtitle="Track losses and spot their causes early.">
+    <button mat-flat-button type="button" (click)="openForm()">
+      <mat-icon>add</mat-icon>
+      Record mortality
+    </button>
+  </app-page-header>
+
+  @if (!loading()) {
+    @if (rows().length > 0) {
+      <section class="summary pp-surface-card" aria-label="Summary">
+        <div>
+          <span class="summary-label">Last 7 days</span>
+          <strong class="summary-value">{{ summary().week }}</strong>
+        </div>
+        <div>
+          <span class="summary-label">This month</span>
+          <strong class="summary-value">{{ summary().month }}</strong>
+        </div>
+        <div>
+          <span class="summary-label">Most common cause</span>
+          <strong class="summary-value">{{ summary().topReason }}</strong>
+        </div>
+      </section>
+
+      <ul class="list pp-surface-card" aria-label="Mortality records">
+        @for (row of rows(); track row.record.id) {
+          <li class="item" data-testid="mortality-row">
+            <span class="icon" aria-hidden="true">
+              <mat-icon>monitor_heart</mat-icon>
+            </span>
+            <div class="main">
+              <span class="title">{{ row.title }}</span>
+              <span class="meta">{{ row.meta }}</span>
+            </div>
+            <div class="side">
+              <span class="chip">{{ row.record.reason }}</span>
+              <app-sync-chip [status]="row.record.syncStatus" [compact]="true" />
+            </div>
+            <button
+              mat-icon-button
+              type="button"
+              [matMenuTriggerFor]="menu"
+              [attr.aria-label]="'More actions for ' + row.title"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+              <button mat-menu-item type="button" (click)="openForm(row.record)">
+                <mat-icon>edit</mat-icon>
+                Edit
+              </button>
+              <button mat-menu-item type="button" (click)="remove(row.record)">
+                <mat-icon>delete</mat-icon>
+                Delete
+              </button>
+            </mat-menu>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="pp-surface-card">
+        <app-empty-state
+          icon="monitor_heart"
+          heading="No losses recorded"
+          [message]="
+            coops().length > 0
+              ? 'Record deaths and their cause to keep an eye on flock health.'
+              : 'Mortality records belong to a coop. Your coops appear here after the first sync.'
+          "
+        />
+      </div>
+    }
+  }
+</div>

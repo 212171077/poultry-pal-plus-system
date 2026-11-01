@@ -1,0 +1,177 @@
+<div class="pp-page">
+  <app-page-header heading="Settings" subtitle="Manage your profile, farm and app preferences." />
+
+  <section class="pp-surface-card panel" aria-labelledby="profile-title">
+    <h2 id="profile-title" class="panel-title">Your profile</h2>
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+      <div class="fields">
+        <mat-form-field>
+          <mat-label>First name</mat-label>
+          <input matInput formControlName="name" autocomplete="given-name" />
+          @if (profileForm.controls.name.invalid && profileForm.controls.name.touched) {
+            <mat-error>Enter a name between 2 and 50 characters.</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Surname</mat-label>
+          <input matInput formControlName="surname" autocomplete="family-name" />
+          @if (profileForm.controls.surname.invalid && profileForm.controls.surname.touched) {
+            <mat-error>Enter a surname between 2 and 50 characters.</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete="email" />
+          @if (profileForm.controls.email.invalid && profileForm.controls.email.touched) {
+            <mat-error>Enter a valid email address.</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Phone number</mat-label>
+          <input matInput type="tel" formControlName="phoneNumber" autocomplete="tel" />
+          @if (profileForm.controls.phoneNumber.invalid && profileForm.controls.phoneNumber.touched) {
+            <mat-error>Enter a phone number of at most 15 characters.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      <button mat-flat-button type="submit" [disabled]="savingProfile()">Save profile</button>
+    </form>
+
+    <form class="subform" [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+      <h3>Login details</h3>
+      <div class="fields">
+        <mat-form-field>
+          <mat-label>Current password</mat-label>
+          <input matInput type="password" formControlName="currentPassword" autocomplete="current-password" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>New password</mat-label>
+          <input matInput type="password" formControlName="newPassword" autocomplete="new-password" />
+          @if (passwordForm.controls.newPassword.hasError('minlength')) {
+            <mat-error>Use at least 8 characters.</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Confirm new password</mat-label>
+          <input matInput type="password" formControlName="confirmPassword" autocomplete="new-password" />
+        </mat-form-field>
+      </div>
+      <button mat-stroked-button type="submit" [disabled]="savingPassword()">Change password</button>
+    </form>
+  </section>
+
+  @if (canManage()) {
+    <section class="pp-surface-card panel" aria-labelledby="farm-title">
+      <h2 id="farm-title" class="panel-title">Farm details</h2>
+      <p class="muted">Changes are saved to the farm and refreshed from the server.</p>
+      <form [formGroup]="farmForm" (ngSubmit)="saveFarm()">
+        <div class="fields">
+          <mat-form-field>
+            <mat-label>Farm name</mat-label>
+            <input matInput formControlName="farmName" autocomplete="organization" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Address line 1</mat-label>
+            <input matInput formControlName="addressLine1" autocomplete="address-line1" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Address line 2</mat-label>
+            <input matInput formControlName="addressLine2" autocomplete="address-line2" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>City / town</mat-label>
+            <input matInput formControlName="city" autocomplete="address-level2" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Province / state</mat-label>
+            <input matInput formControlName="state" autocomplete="address-level1" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Postal code</mat-label>
+            <input matInput formControlName="postalCode" autocomplete="postal-code" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Country</mat-label>
+            <input matInput formControlName="country" autocomplete="country-name" />
+          </mat-form-field>
+        </div>
+        <button mat-flat-button type="submit" [disabled]="savingFarm()">Save farm details</button>
+      </form>
+    </section>
+  }
+
+  <section class="pp-surface-card panel" aria-labelledby="currency-title">
+    <h2 id="currency-title" class="panel-title">Currency</h2>
+    <p class="muted">Used for farm totals and reports on this account.</p>
+    <form class="inline-form" [formGroup]="currencyForm" (ngSubmit)="saveCurrency()">
+      <mat-form-field>
+        <mat-label>Currency</mat-label>
+        <mat-select formControlName="currency">
+          @for (currency of currencies; track currency) {
+            <mat-option [value]="currency">{{ currency }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <button mat-flat-button type="submit" [disabled]="savingCurrency()">Save currency</button>
+    </form>
+  </section>
+
+  <section class="pp-surface-card panel" aria-labelledby="appearance-title">
+    <h2 id="appearance-title" class="panel-title">Appearance</h2>
+    <p class="muted">
+      Use "Farm night" for early mornings and late checks in the coop, and "Sunlight" for
+      extra-clear text when working outdoors.
+    </p>
+    <mat-button-toggle-group
+      aria-labelledby="appearance-title"
+      [value]="themePreference()"
+      (change)="setTheme($event.value)"
+    >
+      <mat-button-toggle value="system">
+        <mat-icon>brightness_auto</mat-icon> Match device
+      </mat-button-toggle>
+      <mat-button-toggle value="light"><mat-icon>light_mode</mat-icon> Light</mat-button-toggle>
+      <mat-button-toggle value="dark"><mat-icon>dark_mode</mat-icon> Farm night</mat-button-toggle>
+      <mat-button-toggle value="sunlight"><mat-icon>wb_sunny</mat-icon> Sunlight</mat-button-toggle>
+    </mat-button-toggle-group>
+  </section>
+
+  <section class="pp-surface-card panel" aria-labelledby="storage-title">
+    <h2 id="storage-title" class="panel-title">Local storage</h2>
+    <p class="muted">{{ storageUsage() }}</p>
+    <p class="muted">Clear local farm records and download a fresh copy from the server.</p>
+    @if (localDataMessage(); as message) {
+      <p class="notice" role="status">{{ message }}</p>
+    }
+    <button mat-stroked-button type="button" [disabled]="clearing()" (click)="clearLocalData()">
+      <mat-icon>delete_sweep</mat-icon>
+      {{ clearing() ? 'Refreshing…' : 'Clear local data' }}
+    </button>
+  </section>
+
+  <section class="pp-surface-card panel" aria-labelledby="app-title">
+    <h2 id="app-title" class="panel-title">App and updates</h2>
+    <p class="muted">Poultry Pal Plus · {{ updatesEnabled ? 'Offline-ready web app' : 'Browser app' }}</p>
+    <p class="muted" aria-live="polite">
+      @switch (updateState()) {
+        @case ('checking') { Checking for an update… }
+        @case ('available') { A new version is available and will load after refresh. }
+        @case ('unsupported') { Update checks are not available in this browser. }
+        @case ('error') { The app could not check for updates. Check your connection and try again. }
+        @default { App is up to date. }
+      }
+    </p>
+    <div class="actions">
+      <button mat-stroked-button type="button" (click)="checkForUpdates()">
+        <mat-icon>system_update</mat-icon>
+        Check for updates
+      </button>
+      @if (canInstall()) {
+        <button mat-flat-button type="button" (click)="install()">
+          <mat-icon>install_mobile</mat-icon>
+          Install Poultry Pal Plus
+        </button>
+      }
+    </div>
+  </section>
+</div>

@@ -12,10 +12,10 @@ public class UpdateFarmRequest {
   @NotBlank private String farmId;
   @NotBlank private String updatedByUserId;
   @NotBlank private String farmName;
-  @NotBlank private String farmAddressLine1;
-  @NotBlank private String farmAddressLine2;
-  @NotBlank private String farmState;
-  @NotBlank private String farmCity;
-  @NotBlank private String farmPostalCode;
-  @NotBlank private String farmCountry;
+  private String farmAddressLine1;
+  private String farmAddressLine2;
+  private String farmState;
+  private String farmCity;
+  private String farmPostalCode;
+  private String farmCountry;
 }

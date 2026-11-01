@@ -18,6 +18,8 @@ import co.za.hlaluko.dynamics.poultry.pal.repository.*;
 import co.za.hlaluko.dynamics.poultry.pal.security.SecurityUtils;
 import co.za.hlaluko.dynamics.poultry.pal.security.services.UserDetailsImpl;
 import co.za.hlaluko.dynamics.poultry.pal.utils.ConstantUtil;
+import co.za.hlaluko.dynamics.poultry.pal.utils.EggBoxSizes;
+import co.za.hlaluko.dynamics.poultry.pal.utils.EggSalePackaging;
 import co.za.hlaluko.dynamics.poultry.pal.utils.PoultryPalUtil;
 import co.za.hlaluko.dynamics.poultry.pal.utils.ValidationUtil;
 import co.za.hlaluko.dynamics.poultry.pal.utils.exception.PoultryPalException;
@@ -68,6 +70,7 @@ public class FarmServiceImpl implements FarmService {
   private final UserSettingsRepository userSettingsRepository;
   private final EmailSender emailSender;
   private final AsyncService asyncService;
+  private final CoopReminderFactory coopReminderFactory;
 
   @Override
   public ResponseEntity<Object> updateUser(UpdateUserRequest request) {
@@ -225,7 +228,7 @@ public class FarmServiceImpl implements FarmService {
     if (farmOptional.isPresent()) {
       Farm farm = farmOptional.get();
       farm.setFarmName(request.getFarmName());
-      Address address = farm.getAddress();
+      Address address = farm.getAddress() == null ? new Address() : farm.getAddress();
       address.setAddressLine1(request.getFarmAddressLine1());
       address.setAddressLine2(request.getFarmAddressLine2());
       address.setCity(request.getFarmCity());
@@ -350,8 +353,22 @@ public class FarmServiceImpl implements FarmService {
           .body(new MessageResponse(false, "Farm does not have coops"));
     }
     double totalSaleAmount;
+    EggSalePackaging packaging = null;
     if (coop.getCoopType() == CoopType.LAYERS) {
-      totalSaleAmount = request.getNumberOfDozensSold() * request.getSalePricePerDozen();
+      if (request.getEggPackaging() != null) {
+        try {
+          packaging = EggSalePackaging.fromCode(request.getEggPackaging());
+        } catch (IllegalArgumentException e) {
+          return ResponseEntity.badRequest().body(new MessageResponse(false, e.getMessage()));
+        }
+        if (request.getQuantitySold() == null || request.getPricePerUnit() == null) {
+          return ResponseEntity.badRequest()
+              .body(new MessageResponse(false, "quantitySold and pricePerUnit are required"));
+        }
+        totalSaleAmount = request.getQuantitySold() * request.getPricePerUnit();
+      } else {
+        totalSaleAmount = request.getNumberOfDozensSold() * request.getSalePricePerDozen();
+      }
     } else {
       totalSaleAmount = request.getNumberOfChickensSold() * request.getSalePricePerChicken();
     }
@@ -368,9 +385,15 @@ public class FarmServiceImpl implements FarmService {
 
         sale.setNumberOfDozensSold(request.getNumberOfDozensSold());
         sale.setSalePricePerDozen(request.getSalePricePerDozen());
+        sale.setEggSize(request.getEggSize());
+        sale.setEggPackaging(packaging == null ? null : packaging.name());
+        sale.setQuantitySold(request.getQuantitySold());
+        sale.setPricePerUnit(request.getPricePerUnit());
+        sale.setTotalEggsSold(
+            packaging == null ? null : request.getQuantitySold() * packaging.getEggsPerUnit());
         sale.setNumberOfChickensSold(request.getNumberOfChickensSold());
         sale.setSalePricePerChicken(request.getSalePricePerChicken());
-        sale.setBuyerName(request.getBuyerName());
+        sale.setAdditionalInfo(request.getAdditionalInfo());
         sale.setRecordedBy(request.getRecordedBy());
         sale.setPaymentStatus(request.getPaymentStatus());
         sale.setTotalSaleAmount(totalSaleAmount);
@@ -394,9 +417,15 @@ public class FarmServiceImpl implements FarmService {
               .id(UUID.randomUUID().toString())
               .numberOfDozensSold(request.getNumberOfDozensSold())
               .salePricePerDozen(request.getSalePricePerDozen())
+              .eggSize(request.getEggSize())
+              .eggPackaging(packaging == null ? null : packaging.name())
+              .quantitySold(request.getQuantitySold())
+              .pricePerUnit(request.getPricePerUnit())
+              .totalEggsSold(
+                  packaging == null ? null : request.getQuantitySold() * packaging.getEggsPerUnit())
               .numberOfChickensSold(request.getNumberOfChickensSold())
               .salePricePerChicken(request.getSalePricePerChicken())
-              .buyerName(request.getBuyerName())
+              .additionalInfo(request.getAdditionalInfo())
               .recordedBy(request.getRecordedBy())
               .paymentStatus(request.getPaymentStatus())
               .totalSaleAmount(totalSaleAmount)
@@ -696,18 +725,7 @@ public class FarmServiceImpl implements FarmService {
   }
 
   private int getBoxSize(String boxSize) {
-    if (boxSize == null || boxSize.isBlank()) {
-      return 0;
-    }
-    String normalized = boxSize.trim().toLowerCase();
-    return switch (normalized) {
-      case "6 eggs box" -> 6;
-      case "12 eggs box" -> 12;
-      case "18 eggs box" -> 18;
-      case "30 eggs box" -> 30;
-      default ->
-          throw new IllegalArgumentException("Unable to determine eggs box size: " + boxSize);
-    };
+    return EggBoxSizes.eggsPerBox(boxSize);
   }
 
   @Override
@@ -1854,31 +1872,6 @@ public class FarmServiceImpl implements FarmService {
 
   private Reminder buildReminders(
       Date chickenArrivalDate, CoopType coopType, GrowingPhase growingPhase) {
-    if (chickenArrivalDate != null) {
-      Reminder reminder = new Reminder();
-      reminder.setId(UUID.randomUUID().toString());
-      if (coopType == CoopType.LAYERS) {
-        reminder.setVaccines(
-            vaccineScheduleService.generateLayerVaccineSchedule(chickenArrivalDate));
-        reminder.setFeeds(
-            feedScheduleService.generateLayerFeedSchedule(chickenArrivalDate, growingPhase));
-        reminder.setMedicines(
-            medicineScheduleService.generateLayerMedicineSchedule(
-                chickenArrivalDate, growingPhase));
-      } else {
-        reminder.setVaccines(
-            vaccineScheduleService.generateBroilerVaccineSchedule(
-                chickenArrivalDate, growingPhase));
-        reminder.setFeeds(
-            feedScheduleService.generateBroilerFeedSchedule(chickenArrivalDate, growingPhase));
-        reminder.setMedicines(
-            medicineScheduleService.generateBroilerMedicineSchedule(
-                chickenArrivalDate, growingPhase));
-      }
-
-      return reminder;
-    } else {
-      return null;
-    }
+    return coopReminderFactory.buildReminders(chickenArrivalDate, coopType, growingPhase);
   }
 }

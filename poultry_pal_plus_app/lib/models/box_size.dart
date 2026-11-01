@@ -3,7 +3,8 @@ enum BoxSize {
     SIX_EGGS_BOX("6 Eggs Box"),
     TWELVE_EGGS_BOX("12 Eggs Box"),
     EIGHTEEN_EGGS_BOX("18 Eggs Box"),
-    THIRTY_EGGS_BOX("30 Eggs Box");
+    THIRTY_EGGS_BOX("30 Eggs Box"),
+    SIXTY_EGGS_BOX("60 Eggs Box");
 
     final String value;
 

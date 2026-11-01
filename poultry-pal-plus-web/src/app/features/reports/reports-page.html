@@ -1,0 +1,159 @@
+<div class="pp-page">
+  <app-page-header heading="Reports" [subtitle]="period()">
+    <button mat-stroked-button type="button" (click)="exportCsv()">
+      <mat-icon>download</mat-icon>
+      CSV
+    </button>
+    <button mat-stroked-button type="button" (click)="exportExcel()">
+      <mat-icon>table_view</mat-icon>
+      Excel
+    </button>
+  </app-page-header>
+
+  <app-range-filter class="range" [(value)]="rangeKey" label="Report period" />
+
+  @if (!loading()) {
+    <section class="kpis" aria-label="Totals">
+      <app-kpi-card label="Sales" icon="payments" tone="success" [value]="totals().sales" />
+      <app-kpi-card
+        label="Expenses"
+        icon="receipt_long"
+        tone="warning"
+        [value]="totals().expenses"
+      />
+      <app-kpi-card
+        label="Profit"
+        icon="account_balance"
+        [tone]="totals().lossMaking ? 'error' : 'info'"
+        [value]="totals().profit"
+      />
+      <app-kpi-card label="Eggs" icon="egg" tone="accent" [value]="totals().eggs" />
+      <app-kpi-card label="Losses" icon="monitor_heart" tone="error" [value]="totals().deaths" />
+    </section>
+
+    <section class="pp-surface-card panel" aria-labelledby="coops-title">
+      <h2 id="coops-title" class="panel-title">By coop</h2>
+      @if (rows().length > 0) {
+        <div class="table-wrap">
+          <table data-testid="coop-report">
+            <thead>
+              <tr>
+                <th scope="col">Coop</th>
+                <th scope="col" class="num">Live birds</th>
+                <th scope="col" class="num">Sales</th>
+                <th scope="col" class="num">Expenses</th>
+                <th scope="col" class="num">Profit</th>
+                <th scope="col" class="num">Eggs</th>
+                <th scope="col" class="num">Deaths</th>
+                <th scope="col" class="num">Mortality</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of rows(); track row.coopId) {
+                <tr>
+                  <th scope="row">
+                    {{ row.coopName }}<span class="type">{{ row.coopType }}</span>
+                  </th>
+                  <td class="num">{{ row.liveBirds }}</td>
+                  <td class="num">{{ row.salesText }}</td>
+                  <td class="num">{{ row.expensesText }}</td>
+                  <td class="num" [class.loss]="row.lossMaking">{{ row.profitText }}</td>
+                  <td class="num">{{ row.eggs }}</td>
+                  <td class="num">{{ row.deaths }}</td>
+                  <td class="num">{{ row.rateText }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <app-empty-state
+          icon="insights"
+          heading="No coops yet"
+          message="Your coops appear here after the first sync."
+        />
+      }
+    </section>
+
+    <section class="pp-surface-card panel" aria-labelledby="share-title">
+      <h2 id="share-title" class="panel-title">PDF and email</h2>
+      <p class="hint">
+        The farm report and each coop's schedule are made by the server. Emails are saved on this
+        device and sent when you are online.
+      </p>
+      @if (coopOptions().length > 0) {
+        <mat-form-field class="coop-select">
+          <mat-label>Coop for schedule</mat-label>
+          <mat-select [value]="selectedCoop()" (selectionChange)="scheduleCoopId.set($event.value)">
+            @for (coop of coopOptions(); track coop.id) {
+              <mat-option [value]="coop.id">{{ coop.coopName }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+      <div class="buttons">
+        <button
+          mat-flat-button
+          type="button"
+          [disabled]="busy() || !connectivity.online()"
+          (click)="downloadPdf('report')"
+        >
+          <mat-icon>picture_as_pdf</mat-icon>
+          Report PDF
+        </button>
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="busy() || !connectivity.online() || !selectedCoop()"
+          (click)="downloadPdf('schedule')"
+        >
+          <mat-icon>picture_as_pdf</mat-icon>
+          Schedule PDF
+        </button>
+        <button mat-stroked-button type="button" [disabled]="busy()" (click)="email('report')">
+          <mat-icon>forward_to_inbox</mat-icon>
+          Email report
+        </button>
+        <button
+          mat-stroked-button
+          type="button"
+          [disabled]="busy() || !selectedCoop()"
+          (click)="email('schedule')"
+        >
+          <mat-icon>forward_to_inbox</mat-icon>
+          Email schedule
+        </button>
+      </div>
+      @if (!connectivity.online()) {
+        <p class="hint">PDF downloads need an internet connection.</p>
+      }
+
+      @if (pending().length > 0) {
+        <h3 class="subhead">Waiting to send</h3>
+        <ul class="queue" data-testid="report-queue">
+          @for (request of pending(); track request.id) {
+            <li>
+              <span>
+                {{ request.label }}
+                @if (request.status === 'failed') {
+                  <span class="loss">· {{ request.lastError || 'Failed' }}</span>
+                }
+              </span>
+              @if (request.status === 'failed') {
+                <button mat-button type="button" (click)="retry(request.id)">Retry</button>
+              }
+              <button
+                mat-button
+                type="button"
+                [attr.aria-label]="'Cancel ' + request.label"
+                (click)="discard(request.id)"
+              >
+                Cancel
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+</div>

@@ -1,0 +1,112 @@
+<h2 mat-dialog-title>{{ editing ? 'Edit sale' : 'Record a sale' }}</h2>
+<form [formGroup]="form" (ngSubmit)="save()" novalidate>
+  <mat-dialog-content class="fields">
+    <mat-form-field>
+      <mat-label>Coop</mat-label>
+      <mat-select formControlName="coopId">
+        @for (coop of coops; track coop.id) {
+          <mat-option [value]="coop.id">{{ coop.coopName }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>Choose the coop this sale comes from</mat-error>
+    </mat-form-field>
+
+    @if (sellsEggs()) {
+      <div class="row">
+        <mat-form-field>
+          <mat-label>Egg size</mat-label>
+          <mat-select formControlName="eggSize">
+            @for (size of eggSizes; track size) {
+              <mat-option [value]="size">{{ size }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Packaging</mat-label>
+          <mat-select formControlName="eggPackaging">
+            @for (packaging of packagings; track packaging.value) {
+              <mat-option [value]="packaging.value">{{ packaging.label }}</mat-option>
+            }
+          </mat-select>
+          <mat-error>Choose how the eggs were sold</mat-error>
+        </mat-form-field>
+      </div>
+    }
+
+    <div class="row">
+      <mat-form-field>
+        <mat-label>{{ quantityLabel() }}</mat-label>
+        <input
+          matInput
+          type="number"
+          inputmode="numeric"
+          min="1"
+          step="1"
+          formControlName="quantity"
+        />
+        <mat-error>Enter a quantity greater than 0</mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>{{ priceLabel() }}</mat-label>
+        <input
+          matInput
+          type="number"
+          inputmode="decimal"
+          min="0"
+          step="0.01"
+          formControlName="price"
+        />
+        <mat-error>Enter a price greater than 0</mat-error>
+      </mat-form-field>
+    </div>
+
+    <p class="total" aria-live="polite">
+      <span>Total</span>
+      <strong data-testid="sale-total">{{ total() }}</strong>
+    </p>
+
+    <div class="row">
+      <mat-form-field>
+        <mat-label>Additional info (optional)</mat-label>
+        <input
+          matInput
+          maxlength="250"
+          autocomplete="off"
+          placeholder="E.g. Buyer name"
+          formControlName="additionalInfo"
+        />
+        <mat-hint>E.g. Buyer name</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="saleDatePicker" formControlName="saleDate" [max]="today" />
+        <mat-datepicker-toggle matIconSuffix [for]="saleDatePicker" />
+        <mat-datepicker #saleDatePicker />
+        <mat-error>Enter the date</mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-button-toggle-group
+      formControlName="paymentStatus"
+      aria-label="Payment status"
+      hideSingleSelectionIndicator
+    >
+      <mat-button-toggle value="PAID">Paid</mat-button-toggle>
+      <mat-button-toggle value="PENDING">Payment pending</mat-button-toggle>
+    </mat-button-toggle-group>
+
+    @if (error(); as message) {
+      <p class="error" role="alert">{{ message }}</p>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button type="submit" [disabled]="saving()">
+      {{ editing ? 'Save changes' : 'Save sale' }}
+    </button>
+  </mat-dialog-actions>
+</form>

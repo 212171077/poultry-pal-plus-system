@@ -144,5 +144,11 @@ Prompt: "Add illustrated empty states and a first-time onboarding flow. (1) Crea
 Prompt: "Improve accessibility and offline UX indicators in the Flutter app. (1) Add semantic labels to all icons and buttons for screen readers. (2) Ensure all tap targets are at least 48x48 pixels (farmer-friendly large touch targets). (3) Add a connectivity banner at the top of the screen (like Gmail) that shows 'No internet connection' with a yellow/red bar when offline and auto-hides when back online using connectivity_plus package. (4) Increase base font sizes - minimum 14sp for body text, 12sp for captions. (5) Add high contrast mode option in Settings. (6) Ensure all color combinations meet WCAG AA contrast ratio."
 
 **8. Login & Registration Polish:**
-Prompt: "Polish the Login and Registration screens. (1) Add a hero animation with the app logo that transitions from splash screen to login screen. (2) Add social login button placeholders (Google, Apple) with 'or continue with email' divider for future implementation. (3) Add password strength indicator on registration (weak/medium/strong with color bar). (4) Add 'Show password' toggle eye icon in password fields. (5) Add loading state on login button (replace text with circular progress, disable button while loading). (6) Add subtle background animation or gradient shift. (7) Show inline error messages below fields instead of snackbars for validation errors. (8) Add biometric login option (fingerprint/face) using local_auth package for returning users."
-
+Prompt: "Polish the Login and Registration screens.
+(1) Add a hero animation with the app logo that transitions from splash screen to login screen.
+(3) Add password strength indicator on registration (weak/medium/strong with color bar).
+(4) Add 'Show password' toggle eye icon in password fields.
+(5) Add loading state on login button (replace text with circular progress, disable button while loading).
+(6) Add subtle background animation or gradient shift.
+(7) Show inline error messages below fields instead of snackbars for validation errors.
+(8) Add biometric login option (fingerprint/face) using local_auth package for returning users."

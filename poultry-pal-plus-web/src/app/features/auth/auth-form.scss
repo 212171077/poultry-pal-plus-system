@@ -1,0 +1,142 @@
+:host {
+  display: block;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pp-space-xs);
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-form-field mat-icon[matPrefix] {
+  margin-inline: var(--pp-space-sm) var(--pp-space-xs);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.section-title {
+  margin: var(--pp-space-md) 0 var(--pp-space-sm);
+  font-family: var(--pp-font-brand);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--pp-brand);
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  small {
+    font-family: var(--pp-font-body);
+    font-weight: 400;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  column-gap: var(--pp-space-md);
+}
+
+.hint {
+  margin: 0 0 var(--pp-space-sm) 40px;
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.notice,
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--pp-space-sm);
+  margin: 0 0 var(--pp-space-md);
+  padding: var(--pp-space-sm) var(--pp-space-md);
+  border: 1px solid transparent;
+  border-radius: var(--pp-radius-md);
+  line-height: 1.45;
+}
+
+.notice {
+  background: var(--pp-warning-container);
+  color: var(--pp-warning);
+  border-color: color-mix(in srgb, var(--pp-warning) 30%, transparent);
+}
+
+.error {
+  background: var(--pp-error-container);
+  color: var(--pp-error);
+  border-color: color-mix(in srgb, var(--pp-error) 30%, transparent);
+}
+
+.submit {
+  min-height: var(--pp-touch-target);
+  margin-top: var(--pp-space-sm);
+  font-size: 1rem;
+
+  mat-spinner {
+    display: inline-block;
+    margin-inline-end: var(--pp-space-sm);
+    vertical-align: middle;
+    --mat-progress-spinner-active-indicator-color: currentColor;
+  }
+}
+
+.switch {
+  margin: var(--pp-space-lg) 0 0;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+
+  a {
+    font-weight: 600;
+    color: var(--pp-brand);
+  }
+}
+
+.strength {
+  display: flex;
+  align-items: center;
+  gap: var(--pp-space-sm);
+  margin: calc(var(--pp-space-xs) * -1) 0 var(--pp-space-sm);
+  font-size: 0.8125rem;
+  color: var(--mat-sys-on-surface-variant);
+
+  .bars {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    flex: 1;
+  }
+
+  .bar {
+    height: 6px;
+    border-radius: var(--pp-radius-pill);
+    background: var(--pp-border);
+
+    &.on.weak {
+      background: var(--pp-error);
+    }
+
+    &.on.fair {
+      background: var(--pp-warning);
+    }
+
+    &.on.good,
+    &.on.strong {
+      background: var(--pp-success);
+    }
+  }
+}
+
+.address {
+  margin-bottom: var(--pp-space-md);
+  box-shadow: none !important;
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius-md) !important;
+
+  small {
+    color: var(--mat-sys-on-surface-variant);
+  }
+}

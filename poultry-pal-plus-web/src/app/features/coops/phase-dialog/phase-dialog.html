@@ -1,0 +1,44 @@
+<h2 mat-dialog-title>Change growth phase</h2>
+<form [formGroup]="form" (ngSubmit)="save()" novalidate>
+  <mat-dialog-content class="fields">
+    <p class="lead">
+      <strong>{{ coop.coopName }}</strong> is in the {{ currentPhase }} with
+      {{ coop.numberOfChickens.toLocaleString() }} chickens.
+    </p>
+
+    <mat-form-field>
+      <mat-label>New phase</mat-label>
+      <mat-select formControlName="newPhase">
+        @for (phase of phases; track phase.value) {
+          <mat-option [value]="phase.value">{{ phase.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Where is the flock going?</mat-label>
+      <mat-select formControlName="targetCoopId">
+        <mat-option value="">Stay in {{ coop.coopName }}</mat-option>
+        @for (target of targets; track target.id) {
+          <mat-option [value]="target.id">Move to {{ target.coopName }}</mat-option>
+        }
+      </mat-select>
+      <mat-hint>
+        @if (targets.length > 0) {
+          Moving takes the chickens and their records along and leaves this coop empty.
+        } @else {
+          To move the flock, first add an empty {{ typeLabel }} coop.
+        }
+      </mat-hint>
+    </mat-form-field>
+
+    @if (error(); as message) {
+      <p class="error" role="alert">{{ message }}</p>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button type="submit" [disabled]="saving()">Change phase</button>
+  </mat-dialog-actions>
+</form>

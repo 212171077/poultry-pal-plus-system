@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/farm")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class FarmController {
 
   // TODO PreAuthorize NOT working. Hint check if the role is in the database has ROLE_

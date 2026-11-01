@@ -10,11 +10,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Mortality {
+public class Mortality implements SyncTracked {
   private String id;
   private Date dateOccurred;
   private int numberOfDeaths;
   private String reason;
   private String recordedBy;
   private Date createdDate;
+
+  // Sync metadata, maintained by FarmChangeTracker
+  private Long version;
+  private Date updatedAt;
+  private String updatedBy;
 }

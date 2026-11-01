@@ -1,0 +1,238 @@
+<div class="pp-page">
+  <app-page-header heading="Coops & batches" subtitle="Your flocks, their age, phase and losses.">
+    @if (canManage()) {
+      <a mat-stroked-button routerLink="/coops/archive">
+        <mat-icon>inventory_2</mat-icon>
+        Archived batches
+      </a>
+      <button mat-flat-button type="button" (click)="openForm()">
+        <mat-icon>add</mat-icon>
+        Add coop
+      </button>
+    }
+  </app-page-header>
+
+  @if (!loading()) {
+    @if (cards().length > 0) {
+      <section class="summary pp-surface-card" aria-label="Summary">
+        <div>
+          <span class="summary-label">Coops</span>
+          <strong class="summary-value">{{ summary().coops }}</strong>
+        </div>
+        <div>
+          <span class="summary-label">Active flocks</span>
+          <strong class="summary-value">{{ summary().active }}</strong>
+        </div>
+        <div>
+          <span class="summary-label">Live birds</span>
+          <strong class="summary-value" data-testid="coops-live-birds">{{
+            summary().alive
+          }}</strong>
+        </div>
+      </section>
+
+      @if (summary().due.length > 0) {
+        <div class="due-banner" role="status" data-testid="due-banner">
+          <mat-icon aria-hidden="true">schedule</mat-icon>
+          <span>
+            {{ summary().due.length }}
+            {{ summary().due.length === 1 ? 'coop is' : 'coops are' }} due for a growth phase
+            change.
+          </span>
+          <button mat-button type="button" (click)="applyDuePhases()">Update all</button>
+        </div>
+      }
+
+      <div class="toolbar">
+        <mat-button-toggle-group
+          hideSingleSelectionIndicator
+          aria-label="Layout"
+          [value]="view()"
+          (change)="setView($event.value)"
+        >
+          <mat-button-toggle value="cards" aria-label="Cards"
+            ><mat-icon>grid_view</mat-icon></mat-button-toggle
+          >
+          <mat-button-toggle value="table" aria-label="Table"
+            ><mat-icon>table_rows</mat-icon></mat-button-toggle
+          >
+        </mat-button-toggle-group>
+      </div>
+
+      @if (view() === 'cards') {
+        <ul class="grid" aria-label="Coops">
+          @for (card of cards(); track card.coop.id) {
+            <li class="card pp-surface-card" data-testid="coop-card">
+              <header>
+                <span
+                  class="avatar"
+                  [class.layers]="card.coop.coopType === 'LAYERS'"
+                  aria-hidden="true"
+                >
+                  <mat-icon>{{
+                    card.coop.coopType === 'LAYERS' ? 'egg' : 'flutter_dash'
+                  }}</mat-icon>
+                </span>
+                <div class="name">
+                  <h2>{{ card.coop.coopName }}</h2>
+                  <span>{{ card.typeLabel }} · {{ card.phaseLabel }}</span>
+                </div>
+                <ng-container *ngTemplateOutlet="actions; context: { $implicit: card }" />
+              </header>
+
+              <div class="chips">
+                <span class="chip" [class.ok]="card.status === 'active'">{{
+                  statusLabel[card.status]
+                }}</span>
+                <app-sync-chip [status]="card.coop.syncStatus" [compact]="true" />
+              </div>
+
+              <dl class="stats">
+                <div>
+                  <dt>Live birds</dt>
+                  <dd data-testid="coop-alive">{{ card.alive.toLocaleString() }}</dd>
+                </div>
+                <div>
+                  <dt>Age</dt>
+                  <dd>{{ card.age }}</dd>
+                </div>
+                <div>
+                  <dt>Deaths</dt>
+                  <dd>{{ card.deaths.toLocaleString() }}</dd>
+                </div>
+                <div>
+                  <dt>Mortality</dt>
+                  <dd [class.alert]="card.rateAlert" data-testid="coop-rate">{{ card.rate }}</dd>
+                </div>
+              </dl>
+
+              @if (card.due) {
+                <div class="due" data-testid="coop-due">
+                  <span>Due: {{ card.dueLabel }}</span>
+                  <button mat-button type="button" (click)="changePhase(card.coop)">
+                    Change phase
+                  </button>
+                </div>
+              }
+
+              <nav class="links" [attr.aria-label]="'Record for ' + card.coop.coopName">
+                <a
+                  mat-stroked-button
+                  routerLink="/sales"
+                  [queryParams]="{ action: 'new', coop: card.coop.id }"
+                >
+                  <mat-icon>point_of_sale</mat-icon>Sale
+                </a>
+                <a
+                  mat-stroked-button
+                  routerLink="/mortality"
+                  [queryParams]="{ action: 'new', coop: card.coop.id }"
+                >
+                  <mat-icon>monitor_heart</mat-icon>Loss
+                </a>
+                @if (card.coop.coopType === 'LAYERS') {
+                  <a
+                    mat-stroked-button
+                    routerLink="/eggs"
+                    [queryParams]="{ action: 'new', coop: card.coop.id }"
+                  >
+                    <mat-icon>egg</mat-icon>Eggs
+                  </a>
+                }
+              </nav>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="table-wrap pp-surface-card">
+          <table aria-label="Coops">
+            <thead>
+              <tr>
+                <th scope="col">Coop</th>
+                <th scope="col">Phase</th>
+                <th scope="col" class="num">Live birds</th>
+                <th scope="col">Age</th>
+                <th scope="col" class="num">Mortality</th>
+                <th scope="col"><span class="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (card of cards(); track card.coop.id) {
+                <tr data-testid="coop-row">
+                  <td>
+                    <strong>{{ card.coop.coopName }}</strong>
+                    <span class="sub">{{ card.typeLabel }} · {{ statusLabel[card.status] }}</span>
+                  </td>
+                  <td>
+                    {{ card.phaseLabel }}
+                    @if (card.due) {
+                      <span class="chip warn">Due: {{ card.dueLabel }}</span>
+                    }
+                  </td>
+                  <td class="num">{{ card.alive.toLocaleString() }}</td>
+                  <td>{{ card.age }}</td>
+                  <td class="num" [class.alert]="card.rateAlert">{{ card.rate }}</td>
+                  <td class="end">
+                    <app-sync-chip [status]="card.coop.syncStatus" [compact]="true" />
+                    <ng-container *ngTemplateOutlet="actions; context: { $implicit: card }" />
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    } @else {
+      <div class="pp-surface-card">
+        <app-empty-state
+          icon="home_work"
+          heading="No coops yet"
+          [message]="
+            canManage()
+              ? 'Add your first coop to start recording sales, losses and eggs.'
+              : 'Coops assigned to you appear here after the first sync.'
+          "
+        >
+          @if (canManage()) {
+            <button mat-flat-button type="button" (click)="openForm()">
+              <mat-icon>add</mat-icon>
+              Add coop
+            </button>
+          }
+        </app-empty-state>
+      </div>
+    }
+  }
+</div>
+
+<ng-template #actions let-card>
+  <button
+    mat-icon-button
+    type="button"
+    class="more"
+    [matMenuTriggerFor]="menu"
+    [attr.aria-label]="'More actions for ' + card.coop.coopName"
+  >
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu" xPosition="before">
+    <button mat-menu-item type="button" (click)="changePhase(card.coop)">
+      <mat-icon>trending_up</mat-icon>
+      Change phase
+    </button>
+    @if (canManage()) {
+      <button mat-menu-item type="button" (click)="openForm(card.coop)">
+        <mat-icon>edit</mat-icon>
+        Edit
+      </button>
+      <button mat-menu-item type="button" (click)="startNewBatch(card.coop)">
+        <mat-icon>restart_alt</mat-icon>
+        Start new batch
+      </button>
+      <button mat-menu-item type="button" (click)="remove(card.coop)">
+        <mat-icon>delete</mat-icon>
+        Delete
+      </button>
+    }
+  </mat-menu>
+</ng-template>

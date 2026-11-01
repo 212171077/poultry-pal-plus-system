@@ -1,0 +1,78 @@
+<app-auth-layout heading="Welcome back" subheading="Sign in to manage your farm.">
+  @if (!online()) {
+    <p class="notice" role="status">
+      <mat-icon>cloud_off</mat-icon>
+      <span>
+        You are offline. Signing in needs an internet connection. Once signed in, this device keeps
+        working offline.
+      </span>
+    </p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input
+        matInput
+        type="email"
+        formControlName="email"
+        autocomplete="username"
+        inputmode="email"
+        autocapitalize="none"
+      />
+      <mat-icon matPrefix>mail</mat-icon>
+      @if (form.controls.email.hasError('email')) {
+        <mat-error>Enter a valid email address</mat-error>
+      } @else {
+        <mat-error>Enter your email</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input
+        matInput
+        [type]="showPassword() ? 'text' : 'password'"
+        formControlName="password"
+        autocomplete="current-password"
+      />
+      <mat-icon matPrefix>lock</mat-icon>
+      <button
+        mat-icon-button
+        matSuffix
+        type="button"
+        (click)="showPassword.set(!showPassword())"
+        [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+        [attr.aria-pressed]="showPassword()"
+      >
+        <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      <mat-error>Enter your password</mat-error>
+    </mat-form-field>
+
+    <mat-checkbox formControlName="rememberMe">Keep me signed in on this device</mat-checkbox>
+    <p class="hint">Untick on a shared computer: you'll be signed out when the browser closes.</p>
+
+    @if (error(); as message) {
+      <p class="error" role="alert">{{ message }}</p>
+    }
+
+    <p class="switch">
+      <a routerLink="/forgot-password">Forgot your password?</a>
+    </p>
+
+    <button mat-flat-button class="submit" type="submit" [disabled]="submitting() || !online()">
+      @if (submitting()) {
+        <mat-spinner diameter="20" />
+        <span>Signing in…</span>
+      } @else {
+        <span>Sign in</span>
+      }
+    </button>
+  </form>
+
+  <p class="switch">
+    New to Poultry Pal Plus?
+    <a routerLink="/register">Create a farm account</a>
+  </p>
+</app-auth-layout>

@@ -1,0 +1,145 @@
+<div class="pp-page">
+  <app-page-header heading="Team" subtitle="Manage who can work on your farm and which coops they can access.">
+    <button mat-flat-button type="button" (click)="showForm.set(!showForm())">
+      <mat-icon>{{ showForm() ? 'close' : 'person_add' }}</mat-icon>
+      {{ showForm() ? 'Cancel' : 'Add team member' }}
+    </button>
+  </app-page-header>
+
+  @if (teamError(); as message) {
+    <p class="notice" role="alert">{{ message }}</p>
+  }
+
+  @if (showForm()) {
+    <form class="pp-surface-card panel form" [formGroup]="form" (ngSubmit)="addMember()">
+      <h2>Add a team member</h2>
+      <div class="fields">
+        <mat-form-field>
+          <mat-label>First name</mat-label>
+          <input matInput formControlName="name" autocomplete="given-name" />
+          @if (form.controls.name.hasError('required')) {
+            <mat-error>Enter a first name.</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Surname</mat-label>
+          <input matInput formControlName="surname" autocomplete="family-name" />
+          @if (form.controls.surname.hasError('required')) {
+            <mat-error>Enter a surname.</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete="email" />
+          @if (form.controls.email.invalid && form.controls.email.touched) {
+            <mat-error>Enter a valid email address.</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Phone number</mat-label>
+          <input matInput type="tel" formControlName="phoneNumber" autocomplete="tel" />
+          @if (form.controls.phoneNumber.hasError('required')) {
+            <mat-error>Enter a phone number.</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Role</mat-label>
+          <mat-select formControlName="role">
+            <mat-option value="ROLE_FARM_WORKER">Farm worker</mat-option>
+            <mat-option value="ROLE_FARM_MANAGER">Farm manager</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <p class="muted">The server sends account setup instructions to the new member.</p>
+      <button mat-flat-button type="submit" [disabled]="saving()">Add member</button>
+    </form>
+  }
+
+  @if (members().length === 0) {
+    <app-empty-state
+      icon="groups"
+      heading="No other team members yet"
+      message="Add farm workers or managers to share day-to-day farm work."
+    />
+  } @else {
+    <ul class="members" aria-label="Farm team members">
+      @for (member of members(); track member.id) {
+        <li class="pp-surface-card member">
+          <div class="identity">
+            <div class="avatar" aria-hidden="true">
+              {{ (member.name ?? member.email ?? '?').slice(0, 1).toUpperCase() }}
+            </div>
+            <div>
+              <h2>{{ member.name }} {{ member.surname }}</h2>
+              <p class="muted">{{ member.email }}</p>
+              @if (member.active === false) {
+                <p class="status-inactive">Inactive</p>
+              }
+              @if (member.phoneNumber) {
+                <p class="muted">{{ member.phoneNumber }}</p>
+              }
+            </div>
+          </div>
+
+          <div class="permissions">
+            <span class="role-label">Role</span>
+            @if (canManage()) {
+              <mat-form-field subscriptSizing="dynamic">
+                <mat-label>Role for {{ member.name }}</mat-label>
+                <mat-select
+                  [value]="role(member)"
+                  [disabled]="saving() || member.farmOwner"
+                  (selectionChange)="changeRole(member, $event.value)"
+                >
+                  <mat-option value="ROLE_FARM_WORKER">Farm worker</mat-option>
+                  @if (user()?.farmOwner) {
+                    <mat-option value="ROLE_FARM_MANAGER">Farm manager</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            } @else {
+              <p>{{ role(member) === 'ROLE_FARM_MANAGER' ? 'Farm manager' : 'Farm worker' }}</p>
+            }
+
+            <mat-form-field subscriptSizing="dynamic">
+              <mat-label>Assigned coops for {{ member.name }}</mat-label>
+              <mat-select
+                multiple
+                [value]="member.userCoopIds ?? []"
+                [disabled]="saving()"
+                (selectionChange)="assign(member, $event.value)"
+              >
+                @for (coop of coops(); track coop.id) {
+                  <mat-option [value]="coop.id">{{ coop.coopName }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          @if (canManage() && !member.farmOwner) {
+            <button
+              mat-button
+              type="button"
+              [disabled]="saving()"
+              (click)="setActive(member, member.active === false)"
+            >
+              <mat-icon>{{ member.active === false ? 'person_check' : 'person_off' }}</mat-icon>
+              {{ member.active === false ? 'Activate' : 'Deactivate' }}
+            </button>
+            <button
+              mat-button
+              class="remove"
+              type="button"
+              [disabled]="saving()"
+              (click)="remove(member)"
+              [attr.aria-label]="'Remove ' + member.name + ' from the farm'"
+            >
+              <mat-icon>person_remove</mat-icon>
+              Remove
+            </button>
+          }
+        </li>
+      }
+    </ul>
+  }
+</div>

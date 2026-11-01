@@ -1,0 +1,17 @@
+.git
+.idea
+**/node_modules
+**/target
+**/dist
+**/.angular
+**/.env
+**/.env.*
+**/keystore
+**/*.pem
+**/*.key
+**/*.p12
+**/*.jks
+poultry_pal_plus_app
+poultry-pal-plus-web/config
+poultry-pal-plus-web/test-results
+poultry-pal-plus-web/playwright-report

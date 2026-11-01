@@ -1,0 +1,40 @@
+# syntax=docker/dockerfile:1
+FROM maven:3.9-eclipse-temurin-21 AS backend-build
+WORKDIR /app/backend
+COPY poultry-pal-service/pom.xml .
+COPY poultry-pal-service/src ./src
+RUN --mount=type=cache,id=poultry-pal-maven,target=/root/.m2,sharing=locked \
+    mvn -B -ntp -Dmaven.wagon.http.retryHandler.count=3 package -DskipTests
+
+FROM node:22-alpine AS web-build
+WORKDIR /app/web
+COPY poultry-pal-plus-web/package.json poultry-pal-plus-web/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY poultry-pal-plus-web/ .
+RUN npm run build
+
+FROM eclipse-temurin:21-jre-jammy
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends nginx gettext-base ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /etc/nginx/sites-enabled/default \
+    && ln -s /etc/ssl/certs/ca-certificates.crt /etc/ssl/cert.pem \
+    && ln -sf /dev/stdout /var/log/nginx/access.log \
+    && ln -sf /dev/stderr /var/log/nginx/error.log
+WORKDIR /app
+ARG TLS_ENABLED=true
+ARG DB_NAME=poultry-pal-db
+ENV TLS_ENABLED=${TLS_ENABLED} \
+    SPRING_DATA_MONGODB_DATABASE=${DB_NAME} \
+    WEB_PORT=8086 \
+    TLS_SERVER_NAME=tertiaryverify.dedicated.co.za
+COPY --from=backend-build /app/backend/target/poultry-pal-0.0.1-SNAPSHOT.jar /app/poultry-pal.jar
+COPY --from=web-build /app/web/dist/poultry-pal-plus-web/browser /usr/share/nginx/html
+COPY poultry-pal-plus-web/nginx.conf.template /opt/poultry-pal/nginx.conf.template
+COPY poultry-pal-plus-web/scripts/configure-tls.sh /opt/poultry-pal/configure-tls.sh
+COPY docker-entrypoint-combined.sh /app/docker-entrypoint-combined.sh
+COPY docker-healthcheck-combined.sh /app/docker-healthcheck-combined.sh
+RUN chmod +x /app/docker-entrypoint-combined.sh
+EXPOSE 8086 8090
+HEALTHCHECK --interval=10s --timeout=10s --start-period=60s --retries=6 CMD ["bash", "/app/docker-healthcheck-combined.sh"]
+ENTRYPOINT ["/app/docker-entrypoint-combined.sh"]

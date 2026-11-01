@@ -1,0 +1,87 @@
+services:
+  tertiary-verify:
+    image: 212171077/tertiary-verify:latest
+    container_name: tertiary-verify
+    ports:
+      - "8083:8083"
+      - "8082:8082"
+      - "8081:8081"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${TERTIARY_VERIFY_DB_PASSWORD:?Set TERTIARY_VERIFY_DB_PASSWORD in .env}
+      JAVA_OPTS: "-Xmx1g -Xms512m"
+    volumes:
+      - tertiary-verify-db:/var/lib/mysql
+    stop_grace_period: 60s
+    restart: always
+    pull_policy: always
+
+  mongodb:
+    image: mongo:4.4
+    command: ["mongod", "--auth"]
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - poultry-mongo-data:/data/db
+    healthcheck:
+      test:
+        - CMD
+        - mongo
+        - --quiet
+        - --eval
+        - "quit(db.adminCommand('ping').ok ? 0 : 1)"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    restart: unless-stopped
+
+  poultry-pal:
+    image: 212171077/poultry-pal:${POULTRY_PAL_TAG:-latest}
+    container_name: poultry-pal
+    ports:
+      - "8086:8086"
+      - "8091:8090"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      TLS_ENABLED: "true"
+      TLS_SERVER_NAME: tertiaryverify.dedicated.co.za
+      TLS_CERT_DIR: /etc/nginx/tls
+      CORS_ALLOWED_ORIGINS: "https://tertiaryverify.dedicated.co.za:8086"
+      JWT_SECRET: ${POULTRY_JWT_SECRET:?Set POULTRY_JWT_SECRET in .env}
+      SPRING_DATA_MONGODB_HOST: mongodb
+      SPRING_DATA_MONGODB_PORT: "27017"
+      SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
+      SPRING_DATA_MONGODB_USERNAME: ${POULTRY_MONGO_USER:?Set POULTRY_MONGO_USER in .env}
+      SPRING_DATA_MONGODB_PASSWORD: ${POULTRY_MONGO_PASSWORD:?Set POULTRY_MONGO_PASSWORD in .env}
+    volumes:
+      - type: bind
+        source: /root/app/docker-projects/poultry-pal-tls
+        target: /etc/nginx/tls
+        read_only: true
+        bind:
+          create_host_path: false
+    restart: always
+    pull_policy: always
+
+  school-verify:
+    image: 212171077/school-verify-front-and-backend:latest
+    container_name: school-verify
+    ports:
+      - "8085:8085"
+    environment:
+      DB_HOST: 154.0.166.216
+      DB_PORT: 3306
+      DB_NAME: schools_verify
+      DB_USER: root
+      DB_PASSWORD: ${SCHOOL_VERIFY_DB_PASSWORD:?Set SCHOOL_VERIFY_DB_PASSWORD in .env}
+      JAVA_OPTS: "-Xmx1g -Xms512m"
+    restart: always
+    pull_policy: always
+
+volumes:
+  tertiary-verify-db:
+  poultry-mongo-data:
+    external: true
+    name: poultry-pal-service_mongo_data_55

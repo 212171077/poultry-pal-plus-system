@@ -1100,7 +1100,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                     ),
                 ),
                 title: Text(
-                    sale.buyerName,
+                    sale.additionalInfo.isEmpty ? 'Sale' : sale.additionalInfo,
                     style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -1624,7 +1624,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                         child: const Icon(Icons.shopping_cart, color: AppColors.success),
                                                                     ),
                                                                     title: Text(
-                                                                        sale.buyerName,
+                                                                        sale.additionalInfo.isEmpty ? 'Sale' : sale.additionalInfo,
                                                                         style: Theme.of(context)
                                                                             .textTheme
                                                                             .bodySmall
@@ -2870,9 +2870,9 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                 ],
                                             ),
                                             const SizedBox(height: 14),
-                                            // Buyer name (prominent)
+                                            // Additional info (prominent)
                                             Text(
-                                                sale.buyerName,
+                                                sale.additionalInfo.isEmpty ? 'Sale' : sale.additionalInfo,
                                                 style: const TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 22,
@@ -2957,6 +2957,22 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                     Icons.set_meal_rounded,
                                                     'Chickens Sold',
                                                     '${sale.numberOfChickensSold}'),
+                                            if (sale.eggPackaging != null)
+                                                _buildSaleDetailRow(context,
+                                                    Icons.egg_outlined,
+                                                    'Packaging',
+                                                    '${EggSalePackaging.fromCode(sale.eggPackaging)?.label ?? sale.eggPackaging}'
+                                                    '${sale.eggSize != null ? ' (${sale.eggSize})' : ''}'),
+                                            if (sale.eggPackaging != null)
+                                                _buildSaleDetailRow(context,
+                                                    Icons.numbers_rounded,
+                                                    'Quantity Sold',
+                                                    '${sale.quantitySold}'),
+                                            if (sale.eggPackaging != null)
+                                                _buildSaleDetailRow(context,
+                                                    Icons.attach_money,
+                                                    'Price per ${EggSalePackaging.fromCode(sale.eggPackaging)?.unit ?? 'unit'}',
+                                                    'R${sale.pricePerUnit.toStringAsFixed(2)}'),
                                             if (sale.numberOfDozensSold > 0)
                                                 _buildSaleDetailRow(context,
                                                     Icons.egg_outlined,
@@ -3883,7 +3899,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
         User user = User.fromJson(userData as Map<String, dynamic>);
 
         final formKey = GlobalKey<FormState>();
-        String buyerName = '';
+        String additionalInfo = '';
         String? paymentStatus;
         int numberOfChickensSold = 0;
         double salePricePerChicken = 0;
@@ -3955,11 +3971,10 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                 const SizedBox(height: 22),
 
                                                                 Common.buildTextField(
-                                                                    label: 'Buyer Name',
+                                                                    label: 'Additional Info (optional)',
                                                                     icon: Icons.account_circle_outlined,
-                                                                    onChanged: (value) => buyerName = value,
-                                                                    validator: (value) =>
-                                                                    value == null || value.isEmpty ? 'Please enter buyer name' : null,
+                                                                    onChanged: (value) => additionalInfo = value,
+                                                                    hintText: 'E.g. Buyer name',
                                                                     context: context,
                                                                 ),
 
@@ -4041,7 +4056,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                         salePricePerDozen: null,
                                                                                         numberOfChickensSold: numberOfChickensSold,
                                                                                         salePricePerChicken: salePricePerChicken,
-                                                                                        buyerName: buyerName,
+                                                                                        additionalInfo: additionalInfo,
                                                                                         recordedBy: recordedBy,
                                                                                         paymentStatus: paymentStatus ?? '',
                                                                                         saleDate: saleDate!.toIso8601String(),
@@ -4117,10 +4132,13 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
 
         User user = User.fromJson(userData as Map<String, dynamic>);
         final formKey = GlobalKey<FormState>();
-        String buyerName = '';
+        String additionalInfo = '';
         String? paymentStatus;
-        int numberOfDozensSold = 0;
-        double salePricePerDozen = 0;
+        String eggSize = EggSalePackaging.eggSizes.first;
+        String? eggPackaging;
+        int quantitySold = 0;
+        double pricePerUnit = 0;
+        bool showPackagingError = false;
         DateTime? saleDate;
         String recordedBy = user.id;
         bool isSaleDateError = false;
@@ -4195,30 +4213,56 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
 
                                                             children: [
                                                                 const SizedBox(height: 24),
+                                                                Common.buildDropdown(
+                                                                    label: 'Egg Size',
+                                                                    selectedValue: eggSize,
+                                                                    items: EggSalePackaging.eggSizes
+                                                                        .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                                                                        .toList(),
+                                                                    onChanged: (val) => setModalState(() => eggSize = val ?? eggSize),
+                                                                    context: context,
+                                                                ),
+                                                                const SizedBox(height: 22),
+                                                                Common.buildDropdown(
+                                                                    label: 'Packaging',
+                                                                    hintText: 'Select how the eggs were sold',
+                                                                    selectedValue: eggPackaging,
+                                                                    showError: showPackagingError,
+                                                                    items: EggSalePackaging.all
+                                                                        .map((p) => DropdownMenuItem(value: p.code, child: Text(p.label)))
+                                                                        .toList(),
+                                                                    onChanged: (val) => setModalState(() {
+                                                                            eggPackaging = val;
+                                                                            showPackagingError = false;
+                                                                        }),
+                                                                    context: context,
+                                                                ),
+                                                                const SizedBox(height: 22),
                                                                 Common.buildStepperField(
-                                                                    label: 'Number Of Dozens Sold',
-                                                                    value: numberOfDozensSold,
-                                                                    onChanged: (val) => setModalState(() => numberOfDozensSold = val),
+                                                                    label: 'Number of ${EggSalePackaging.fromCode(eggPackaging)?.unit ?? 'unit'}s sold',
+                                                                    value: quantitySold,
+                                                                    onChanged: (val) => setModalState(() => quantitySold = val),
                                                                     min: 0,
                                                                     context: context,
                                                                     validator: (val) => val == null || val <= 0
-                                                                        ? 'Please enter number of dozens sold'
+                                                                        ? 'Please enter the quantity sold'
                                                                         : null,
                                                                 ),
                                                                 const SizedBox(height: 22),
                                                                 Common.buildCurrencyField(
-                                                                    label: 'Sale Price Per Dozen',
-                                                                    onChanged: (value) => salePricePerDozen = value,
+                                                                    label: 'Price per ${EggSalePackaging.fromCode(eggPackaging)?.unit ?? 'unit'}',
+                                                                    onChanged: (value) => pricePerUnit = value,
+                                                                    validator: (val) => pricePerUnit <= 0
+                                                                        ? 'Please enter the price'
+                                                                        : null,
                                                                     context: context,
                                                                 ),
                                                                 const SizedBox(height: 22),
                                                                 Common.buildTextField(
-                                                                    label: 'Buyer Name',
+                                                                    label: 'Additional Info (optional)',
                                                                     icon: Icons.account_box_outlined,
-                                                                    onChanged: (value) => buyerName = value,
-                                                                    validator: (value) => value == null || value.isEmpty
-                                                                        ? 'Please enter buyer name'
-                                                                        : null,
+                                                                    onChanged: (value) => additionalInfo = value,
+                                                                    hintText: 'E.g. Buyer name',
                                                                     context: context,
                                                                 ),
 
@@ -4286,7 +4330,9 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                             isSaleDateError = saleDate == null;
                                                                                         });
 
-                                                                                    if (!isFormValid || !isPaymentStatusValid) return;
+                                                                                    setModalState(() => showPackagingError = eggPackaging == null);
+
+                                                                                    if (!isFormValid || !isPaymentStatusValid || eggPackaging == null) return;
 
                                                                                     setModalState(() => isLoading = true);
 
@@ -4294,11 +4340,15 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                                                                         id: null,
                                                                                         farmId: farmId,
                                                                                         coopId: coop.id,
-                                                                                        numberOfDozensSold: numberOfDozensSold,
-                                                                                        salePricePerDozen: salePricePerDozen,
+                                                                                        numberOfDozensSold: null,
+                                                                                        salePricePerDozen: null,
+                                                                                        eggSize: eggSize,
+                                                                                        eggPackaging: eggPackaging,
+                                                                                        quantitySold: quantitySold,
+                                                                                        pricePerUnit: pricePerUnit,
                                                                                         numberOfChickensSold: null,
                                                                                         salePricePerChicken: null,
-                                                                                        buyerName: buyerName,
+                                                                                        additionalInfo: additionalInfo,
                                                                                         recordedBy: recordedBy,
                                                                                         paymentStatus: paymentStatus ?? '',
                                                                                         saleDate: saleDate!.toIso8601String(),

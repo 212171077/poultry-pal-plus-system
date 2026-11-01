@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Expense {
+public class Expense implements SyncTracked {
   private String id;
   private Date expenseDate;
   private String expenseType;
@@ -18,4 +18,9 @@ public class Expense {
   private String additionalInfo;
   private String recordedBy;
   private Date createdDate;
+
+  // Sync metadata, maintained by FarmChangeTracker
+  private Long version;
+  private Date updatedAt;
+  private String updatedBy;
 }

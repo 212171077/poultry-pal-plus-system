@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class EggPackagingRecord {
+public class EggPackagingRecord implements SyncTracked {
   private String id;
   private Date createdDate;
   private String eggSize;
@@ -19,4 +19,9 @@ public class EggPackagingRecord {
   private int totalEggs;
   private String userId;
   private String additionalInfo;
+
+  // Sync metadata, maintained by FarmChangeTracker
+  private Long version;
+  private Date updatedAt;
+  private String updatedBy;
 }
