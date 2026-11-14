@@ -1,5 +1,6 @@
 package co.za.hlaluko.dynamics.poultry.pal;
 
+import co.za.hlaluko.dynamics.poultry.pal.mail.MailSettings;
 import co.za.hlaluko.dynamics.poultry.pal.model.dto.ERole;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.Role;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.lookups.AppConfig;
@@ -7,7 +8,6 @@ import co.za.hlaluko.dynamics.poultry.pal.repository.AppConfigRepository;
 import co.za.hlaluko.dynamics.poultry.pal.service.AdminUserInitializer;
 import co.za.hlaluko.dynamics.poultry.pal.service.AppConfigValues;
 import co.za.hlaluko.dynamics.poultry.pal.repository.RoleRepository;
-import co.za.hlaluko.dynamics.poultry.pal.utils.ConstantUtil;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
@@ -35,6 +35,7 @@ public class PoultryPalApplication implements CommandLineRunner {
   private final RoleRepository roleRepository;
   private final AppConfigRepository appConfigRepository;
   private final AdminUserInitializer adminUserInitializer;
+  private final MailSettings mailSettings;
 
   public static void main(String[] args) {
     SpringApplication.run(PoultryPalApplication.class, args);
@@ -43,7 +44,11 @@ public class PoultryPalApplication implements CommandLineRunner {
   @Override
   public void run(String... args) throws Exception {
     initializeRoles();
-    ensureDefaultConfig(AppConfigValues.ADMIN_EMAIL, ConstantUtil.MAIL_USER);
+    mailSettings.seedDefaults();
+    ensureDefaultConfig(
+        AppConfigValues.ADMIN_EMAIL,
+        System.getProperty(
+            "poultry.pal.app.admin.email", System.getenv().getOrDefault("POULTRY_PAL_APP_ADMIN_EMAIL", "")));
     ensureDefaultConfig(AppConfigValues.APP_BASE_URL, AppConfigValues.DEFAULT_APP_BASE_URL);
     adminUserInitializer.ensureAdminUser();
   }
@@ -68,27 +73,6 @@ public class PoultryPalApplication implements CommandLineRunner {
 
       roleRepository.saveAll(roles);
       LOGGER.info("New roles initialized: {}", roles);
-    }
-
-    AppConfig mailUser = appConfigRepository.findByCode("MAIL_USER");
-    AppConfig mailPass = appConfigRepository.findByCode("MAIL_PASS");
-
-    if (mailUser == null || mailPass == null) {
-
-      AppConfig defaultMailUser = new AppConfig();
-      defaultMailUser.setCode("MAIL_USER");
-      defaultMailUser.setDescription(ConstantUtil.MAIL_USER);
-      defaultMailUser.setCreateDate(new Date());
-      defaultMailUser.setLastUpdateDate(new Date());
-
-      AppConfig defaultMailPass = new AppConfig();
-      defaultMailPass.setCode("MAIL_PASS");
-      defaultMailPass.setDescription(ConstantUtil.MAIL_PASS);
-      defaultMailPass.setCreateDate(new Date());
-      defaultMailPass.setLastUpdateDate(new Date());
-
-      appConfigRepository.save(defaultMailUser);
-      appConfigRepository.save(defaultMailPass);
     }
   }
 }

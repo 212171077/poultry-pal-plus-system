@@ -64,6 +64,12 @@
             <div class="item-text">
               <strong>{{ op.label }}</strong>
               <span>{{ op.lastError }}</span>
+              @if (op.errorCode === 'CAPACITY_CONFLICT') {
+                <span class="detail">
+                  There is no longer room for this. Free up space (for example finish or cancel
+                  another batch), then Retry, or Discard it.
+                </span>
+              }
               @for (error of op.errors ?? []; track error) {
                 <span class="detail">{{ error }}</span>
               }

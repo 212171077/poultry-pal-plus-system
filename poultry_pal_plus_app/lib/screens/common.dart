@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_icons.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:poultry_pal_plus_app/theme/app_theme.dart';
@@ -569,7 +570,7 @@ class Common {
         required BuildContext context,
     }) {
         final phases = [
-        {'value': GrowingPhase.BROODING_PHASE,           'label': 'Brooding',   'icon': Icons.egg_alt_rounded,    'color': AppColors.warning},
+        {'value': GrowingPhase.BROODING_PHASE,           'label': 'Brooding',   'icon': AppIcons.chick,    'color': AppColors.warning},
         {'value': GrowingPhase.GROWING_REARING_PHASE,    'label': 'Growing',    'icon': Icons.grass_rounded,      'color': AppColors.success},
         {'value': GrowingPhase.PRODUCTION_FINISHING_PHASE,'label': 'Production','icon': Icons.storefront_rounded, 'color': AppColors.info},
         ];
@@ -861,7 +862,7 @@ class Common {
         required void Function(String) onChanged,
     }) {
         final types = [
-        {'value': 'Broiler', 'label': 'Broiler', 'icon': Icons.set_meal_rounded, 'color': AppColors.warning},
+        {'value': 'Broiler', 'label': 'Broiler', 'icon': AppIcons.chicken, 'color': AppColors.warning},
         {'value': 'Layers',  'label': 'Layers',  'icon': Icons.egg_rounded,      'color': AppColors.success},
         ];
 

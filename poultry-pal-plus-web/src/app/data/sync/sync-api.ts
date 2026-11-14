@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
 import { APP_CONFIG } from '../../core/config/app-config';
 import { ApiResponse, isApiResponse } from '../../core/http/api-response';
+import type { ProductionSnapshot } from '../../features/production/production-api';
 import {
   SyncBootstrapResponse,
   SyncChangesResponse,
@@ -73,6 +74,13 @@ export class SyncApi {
   bootstrap(): Promise<SyncBootstrapResponse> {
     return this.unwrap(
       this.http.get<ApiResponse<SyncBootstrapResponse>>(`${this.baseUrl}/sync/bootstrap`),
+    );
+  }
+
+  /** Everything the production pages read; cached for offline use. */
+  productionSnapshot(): Promise<ProductionSnapshot> {
+    return this.unwrap(
+      this.http.get<ApiResponse<ProductionSnapshot>>(`${this.baseUrl}/production/snapshot`),
     );
   }
 

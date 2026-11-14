@@ -1,4 +1,5 @@
 import { Provider } from '@angular/core';
+import type { ProductionSnapshot } from '../../features/production/production-api';
 import { AppDb, APP_DB } from '../db/app-db';
 import {
   SyncBootstrapResponse,
@@ -44,13 +45,20 @@ export const TEST_USER: UserInfo = {
  * In-memory implementation of the backend sync contract (opId idempotency, optimistic versions,
  * tombstones) for unit tests. Tests can edit records "from another device" and inject failures.
  */
-export class FakeSyncServer implements Pick<SyncApi, 'push' | 'changes' | 'bootstrap' | 'refresh'> {
+export class FakeSyncServer implements Pick<
+  SyncApi,
+  'push' | 'changes' | 'bootstrap' | 'refresh' | 'productionSnapshot'
+> {
   version = 0;
   readonly records = new Map<string, StoredRecord>();
   readonly results = new Map<string, SyncOperationResult>();
   readonly pushed: SyncOperationDto[][] = [];
   /** When set, calls fail with this error (cleared after one call unless `sticky`). */
   failWith: { error: SyncHttpError; sticky?: boolean } | null = null;
+  /** Returned by `productionSnapshot`; `null` means the user has no production access. */
+  productionSnapshotData: ProductionSnapshot | null = null;
+  /** Decides the outcome of production commands; applies them by default. */
+  productionHandler: ((op: SyncOperationDto) => SyncOperationResult) | null = null;
   refreshFails = false;
   refreshCalls = 0;
 
@@ -122,6 +130,12 @@ export class FakeSyncServer implements Pick<SyncApi, 'push' | 'changes' | 'boots
     };
   }
 
+  async productionSnapshot(): Promise<ProductionSnapshot> {
+    this.maybeFail();
+    if (!this.productionSnapshotData) throw new SyncHttpError('forbidden', 403, 'No access');
+    return this.productionSnapshotData;
+  }
+
   async refresh(): Promise<UserInfo> {
     this.refreshCalls++;
     if (this.refreshFails) throw new SyncHttpError('auth', 401, 'Refresh expired');
@@ -175,6 +189,11 @@ export class FakeSyncServer implements Pick<SyncApi, 'push' | 'changes' | 'boots
       entityId: op.entityId,
       coopId: op.coopId,
     };
+    if (op.entityType === 'PRODUCTION') {
+      return this.productionHandler
+        ? this.productionHandler(op)
+        : { ...base, status: 'APPLIED', serverRecord: { id: op.entityId } };
+    }
     if (!(op.entityType in LIST_KEYS)) {
       return { ...base, status: 'REJECTED', errorCode: 'UNSUPPORTED', message: 'Not supported' };
     }

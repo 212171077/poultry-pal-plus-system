@@ -1,0 +1,88 @@
+<div class="pp-page">
+  <app-page-header
+    heading="Production dashboard"
+    subtitle="Eggs, birds and what is coming up."
+    info="A summary of the whole production cycle: eggs in incubators and hatchers, birds in chicken houses, open tasks and plans to review. The timeline lists transfers, hatch dates and placements; forecast dates are planned, not yet done."
+  />
+  <app-offline-data-note [since]="repo.offlineSince()" />
+
+  @if (error(); as message) {
+    <p class="notice" role="alert">{{ message }}</p>
+  }
+
+  @if (totals(); as t) {
+    <section class="cards" aria-label="Totals">
+      @for (card of cards(); track card.label) {
+        <app-kpi-card
+          [label]="card.label"
+          [icon]="card.icon"
+          [tone]="card.tone"
+          [value]="card.value"
+          [hint]="card.note"
+        />
+      }
+    </section>
+
+    <section class="pp-surface-card panel capacity" aria-labelledby="capacity-heading">
+      <h2 id="capacity-heading">Chicken house space</h2>
+      <p class="meta">
+        {{ t.birdsInHouses }} of {{ t.houseCapacity }} birds ({{ usedPercent() }}% full)
+      </p>
+      <div class="bar" role="img" [attr.aria-label]="usedPercent() + '% full'">
+        <div class="fill" [class.warn]="usedPercent() >= 90" [style.width.%]="usedPercent()"></div>
+      </div>
+    </section>
+    <p class="meta">
+      Totals come from your batches, houses and movements. Dates marked "forecast" are planned, not
+      yet done.
+    </p>
+
+    <section class="pp-surface-card panel" aria-labelledby="timeline-heading">
+      <h2 id="timeline-heading">Timeline</h2>
+      <div class="filters">
+        <mat-form-field>
+          <mat-label>Show</mat-label>
+          <mat-select [value]="kind()" (selectionChange)="kind.set($event.value)">
+            <mat-option value="">Everything</mat-option>
+            @for (k of kinds; track k[0]) {
+              <mat-option [value]="k[0]">{{ k[1] }}</mat-option>
+            }
+          </mat-select>
+          <mat-hint>The type of event</mat-hint>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Equipment</mat-label>
+          <mat-select [value]="equipmentId()" (selectionChange)="equipmentId.set($event.value)">
+            <mat-option value="">All</mat-option>
+            @for (e of equipment(); track e.id) {
+              <mat-option [value]="e.id">{{ e.name }}</mat-option>
+            }
+          </mat-select>
+          <mat-hint>A machine or house</mat-hint>
+        </mat-form-field>
+        <app-date-field label="From" hint="Earliest date" [(value)]="from" />
+        <app-date-field label="To" hint="Latest date" [(value)]="to" />
+      </div>
+      @if (events().length === 0) {
+        <app-empty-state
+          icon="event"
+          heading="Nothing scheduled"
+          message="No events match these filters."
+        />
+      } @else {
+        <ul class="timeline">
+          @for (e of events(); track $index) {
+            <li [class.forecast]="e.forecast">
+              <time [attr.datetime]="e.date">{{ e.date | date: 'mediumDate' }}</time>
+              <span class="kind" [attr.data-kind]="e.kind">{{ label(e.kind) }}</span>
+              <span>{{ e.title }}</span>
+              <span class="meta">{{ e.forecast ? 'Forecast · ' : 'Actual · ' }}{{ e.detail }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  } @else if (!error()) {
+    <p class="meta">Loading…</p>
+  }
+</div>

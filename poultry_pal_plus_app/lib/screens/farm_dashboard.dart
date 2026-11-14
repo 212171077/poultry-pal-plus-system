@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_icons.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 
@@ -393,7 +394,7 @@ class _FarmDashboardState extends State<FarmDashboard> {
                                 Expanded(
                                     child: Column(
                                         children: [
-                                            _metricRow(context, Icons.egg_rounded, 'Total', c.totalChickens.toString(), AppColors.warning),
+                                            _metricRow(context, AppIcons.chicken, 'Total', c.totalChickens.toString(), AppColors.warning),
                                             _metricRow(context, Icons.check_circle_outline_rounded, 'Available', c.availableChickens.toString(), AppColors.success),
                                             _metricRow(context, Icons.warning_amber_rounded, 'Mortality', c.totalMortality.toString(), AppColors.error),
                                             _metricRow(context, Icons.timer_outlined, 'Age', c.chickenAge, AppColors.info),

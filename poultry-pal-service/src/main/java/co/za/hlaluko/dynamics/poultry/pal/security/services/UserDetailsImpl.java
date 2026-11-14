@@ -1,12 +1,14 @@
 package co.za.hlaluko.dynamics.poultry.pal.security.services;
 
 import co.za.hlaluko.dynamics.poultry.pal.model.dto.ApprovalStatus;
+import co.za.hlaluko.dynamics.poultry.pal.model.dto.ProductionPermission;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serial;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +32,7 @@ public class UserDetailsImpl implements UserDetails {
   private boolean removed;
   private ApprovalStatus approvalStatus;
   private Date createdDate;
+  private Set<ProductionPermission> permissions;
   private final String email;
   private final Collection<? extends GrantedAuthority> authorities;
   @JsonIgnore private String password;
@@ -51,10 +54,17 @@ public class UserDetailsImpl implements UserDetails {
         .removed(user.isRemoved())
         .approvalStatus(user.getApprovalStatus())
         .createdDate(user.getCreatedDate())
+        .permissions(user.getPermissions() == null ? Set.of() : Set.copyOf(user.getPermissions()))
         .email(user.getEmail())
         .password(user.getPassword())
         .authorities(authorities)
         .build();
+  }
+
+  /** The farm owner always manages production; others need an explicit grant. */
+  public boolean canManageProduction() {
+    return isFarmOwner
+        || (permissions != null && permissions.contains(ProductionPermission.PRODUCTION_MANAGE));
   }
 
   @Override

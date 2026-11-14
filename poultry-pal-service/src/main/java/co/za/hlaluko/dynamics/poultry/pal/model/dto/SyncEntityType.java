@@ -7,5 +7,6 @@ public enum SyncEntityType {
   MORTALITY,
   EXPENSE,
   EGG_PACKAGING,
-  REMINDER
+  REMINDER,
+  PRODUCTION
 }

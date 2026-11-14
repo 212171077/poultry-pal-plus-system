@@ -3,10 +3,12 @@ package co.za.hlaluko.dynamics.poultry.pal.service;
 import co.za.hlaluko.dynamics.poultry.pal.exception.ApiException;
 import co.za.hlaluko.dynamics.poultry.pal.model.dto.Coop;
 import co.za.hlaluko.dynamics.poultry.pal.model.dto.ERole;
+import co.za.hlaluko.dynamics.poultry.pal.model.dto.ProductionPermission;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.Farm;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.Role;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.User;
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.CoopAssignmentRequest;
+import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.ProductionAccessRequest;
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.TeamMemberRequest;
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.TeamRoleRequest;
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.response.UserInfoResponse;
@@ -32,6 +34,7 @@ public class TeamManagementService {
   private final RoleRepository roleRepository;
   private final PasswordEncoder passwordEncoder;
   private final AsyncService asyncService;
+  private final ProductionAccessService productionAccessService;
 
   public List<UserInfoResponse> list(UserDetailsImpl actor) {
     Farm farm = requireManagerFarm(actor);
@@ -85,6 +88,33 @@ public class TeamManagementService {
     member.setRoles(new HashSet<>(Set.of(requireRole(ERole.ROLE_USER), requireRole(requestedRole))));
     member.setRolesUpdatedByUserId(actor.getId());
     userRepository.save(member);
+    return list(actor);
+  }
+
+  public List<UserInfoResponse> setProductionAccess(
+      UserDetailsImpl actor, String memberId, ProductionAccessRequest request) {
+    Farm farm = requireManagerFarm(actor);
+    if (!productionAccessService.canGrant(actor)) {
+      throw ApiException.forbidden("Only the farm owner or an administrator can grant production access");
+    }
+    User member = requireMember(farm, memberId);
+    if (member.isFarmOwner()) {
+      throw ApiException.badRequest("The farm owner always has production access");
+    }
+    Set<ProductionPermission> permissions =
+        member.getPermissions() == null
+            ? new HashSet<>()
+            : new HashSet<>(member.getPermissions());
+    boolean changed =
+        Boolean.TRUE.equals(request.getGranted())
+            ? permissions.add(ProductionPermission.PRODUCTION_MANAGE)
+            : permissions.remove(ProductionPermission.PRODUCTION_MANAGE);
+    if (changed) {
+      member.setPermissions(permissions);
+      member.setPermissionsUpdatedByUserId(actor.getId());
+      member.setPermissionsUpdatedAt(new Date());
+      userRepository.save(member);
+    }
     return list(actor);
   }
 

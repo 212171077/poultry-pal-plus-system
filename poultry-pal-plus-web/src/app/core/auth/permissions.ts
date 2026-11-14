@@ -6,7 +6,7 @@ import { LocalUser } from '../../data/models/local';
  * the coops they are assigned to.
  */
 /** `SYSTEM_ADMIN` is the application operator (`ROLE_ADMIN`), independent of any farm. */
-export type Permission = 'FARM_MANAGER' | 'FARM_OWNER' | 'SYSTEM_ADMIN';
+export type Permission = 'FARM_MANAGER' | 'FARM_OWNER' | 'SYSTEM_ADMIN' | 'PRODUCTION_MANAGE';
 
 const MANAGER_ROLES: readonly string[] = ['ROLE_FARM_MANAGER', 'ROLE_ADMIN'];
 
@@ -15,6 +15,9 @@ export function hasPermission(user: LocalUser | null | undefined, permission: Pe
   if (permission === 'SYSTEM_ADMIN') return (user.roles ?? []).includes('ROLE_ADMIN');
   if (user.farmOwner) return true;
   if (permission === 'FARM_OWNER') return false;
+  if (permission === 'PRODUCTION_MANAGE') {
+    return (user.permissions ?? []).includes('PRODUCTION_MANAGE');
+  }
   return (user.roles ?? []).some((role) => MANAGER_ROLES.includes(role));
 }
 

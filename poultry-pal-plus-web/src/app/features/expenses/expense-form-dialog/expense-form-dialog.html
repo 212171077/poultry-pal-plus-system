@@ -14,7 +14,12 @@
     <div class="row">
       <mat-form-field>
         <mat-label>Date</mat-label>
-        <input matInput [matDatepicker]="expenseDatePicker" formControlName="expenseDate" [max]="today" />
+        <input
+          matInput
+          [matDatepicker]="expenseDatePicker"
+          formControlName="expenseDate"
+          [max]="today"
+        />
         <mat-datepicker-toggle matIconSuffix [for]="expenseDatePicker" />
         <mat-datepicker #expenseDatePicker />
         <mat-error>Enter the date</mat-error>

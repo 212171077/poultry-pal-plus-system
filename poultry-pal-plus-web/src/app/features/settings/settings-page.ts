@@ -1,5 +1,6 @@
 import { DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { strongPassword, PASSWORD_RULES_HINT } from '../../shared/validators/password-rules';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -16,6 +17,7 @@ import { AppUpdateService } from '../../core/pwa/app-update.service';
 import { InstallPromptService } from '../../core/pwa/install-prompt.service';
 import { ThemePreference, ThemeService } from '../../core/theme/theme.service';
 import { APP_DB } from '../../data/db/app-db';
+import { liveSignal } from '../../data/db/live-signal';
 import { LocalFarm, LocalSettings } from '../../data/models/local';
 import { SyncEngine } from '../../data/sync/sync-engine';
 import { ConnectivityService } from '../../core/network/connectivity.service';
@@ -42,6 +44,7 @@ const CURRENCIES = ['ZAR', 'BWP', 'KES', 'NGN', 'TZS', 'UGX', 'USD', 'EUR', 'GBP
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SettingsPage {
+  protected readonly passwordHint = PASSWORD_RULES_HINT;
   private readonly db = inject(APP_DB);
   private readonly auth = inject(AuthService);
   private readonly api = inject(FarmSettingsApi);
@@ -77,7 +80,7 @@ export default class SettingsPage {
   });
   protected readonly passwordForm = this.fb.nonNullable.group({
     currentPassword: ['', Validators.required],
-    newPassword: ['', [Validators.required, Validators.minLength(8)]],
+    newPassword: ['', [Validators.required, Validators.minLength(8), strongPassword]],
     confirmPassword: ['', Validators.required],
   });
   protected readonly farmForm = this.fb.nonNullable.group({
@@ -96,8 +99,42 @@ export default class SettingsPage {
   private currentFarm: LocalFarm | undefined;
   private currentSettings: LocalSettings | undefined;
 
+  // The farm row and settings can arrive after the page opens (first sync), so follow the local
+  // store and fill the forms until the user starts editing them.
+  private readonly farmRow = liveSignal(() => {
+    const farmId = this.user()?.farmId;
+    return farmId ? this.db.farms.get(farmId) : undefined;
+  });
+  private readonly settingsRow = liveSignal(() => {
+    const userId = this.user()?.id;
+    return userId ? this.db.settings.get(userId) : undefined;
+  });
+
   constructor() {
     void this.load();
+    effect(() => {
+      const farm = this.farmRow();
+      if (!farm) return;
+      this.currentFarm = farm;
+      if (this.farmForm.dirty) return;
+      this.farmForm.patchValue({
+        farmName: farm.farmName,
+        addressLine1: farm.address?.addressLine1 ?? '',
+        addressLine2: farm.address?.addressLine2 ?? '',
+        state: farm.address?.state ?? '',
+        city: farm.address?.city ?? '',
+        postalCode: farm.address?.postalCode ?? '',
+        country: farm.address?.country ?? '',
+      });
+    });
+    effect(() => {
+      const settings = this.settingsRow();
+      if (!settings) return;
+      this.currentSettings = settings;
+      if (!this.currencyForm.dirty) {
+        this.currencyForm.patchValue({ currency: settings.currency || 'ZAR' });
+      }
+    });
   }
 
   protected setTheme(preference: ThemePreference): void {
@@ -224,8 +261,7 @@ export default class SettingsPage {
     const accepted = await firstValueFrom(
       this.confirm.confirm({
         title: 'Clear local data?',
-        message:
-          `This removes farm records, saved report requests${queuedReports ? ` (${queuedReports} queued)` : ''} and app sync state stored on this device. The app will download a fresh copy from the server. Your account will remain signed in.`,
+        message: `This removes farm records, saved report requests${queuedReports ? ` (${queuedReports} queued)` : ''} and app sync state stored on this device. The app will download a fresh copy from the server. Your account will remain signed in.`,
         confirmText: 'Clear local data',
         destructive: true,
       }),
@@ -236,7 +272,9 @@ export default class SettingsPage {
     try {
       await this.db.transaction('rw', this.db.tables, async () => {
         if (await this.db.outbox.count()) {
-          throw new Error('New unsynced changes were created. Sync them before clearing local data.');
+          throw new Error(
+            'New unsynced changes were created. Sync them before clearing local data.',
+          );
         }
         for (const table of this.db.tables) await table.clear();
       });
@@ -262,20 +300,6 @@ export default class SettingsPage {
         email: user.email ?? '',
         phoneNumber: user.phoneNumber ?? '',
       });
-      this.currentSettings = await this.db.settings.get(user.id);
-      this.currencyForm.patchValue({ currency: this.currentSettings?.currency || 'ZAR' });
-      this.currentFarm = user.farmId ? await this.db.farms.get(user.farmId) : undefined;
-      if (this.currentFarm) {
-        this.farmForm.patchValue({
-          farmName: this.currentFarm.farmName,
-          addressLine1: this.currentFarm.address?.addressLine1 ?? '',
-          addressLine2: this.currentFarm.address?.addressLine2 ?? '',
-          state: this.currentFarm.address?.state ?? '',
-          city: this.currentFarm.address?.city ?? '',
-          postalCode: this.currentFarm.address?.postalCode ?? '',
-          country: this.currentFarm.address?.country ?? '',
-        });
-      }
     }
     await this.refreshStorageUsage();
   }

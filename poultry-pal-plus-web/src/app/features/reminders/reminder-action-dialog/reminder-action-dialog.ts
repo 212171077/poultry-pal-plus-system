@@ -29,7 +29,9 @@ export interface ReminderActionData {
       <mat-dialog-content class="fields">
         <p>{{ data.reminder.name }}</p>
         @if (data.kind === 'removed') {
-          <p>This task will no longer be due. It moves to Completed with the action “Remove Task”.</p>
+          <p>
+            This task will no longer be due. It moves to Completed with the action “Remove Task”.
+          </p>
         }
         <mat-form-field>
           <mat-label>Comment (optional)</mat-label>

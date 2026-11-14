@@ -11,6 +11,7 @@ import {
   LocalSettings,
   LocalUser,
   OutboxOperation,
+  ProductionCacheEntry,
   ReportRequest,
   SyncConflict,
   SyncMetaEntry,
@@ -41,6 +42,7 @@ export class AppDb extends Dexie {
   syncMeta!: Table<SyncMetaEntry, string>;
   conflicts!: Table<SyncConflict, string>;
   reportRequests!: Table<ReportRequest, string>;
+  productionCache!: Table<ProductionCacheEntry, string>;
 
   constructor(name = DEFAULT_DB_NAME) {
     super(name);
@@ -60,6 +62,9 @@ export class AppDb extends Dexie {
     });
     this.version(2).stores({
       reportRequests: 'id, status, createdAt',
+    });
+    this.version(3).stores({
+      productionCache: 'key',
     });
   }
 

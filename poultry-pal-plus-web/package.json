@@ -17,7 +17,10 @@
     "format:check": "prettier --check \"src/**/*.{ts,html,scss,json}\" \"e2e/**/*.{ts,mjs}\" \"*.{json,ts}\"",
     "e2e": "ng build && playwright test",
     "e2e:slow": "ng build && E2E_SLOWMO=2000 playwright test",
-    "e2e:headless": "ng build && E2E_HEADLESS=1 playwright test"
+    "e2e:headless": "ng build && E2E_HEADLESS=1 playwright test",
+    "e2e:live": "playwright test -c e2e-live/playwright.live.config.ts",
+    "e2e:live:desktop": "playwright test -c e2e-live/playwright.live.config.ts --project=desktop",
+    "e2e:live:mobile": "playwright test -c e2e-live/playwright.live.config.ts --project=mobile"
   },
   "prettier": {
     "printWidth": 100,

@@ -1,0 +1,227 @@
+<div class="pp-page">
+  <app-page-header
+    heading="Incubation batches"
+    subtitle="Plan egg batches, reserve hatcher space and move eggs on day 18."
+    info="Each batch is a group of eggs set in an incubator on one date. Here you start incubation, reserve hatcher space, move eggs to the hatcher on transfer day and record how many chicks hatched."
+  >
+    <button mat-flat-button type="button" (click)="showForm.set(!showForm())">
+      <mat-icon>{{ showForm() ? 'close' : 'add' }}</mat-icon>
+      {{ showForm() ? 'Cancel' : 'New batch' }}
+    </button>
+  </app-page-header>
+  <app-offline-data-note [since]="repo.offlineSince()" />
+
+  @if (error(); as message) {
+    <p class="notice" role="alert">{{ message }}</p>
+  }
+  @if (!connectivity.online()) {
+    <p class="notice" role="status">Batches need an online connection for now.</p>
+  }
+
+  @if (showForm()) {
+    <form class="pp-surface-card panel" [formGroup]="form" (ngSubmit)="create()">
+      <h2>New incubation batch</h2>
+      <div class="fields">
+        <mat-form-field>
+          <mat-label>Incubator</mat-label>
+          <mat-select formControlName="equipmentId">
+            @for (item of incubators(); track item.id) {
+              <mat-option [value]="item.id">{{ item.name }} ({{ item.capacity }} eggs)</mat-option>
+            }
+          </mat-select>
+          <mat-hint>The machine the eggs will be set in</mat-hint>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Eggs set</mat-label>
+          <input matInput type="number" min="1" formControlName="eggsSet" />
+          <mat-hint>Total number of eggs placed in the incubator</mat-hint>
+        </mat-form-field>
+        <app-date-field
+          label="Start date"
+          hint="The day the eggs go into the incubator"
+          [required]="true"
+          [value]="form.controls.plannedStartDate.value"
+          (valueChange)="form.controls.plannedStartDate.setValue($event)"
+        />
+        <mat-form-field>
+          <mat-label>Reference</mat-label>
+          <input matInput formControlName="reference" />
+          <mat-hint>Generated as MONDD-eggs (for example NOV03-1000); you can change it</mat-hint>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Egg source (optional)</mat-label>
+          <input matInput formControlName="eggSource" />
+          <mat-hint>Where the eggs came from, such as your own layers or a supplier</mat-hint>
+        </mat-form-field>
+      </div>
+      <button mat-flat-button type="submit" [disabled]="busy() || !connectivity.online()">
+        Create batch
+      </button>
+    </form>
+  }
+
+  @if (reminders().length > 0) {
+    <section class="pp-surface-card panel" aria-labelledby="tasks-heading">
+      <h2 id="tasks-heading">Production tasks</h2>
+      @for (task of reminders(); track task.id) {
+        <div class="cycle">
+          <span>
+            {{ task.title }}
+            @if (task.sourceReference) {
+              ({{ task.sourceReference }})
+            }
+            , due {{ task.dueDate }}
+          </span>
+          @if (task.overdue) {
+            <span class="status">Overdue</span>
+          }
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="busy()"
+            (click)="completeReminder(task.id)"
+          >
+            Done
+          </button>
+        </div>
+      }
+    </section>
+  }
+
+  @if (loaded() && batches().length === 0) {
+    <app-empty-state
+      icon="egg_alt"
+      heading="No batches yet"
+      message="Create a batch to schedule transfers and hatching."
+    />
+  }
+
+  @for (batch of batches(); track batch.id) {
+    <section class="pp-surface-card panel">
+      <header class="head">
+        <h2>{{ batch.reference }}</h2>
+        <span class="status">{{ statusLabels[batch.status] }}</span>
+      </header>
+      <p class="meta">
+        {{ batch.eggsSet }} eggs in {{ equipmentName(batch.equipmentId) }}. Start
+        {{ batch.plannedStartDate }}, transfer {{ batch.plannedTransferDate }}, hatch
+        {{ batch.plannedHatchDate }}.
+      </p>
+      <p class="meta">
+        {{ batch.eggsReserved }} eggs reserved for hatching, {{ batch.eggsUnassigned }} not yet
+        assigned.
+      </p>
+
+      @for (cycle of batch.hatcherCycles; track cycle.id) {
+        @if (cycle.status !== 'CANCELLED') {
+          <div class="cycle">
+            <span
+              >{{ cycle.reference }}: {{ cycle.quantity }} eggs in
+              {{ equipmentName(cycle.hatcherId) }}, transfer
+              {{ cycle.actualTransferDate ?? cycle.plannedTransferDate }}</span
+            >
+            <span class="status">{{ cycleLabels[cycle.status] }}</span>
+            @if (cycle.status === 'RESERVED') {
+              @if (batch.status === 'INCUBATING') {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  [disabled]="busy()"
+                  (click)="transfer(cycle.id)"
+                >
+                  Transfer now
+                </button>
+              }
+              <button mat-button type="button" [disabled]="busy()" (click)="cancelCycle(cycle.id)">
+                Remove
+              </button>
+            }
+          </div>
+          @if (cycle.status === 'IN_HATCHER') {
+            <div class="reserve">
+              <mat-form-field>
+                <mat-label>Hatched chicks</mat-label>
+                <input
+                  matInput
+                  type="number"
+                  min="0"
+                  [max]="cycle.quantity"
+                  (input)="setHatched(cycle.id, hatched.value)"
+                  #hatched
+                />
+                <mat-hint>Live chicks counted out of {{ cycle.quantity }} eggs</mat-hint>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Unhatched eggs</mat-label>
+                <input matInput type="number" [value]="unhatchedFor(cycle)" readonly #unhatched />
+                <mat-hint>Calculated: eggs transferred minus hatched</mat-hint>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Weak chicks</mat-label>
+                <input matInput type="number" min="0" #weak />
+                <mat-hint>Hatched chicks that are weak; counted inside Hatched</mat-hint>
+              </mat-form-field>
+              <app-date-field
+                label="Result date"
+                hint="The day you counted the chicks"
+                [(value)]="resultDate"
+              />
+              <button
+                mat-flat-button
+                type="button"
+                [disabled]="busy() || !connectivity.online()"
+                (click)="
+                  recordResult(cycle.id, hatched.value, unhatched.value, weak.value, resultDate())
+                "
+              >
+                Record result
+              </button>
+            </div>
+          }
+        }
+      }
+
+      @if (
+        (batch.status === 'PLANNED' || batch.status === 'INCUBATING') && batch.eggsUnassigned > 0
+      ) {
+        <div class="reserve">
+          <mat-form-field>
+            <mat-label>Hatcher</mat-label>
+            <mat-select #hatcher>
+              @for (item of hatchers(); track item.id) {
+                <mat-option [value]="item.id">{{ item.name }} ({{ item.capacity }})</mat-option>
+              }
+            </mat-select>
+            <mat-hint>Where these eggs will hatch</mat-hint>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Eggs to reserve</mat-label>
+            <input matInput type="number" min="1" [value]="batch.eggsUnassigned" #quantity />
+            <mat-hint>{{ batch.eggsUnassigned }} eggs are not yet assigned</mat-hint>
+          </mat-form-field>
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="busy() || !connectivity.online()"
+            (click)="reserve(batch, hatcher.value, quantity.value)"
+          >
+            Reserve hatcher
+          </button>
+        </div>
+      }
+
+      <div class="actions">
+        @if (batch.status === 'PLANNED') {
+          <button mat-flat-button type="button" [disabled]="busy()" (click)="start(batch)">
+            Start incubation
+          </button>
+        }
+        @if (batch.status === 'PLANNED' || batch.status === 'INCUBATING') {
+          <button mat-button type="button" [disabled]="busy()" (click)="cancel(batch)">
+            Cancel batch
+          </button>
+        }
+      </div>
+    </section>
+  }
+</div>

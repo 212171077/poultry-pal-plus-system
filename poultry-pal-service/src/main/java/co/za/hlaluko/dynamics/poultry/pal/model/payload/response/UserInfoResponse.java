@@ -23,5 +23,6 @@ public class UserInfoResponse {
   private List<String> roles;
   private List<String> userCoopIds;
   private List<String> roleFriendlyNames;
+  private List<String> permissions;
 
 }

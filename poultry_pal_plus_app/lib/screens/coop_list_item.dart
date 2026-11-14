@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_icons.dart';
 import 'package:flutter/services.dart';
 import 'package:poultry_pal_plus_app/theme/app_theme.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
@@ -240,7 +241,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                             runSpacing: 4,
                             children: [
                                 _buildMetricChip(
-                                    icon: Icons.egg_outlined,
+                                    icon: AppIcons.chicken,
                                     value: '${widget.coop.numberOfChickens}',
                                     label: 'Birds',
                                     color: AppColors.info,
@@ -708,7 +709,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                 ),
                 const SizedBox(height: 12),
                 _buildInfoRow(
-                    Icons.fact_check_outlined,
+                    AppIcons.chicken,
                     'Chickens',
                     '${widget.coop.numberOfChickens}',
                 ),
@@ -900,7 +901,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                 if (mortalities.isEmpty)
                     _buildEmptyState(
                         'No mortality recorded yet',
-                        Icons.pets_outlined,
+                        Icons.monitor_heart_outlined,
                     )
                 else
                     ...mortalities.map((m) => _buildInlineMortalityItem(m)),
@@ -2954,7 +2955,7 @@ class _CoopListItemState extends State<CoopListItem> with SingleTickerProviderSt
                                         children: [
                                             if (sale.numberOfChickensSold > 0)
                                                 _buildSaleDetailRow(context,
-                                                    Icons.set_meal_rounded,
+                                                    AppIcons.chicken,
                                                     'Chickens Sold',
                                                     '${sale.numberOfChickensSold}'),
                                             if (sale.eggPackaging != null)

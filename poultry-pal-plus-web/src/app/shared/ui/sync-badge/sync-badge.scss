@@ -4,7 +4,9 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 36px;
+  min-height: 48px;
+  min-width: 48px;
+  justify-content: center;
   padding: 0 var(--pp-space-sm);
   border-radius: var(--pp-radius-pill);
   background: color-mix(in srgb, var(--tone) 12%, transparent);

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -45,6 +45,9 @@ export default class TeamPage {
   private readonly fb = inject(FormBuilder);
   protected readonly user = this.auth.user;
   protected readonly canManage = this.auth.canManageFarm;
+  protected readonly canGrantProduction = computed(
+    () => this.auth.can('FARM_OWNER') || this.auth.can('SYSTEM_ADMIN'),
+  );
   protected readonly saving = signal(false);
   protected readonly showForm = signal(false);
   protected readonly teamError = signal<string | null>(null);
@@ -57,7 +60,10 @@ export default class TeamPage {
     [],
   );
   protected readonly coops = liveSignal(
-    () => this.db.coops.toArray().then((coops) => coops.sort((a, b) => a.coopName.localeCompare(b.coopName))),
+    () =>
+      this.db.coops
+        .toArray()
+        .then((coops) => coops.sort((a, b) => a.coopName.localeCompare(b.coopName))),
     [],
   );
   protected readonly form = this.fb.nonNullable.group({
@@ -95,7 +101,13 @@ export default class TeamPage {
     this.saving.set(true);
     try {
       await this.refreshTeam(await this.api.addMember(this.form.getRawValue()));
-      this.form.reset({ name: '', surname: '', email: '', phoneNumber: '', role: 'ROLE_FARM_WORKER' });
+      this.form.reset({
+        name: '',
+        surname: '',
+        email: '',
+        phoneNumber: '',
+        role: 'ROLE_FARM_WORKER',
+      });
       this.showForm.set(false);
       this.snackBar.open('Team member added. They will receive account setup instructions.', 'OK');
     } catch (error) {
@@ -131,6 +143,26 @@ export default class TeamPage {
     }
   }
 
+  protected async setProductionAccess(member: LocalUser, granted: boolean): Promise<void> {
+    if (!this.connectivity.online()) return;
+    this.saving.set(true);
+    try {
+      await this.refreshTeam(await this.api.setProductionAccess(member.id, granted));
+      this.snackBar.open(
+        granted ? 'Production access granted.' : 'Production access revoked.',
+        'OK',
+      );
+    } catch (error) {
+      this.showError(error, 'Could not update production access.');
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  protected hasProductionAccess(member: LocalUser): boolean {
+    return member.permissions?.includes('PRODUCTION_MANAGE') ?? false;
+  }
+
   protected async setActive(member: LocalUser, active: boolean): Promise<void> {
     if (!this.connectivity.online()) return;
     this.saving.set(true);
@@ -146,12 +178,14 @@ export default class TeamPage {
 
   protected async remove(member: LocalUser): Promise<void> {
     if (!this.connectivity.online()) return;
-    const accepted = await firstValueFrom(this.confirm.confirm({
-      title: 'Remove team member?',
-      message: `${member.name ?? member.email ?? 'This member'} will no longer have access to this farm.`,
-      confirmText: 'Remove',
-      destructive: true,
-    }));
+    const accepted = await firstValueFrom(
+      this.confirm.confirm({
+        title: 'Remove team member?',
+        message: `${member.name ?? member.email ?? 'This member'} will no longer have access to this farm.`,
+        confirmText: 'Remove',
+        destructive: true,
+      }),
+    );
     if (!accepted) return;
     this.saving.set(true);
     try {
@@ -166,7 +200,17 @@ export default class TeamPage {
 
   private async refreshTeam(members?: Awaited<ReturnType<TeamApi['members']>>): Promise<void> {
     const response = members ?? (await this.api.members());
-    await this.db.users.bulkPut(response.map((member) => toLocalUser(member, this.user()?.id ?? '')));
+    const self = this.user();
+    const returned = new Set(response.map((member) => member.id));
+    await this.db.transaction('rw', this.db.users, async () => {
+      // Members the server no longer returns (removed) must leave the local list too.
+      const gone = (await this.db.users.toArray()).filter(
+        (member) =>
+          member.farmId === self?.farmId && member.id !== self?.id && !returned.has(member.id),
+      );
+      await this.db.users.bulkDelete(gone.map((member) => member.id));
+      await this.db.users.bulkPut(response.map((member) => toLocalUser(member, self?.id ?? '')));
+    });
     this.teamError.set(null);
   }
 

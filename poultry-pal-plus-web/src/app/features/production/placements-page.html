@@ -1,0 +1,192 @@
+<div class="pp-page">
+  <app-page-header
+    heading="Chicken houses"
+    subtitle="Where your birds are, how many remain and what is left to fill."
+    info="Shows how full each chicken house is. Use Place chicks to move hatched or bought chicks into a house, then record deaths, sales and other removals so the count of birds in each house stays correct."
+  />
+  <app-offline-data-note [since]="repo.offlineSince()" />
+
+  @if (error(); as message) {
+    <p class="notice" role="alert">{{ message }}</p>
+  }
+
+  @for (house of houses(); track house.houseId) {
+    <section class="pp-surface-card panel">
+      <h2>{{ house.name }}</h2>
+      <p class="meta">
+        {{ house.occupied }} of {{ house.capacity }} birds, {{ house.available }} free
+      </p>
+      <div class="bar" role="img" [attr.aria-label]="percent(house) + '% full'">
+        <div class="fill" [style.width.%]="percent(house)"></div>
+      </div>
+    </section>
+  } @empty {
+    <app-empty-state
+      icon="home"
+      heading="No chicken houses"
+      message="Add a chicken house in Production settings first."
+    />
+  }
+
+  @if (houses().length) {
+    <section class="pp-surface-card panel" aria-labelledby="place-heading">
+      <h2 id="place-heading">Place chicks</h2>
+      <div class="form">
+        <mat-form-field>
+          <mat-label>House</mat-label>
+          <select
+            matNativeControl
+            [value]="houseId()"
+            (change)="setHouse($any($event.target).value)"
+            #house
+          >
+            @for (h of houses(); track h.houseId) {
+              <option [value]="h.houseId" [selected]="h.houseId === houseId()">
+                {{ h.name }} ({{ h.available }} free)
+              </option>
+            }
+          </select>
+          <mat-hint>The chicken house the chicks go into</mat-hint>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Source</mat-label>
+          <select matNativeControl (change)="setSource($any($event.target).value)">
+            <option value="PURCHASED_DAY_OLD">Bought day-old chicks</option>
+            <option value="OWN_HATCH">Own hatch</option>
+          </select>
+          <mat-hint>Where the chicks came from</mat-hint>
+        </mat-form-field>
+        @if (source() === 'OWN_HATCH') {
+          <mat-form-field>
+            <mat-label>Hatcher cycle</mat-label>
+            <select matNativeControl (change)="cycleId.set($any($event.target).value)">
+              @for (c of cycles(); track c.id) {
+                <option [value]="c.id" [selected]="c.id === defaultCycleId()">
+                  {{ c.reference }}
+                </option>
+              }
+            </select>
+            <mat-hint>The hatched batch these chicks belong to</mat-hint>
+          </mat-form-field>
+        } @else {
+          <mat-form-field>
+            <mat-label>Supplier</mat-label>
+            <input matInput (input)="supplier.set($any($event.target).value)" />
+            <mat-hint>Optional: who you bought the chicks from</mat-hint>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Age on arrival (days)</mat-label>
+            <input
+              matInput
+              type="number"
+              min="0"
+              value="0"
+              (input)="age.set($any($event.target).value)"
+            />
+            <mat-hint>0 for day-old chicks</mat-hint>
+          </mat-form-field>
+        }
+        <mat-form-field>
+          <mat-label>Chicks</mat-label>
+          <input
+            matInput
+            type="number"
+            min="1"
+            [max]="freeSpace()"
+            [value]="quantity()"
+            (input)="customQuantity.set($any($event.target).value)"
+            #qty
+          />
+          <mat-hint>Filled with the free space ({{ freeSpace() }}); change if needed</mat-hint>
+        </mat-form-field>
+        <app-date-field
+          label="Placement date"
+          hint="The day the chicks went into the house"
+          [max]="today"
+          [(value)]="placementDate"
+        />
+        <button
+          mat-flat-button
+          type="button"
+          [disabled]="busy()"
+          (click)="
+            place(
+              houseId(),
+              qty.value,
+              placementDate(),
+              cycleId() || defaultCycleId(),
+              supplier(),
+              age()
+            )
+          "
+        >
+          Place chicks
+        </button>
+      </div>
+    </section>
+  }
+
+  @for (p of placements(); track p.id) {
+    <section class="pp-surface-card panel">
+      <h2>
+        {{ p.reference }} <span class="meta">{{ p.status }}</span>
+      </h2>
+      <p class="meta">
+        {{ houseNames().get(p.houseId) }}: {{ p.remaining }} of {{ p.quantity }} remain.
+        {{ p.mortality }} died, {{ p.sold }} sold, {{ p.otherRemovals }} removed.
+      </p>
+      @if (p.status === 'ACTIVE') {
+        <div class="form">
+          <mat-form-field>
+            <mat-label>Type</mat-label>
+            <select matNativeControl #type (change)="movementType.set(type.value)">
+              @for (t of movementTypes; track t[0]) {
+                <option [value]="t[0]">{{ t[1] }}</option>
+              }
+            </select>
+            <mat-hint>Why the birds left, or a count correction</mat-hint>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Birds</mat-label>
+            <input matInput type="number" min="1" [max]="p.remaining" #n />
+            <mat-hint>How many birds ({{ p.remaining }} remain)</mat-hint>
+          </mat-form-field>
+          <app-date-field
+            label="Date"
+            hint="When it happened"
+            [max]="today"
+            [(value)]="movementDate"
+          />
+          <mat-form-field>
+            <mat-label>Reason</mat-label>
+            <input matInput #why />
+            <mat-hint>Required for corrections, optional otherwise</mat-hint>
+          </mat-form-field>
+          @if (movementType() === 'CORRECTION') {
+            <label
+              ><input type="checkbox" (change)="increase.set($any($event.target).checked)" />
+              Correction adds birds</label
+            >
+          }
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="busy()"
+            (click)="
+              record(
+                p.id,
+                type.value,
+                n.value,
+                movementDate(),
+                why.value,
+                movementType() === 'CORRECTION' && increase()
+              )
+            "
+          >
+            Record
+          </button>
+        </div>
+      }
+    </section>
+  }
+</div>

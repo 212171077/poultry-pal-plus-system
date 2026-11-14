@@ -50,6 +50,11 @@ export const routes: Routes = [
         loadChildren: () => import('./features/team/team.routes'),
       },
       {
+        path: 'production',
+        canActivate: [permissionGuard('PRODUCTION_MANAGE')],
+        loadChildren: () => import('./features/production/production.routes'),
+      },
+      {
         path: 'admin/app-config',
         canActivate: [permissionGuard('SYSTEM_ADMIN')],
         loadChildren: () => import('./features/admin/app-config/app-config.routes'),

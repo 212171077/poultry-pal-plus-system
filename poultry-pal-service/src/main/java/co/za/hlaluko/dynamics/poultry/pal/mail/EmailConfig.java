@@ -1,14 +1,11 @@
 package co.za.hlaluko.dynamics.poultry.pal.mail;
 
-import java.util.Optional;
+import jakarta.mail.internet.MimeMessage;
 import java.util.Properties;
-
-import co.za.hlaluko.dynamics.poultry.pal.model.entity.lookups.AppConfig;
-import co.za.hlaluko.dynamics.poultry.pal.repository.AppConfigRepository;
-import co.za.hlaluko.dynamics.poultry.pal.utils.ConstantUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -18,41 +15,16 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 @Configuration
 public class EmailConfig {
 
-  private final AppConfigRepository repository;
+  private final MailSettings settings;
 
   @Autowired
-  public EmailConfig(AppConfigRepository repository) {
-    this.repository = repository;
+  public EmailConfig(MailSettings settings) {
+    this.settings = settings;
   }
 
   @Bean
   public JavaMailSender getMailSender() {
-    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-
-    mailSender.setHost("smtp.gmail.com");
-    mailSender.setPort(587);
-/*    mailSender.setUsername(
-        Optional.ofNullable(repository.findByCode("MAIL_USER"))
-            .map(AppConfig::getDescription)
-            .orElse(ConstantUtil.MAIL_USER)
-        );
-
-    mailSender.setPassword(
-            Optional.ofNullable(repository.findByCode("MAIL_PASS"))
-                    .map(AppConfig::getDescription)
-                    .orElse(ConstantUtil.MAIL_PASS));*/
-      mailSender.setUsername(ConstantUtil.MAIL_USER);
-
-    mailSender.setPassword(ConstantUtil.MAIL_PASS);
-
-    Properties javaMailProperties = new Properties();
-    javaMailProperties.put("mail.smtp.starttls.enable", "true");
-    javaMailProperties.put("mail.smtp.auth", "true");
-    javaMailProperties.put("mail.transport.protocol", "smtp");
-    javaMailProperties.put("mail.debug", "true");
-
-    mailSender.setJavaMailProperties(javaMailProperties);
-    return mailSender;
+    return new DatabaseMailSender(settings);
   }
 
   /** HTML Email config */
@@ -63,5 +35,36 @@ public class EmailConfig {
     templateResolver.setSuffix(".html");
     templateResolver.setTemplateMode(TemplateMode.HTML);
     return templateResolver;
+  }
+
+  /** Re-reads the SMTP settings from the database before every send, so edits apply without a restart. */
+  static class DatabaseMailSender extends JavaMailSenderImpl {
+    private final MailSettings settings;
+
+    DatabaseMailSender(MailSettings settings) {
+      this.settings = settings;
+    }
+
+    @Override
+    protected void doSend(MimeMessage[] mimeMessages, Object[] originalMessages)
+        throws MailException {
+      refresh();
+      super.doSend(mimeMessages, originalMessages);
+    }
+
+    private synchronized void refresh() {
+      setHost(settings.get(MailSettings.HOST));
+      setPort(Integer.parseInt(settings.get(MailSettings.PORT)));
+      setUsername(settings.get(MailSettings.USER));
+      setPassword(settings.get(MailSettings.PASS));
+
+      Properties properties = new Properties();
+      properties.put("mail.transport.protocol", "smtp");
+      properties.put("mail.smtp.auth", String.valueOf(settings.flag(MailSettings.AUTH)));
+      properties.put(
+          "mail.smtp.starttls.enable", String.valueOf(settings.flag(MailSettings.STARTTLS)));
+      properties.put("mail.debug", "true");
+      setJavaMailProperties(properties);
+    }
   }
 }

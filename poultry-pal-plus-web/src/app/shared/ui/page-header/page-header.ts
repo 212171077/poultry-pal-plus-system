@@ -1,11 +1,28 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Injector, inject, input } from '@angular/core';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 /** Page title block. Project action buttons into it; they wrap below the title on small screens. */
 @Component({
   selector: 'app-page-header',
+  imports: [MatIconButton, MatIcon],
   template: `
     <div class="text">
-      <h1 class="title">{{ heading() }}</h1>
+      <h1 class="title">
+        {{ heading() }}
+        @if (info()) {
+          <button
+            mat-icon-button
+            type="button"
+            class="info-button"
+            aria-haspopup="dialog"
+            aria-label="About this page"
+            (click)="openInfo()"
+          >
+            <mat-icon>info</mat-icon>
+          </button>
+        }
+      </h1>
       @if (subtitle()) {
         <p class="subtitle">{{ subtitle() }}</p>
       }
@@ -30,6 +47,10 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       margin-top: var(--pp-space-xs);
       color: var(--mat-sys-on-surface-variant);
     }
+    .info-button {
+      vertical-align: middle;
+      color: var(--mat-sys-primary);
+    }
     .actions {
       display: flex;
       flex-wrap: wrap;
@@ -44,4 +65,18 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 export class PageHeader {
   readonly heading = input.required<string>();
   readonly subtitle = input<string>();
+  /** Explains what the page records or does; shown in a popup from an info icon beside the title. */
+  readonly info = input<string>();
+  private readonly injector = inject(Injector);
+
+  protected async openInfo(): Promise<void> {
+    const [{ MatDialog }, { InfoDialog }] = await Promise.all([
+      import('@angular/material/dialog'),
+      import('./info-dialog'),
+    ]);
+    this.injector.get(MatDialog).open(InfoDialog, {
+      data: { title: this.heading(), message: this.info() ?? '' },
+      maxWidth: '440px',
+    });
+  }
 }

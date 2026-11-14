@@ -1,5 +1,8 @@
 <div class="pp-page">
-  <app-page-header heading="Team" subtitle="Manage who can work on your farm and which coops they can access.">
+  <app-page-header
+    heading="Team"
+    subtitle="Manage who can work on your farm and which coops they can access."
+  >
     <button mat-flat-button type="button" (click)="showForm.set(!showForm())">
       <mat-icon>{{ showForm() ? 'close' : 'person_add' }}</mat-icon>
       {{ showForm() ? 'Cancel' : 'Add team member' }}
@@ -69,20 +72,30 @@
             <div class="avatar" aria-hidden="true">
               {{ (member.name ?? member.email ?? '?').slice(0, 1).toUpperCase() }}
             </div>
-            <div>
+            <div class="details">
               <h2>{{ member.name }} {{ member.surname }}</h2>
-              <p class="muted">{{ member.email }}</p>
-              @if (member.active === false) {
-                <p class="status-inactive">Inactive</p>
-              }
+              <div class="chips">
+                <span class="chip">{{
+                  member.farmOwner
+                    ? 'Owner'
+                    : role(member) === 'ROLE_FARM_MANAGER'
+                      ? 'Farm manager'
+                      : 'Farm worker'
+                }}</span>
+                @if (member.active === false) {
+                  <span class="chip chip-inactive">Inactive</span>
+                }
+              </div>
+              <p class="contact"><mat-icon aria-hidden="true">mail</mat-icon>{{ member.email }}</p>
               @if (member.phoneNumber) {
-                <p class="muted">{{ member.phoneNumber }}</p>
+                <p class="contact">
+                  <mat-icon aria-hidden="true">call</mat-icon>{{ member.phoneNumber }}
+                </p>
               }
             </div>
           </div>
 
           <div class="permissions">
-            <span class="role-label">Role</span>
             @if (canManage()) {
               <mat-form-field subscriptSizing="dynamic">
                 <mat-label>Role for {{ member.name }}</mat-label>
@@ -116,28 +129,46 @@
             </mat-form-field>
           </div>
 
-          @if (canManage() && !member.farmOwner) {
-            <button
-              mat-button
-              type="button"
-              [disabled]="saving()"
-              (click)="setActive(member, member.active === false)"
-            >
-              <mat-icon>{{ member.active === false ? 'person_check' : 'person_off' }}</mat-icon>
-              {{ member.active === false ? 'Activate' : 'Deactivate' }}
-            </button>
-            <button
-              mat-button
-              class="remove"
-              type="button"
-              [disabled]="saving()"
-              (click)="remove(member)"
-              [attr.aria-label]="'Remove ' + member.name + ' from the farm'"
-            >
-              <mat-icon>person_remove</mat-icon>
-              Remove
-            </button>
-          }
+          <div class="actions">
+            @if (canGrantProduction() && !member.farmOwner) {
+              <button
+                mat-stroked-button
+                type="button"
+                [disabled]="saving()"
+                (click)="setProductionAccess(member, !hasProductionAccess(member))"
+              >
+                <mat-icon>{{ hasProductionAccess(member) ? 'lock' : 'lock_open' }}</mat-icon>
+                {{
+                  hasProductionAccess(member)
+                    ? 'Revoke production access'
+                    : 'Grant production access'
+                }}
+              </button>
+            }
+
+            @if (canManage() && !member.farmOwner) {
+              <button
+                mat-stroked-button
+                type="button"
+                [disabled]="saving()"
+                (click)="setActive(member, member.active === false)"
+              >
+                <mat-icon>{{ member.active === false ? 'person_check' : 'person_off' }}</mat-icon>
+                {{ member.active === false ? 'Activate' : 'Deactivate' }}
+              </button>
+              <button
+                mat-stroked-button
+                class="remove"
+                type="button"
+                [disabled]="saving()"
+                (click)="remove(member)"
+                [attr.aria-label]="'Remove ' + member.name + ' from the farm'"
+              >
+                <mat-icon>person_remove</mat-icon>
+                Remove
+              </button>
+            }
+          </div>
         </li>
       }
     </ul>

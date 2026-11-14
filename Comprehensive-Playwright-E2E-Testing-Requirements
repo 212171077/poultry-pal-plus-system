@@ -1,0 +1,249 @@
+# Task: Comprehensive Playwright E2E Testing and Application Validation
+
+Act as a Senior QA Automation Engineer. Analyse the entire web application and implement a comprehensive Playwright End-to-End (E2E) testing suite that validates the functionality, usability, and reliability of every page.
+
+The objective is to identify existing defects, broken functionality, UI inconsistencies, and potential usability issues without modifying the application code to fix them.
+
+## 1. Application Analysis
+
+Before writing tests:
+
+- Analyse the complete project structure.
+- Identify the Angular application, backend service, database, and supporting services.
+- Inspect all application routes and pages.
+- Identify available user roles and permissions.
+- Understand the authentication and authorisation flows.
+- Identify forms, buttons, navigation menus, tables, dialogs, filters, search functionality, and other interactive components.
+- Review existing API endpoints and understand how the frontend communicates with the backend.
+- Identify the main user journeys and business processes.
+
+Create a test plan covering every page and its associated functionality.
+
+Do not assume that a page works correctly just because it loads successfully.
+
+## 2. Playwright Test Implementation
+
+Implement a comprehensive Playwright test suite covering:
+
+- Page loading and rendering.
+- Navigation between pages.
+- Authentication and logout.
+- Role-based access control and permissions.
+- Form validation, including required fields and invalid inputs.
+- Create, read, update, and delete (CRUD) operations.
+- Search, filtering, sorting, and pagination.
+- Buttons, links, dropdowns, dialogs, and modal interactions.
+- API integration and backend responses.
+- Error handling and validation messages.
+- Empty states and loading states.
+- Responsive layouts and UI consistency.
+- Negative scenarios and edge cases.
+
+Test actual business functionality, not just whether elements are visible.
+
+Use reusable test utilities, fixtures, and Page Object Models where appropriate. Avoid unnecessary complexity.
+
+## 3. Desktop and Mobile Testing
+
+Configure Playwright to execute tests in both desktop and mobile environments.
+
+**Desktop:**
+- Use a standard desktop viewport (1920 × 1080).
+- Validate layouts, navigation, tables, forms, and other components.
+
+**Mobile:**
+- Use a standard mobile viewport (390 × 844).
+- Simulate a mobile device where appropriate.
+- Validate responsive layouts, mobile navigation, forms, buttons, tables, and scrolling.
+- Identify horizontal overflow, overlapping elements, and inaccessible controls.
+
+Run the relevant tests against both viewport configurations.
+
+## 4. Screenshot Collection
+
+Capture screenshots throughout test execution.
+
+Requirements:
+
+- Save screenshots for every page in desktop and mobile views.
+- Capture screenshots after pages have fully loaded.
+- Capture important user journeys and significant UI states.
+- Capture screenshots whenever a test fails.
+- Capture screenshots of unexpected UI behaviour.
+- Use descriptive filenames that include the page, viewport, and test scenario.
+
+Organise screenshots in a structured directory, for example:
+
+`test-results/screenshots/desktop/`
+
+`test-results/screenshots/mobile/`
+
+`test-results/screenshots/failures/`
+
+## 5. Test Execution Environment
+
+The test suite must be capable of starting the complete application locally without requiring me to start individual services manually.
+
+Every test execution must:
+
+1. Start the backend service.
+2. Start the Angular application.
+3. Start any required supporting services, such as the database.
+4. Wait until all services are healthy and ready.
+5. Initialise a clean test database.
+6. Execute the Playwright tests.
+7. Generate test reports and screenshots.
+8. Shut down any processes started specifically for the test run.
+
+Configure the Playwright setup to manage application startup and shutdown automatically.
+
+Provide a single command to execute the complete test suite.
+
+## 6. Database Isolation and Clean Test Execution
+
+Every test run must start with a completely clean database.
+
+Requirements:
+
+- Ensure the test database contains no data from previous executions.
+- Automatically reset or recreate the test database before each complete test run.
+- Apply database migrations and initialise any required test data.
+- Create test users and other required records through controlled test fixtures or setup scripts.
+- Ensure test data is isolated from development or production data.
+- Clean up test data where necessary.
+- Make sure tests are repeatable and produce consistent results.
+
+**Important:** Never delete, truncate, or modify the development or production database. Use a dedicated test database and validate the database connection before performing any reset operation.
+
+## 7. Defect and Bug Documentation
+
+Do not fix any defects discovered during testing.
+
+For every defect, bug, or unexpected error identified, create a separate Markdown (`.md`) file documenting the issue.
+
+Store the files in:
+
+`test-results/defects/`
+
+Each defect document must contain:
+
+- Defect ID.
+- Short, descriptive title.
+- Affected page or component.
+- Test scenario that exposed the defect.
+- Steps to reproduce.
+- Expected behaviour.
+- Actual behaviour.
+- Severity (Critical, High, Medium, or Low).
+- Screenshots or other relevant evidence.
+- Relevant error messages or API responses.
+- Possible root cause, if identifiable.
+- Suggested resolution, if appropriate.
+
+Use descriptive filenames, for example:
+
+`DEF-001-login-validation-error.md`
+
+`DEF-002-mobile-navigation-overflow.md`
+
+If multiple tests expose the same underlying defect, document it once and reference the affected tests.
+
+Do not report expected validation behaviour or intentional application behaviour as defects.
+
+## 8. Test Reports
+
+Generate comprehensive execution reports after every run.
+
+Include:
+
+- Total number of tests.
+- Passed tests.
+- Failed tests.
+- Skipped tests.
+- Execution duration.
+- Results grouped by page.
+- Results grouped by desktop and mobile.
+- List of identified defects.
+- Links or references to relevant screenshots.
+- Backend or frontend errors encountered during execution.
+
+Use the Playwright HTML report and an additional Markdown summary.
+
+Store reports in:
+
+`test-results/reports/`
+
+## 9. Execution Performance and Test Reliability
+
+Do not optimise the tests simply to make them execute as quickly as possible.
+
+I want the tests to run thoroughly and reliably.
+
+Requirements:
+
+- Use explicit waits for application readiness and asynchronous operations.
+- Wait for API responses where appropriate.
+- Allow animations and UI transitions to complete before taking screenshots.
+- Avoid arbitrary fixed delays where Playwright's built-in waiting mechanisms are more reliable.
+- Validate that actions have completed before proceeding.
+- Avoid flaky tests and unnecessary dependencies between test cases.
+- Use appropriate retries for diagnosing intermittent failures, without hiding genuine defects.
+
+The objective is thorough validation, not maximum execution speed.
+
+## 10. Documentation and Deliverables
+
+Create or update the testing documentation.
+
+Include:
+
+- Playwright installation and configuration instructions.
+- Test directory structure.
+- How to execute all tests.
+- How to execute desktop-only tests.
+- How to execute mobile-only tests.
+- How to execute tests for a specific page.
+- How the backend and Angular application are started.
+- How the test database is reset.
+- Where screenshots are saved.
+- Where defect reports are saved.
+- Where execution reports are saved.
+
+Provide a single command, such as:
+
+`./run-e2e-tests.sh`
+
+This command must execute the complete testing workflow.
+
+## 11. Important Implementation Rules
+
+- Analyse the existing application before implementing tests.
+- Reuse the existing project structure and conventions where possible.
+- Do not unnecessarily modify application functionality.
+- Do not fix application defects discovered during testing.
+- Do not skip pages or functionality simply because they are difficult to test.
+- Do not use mocked responses when the objective is to validate actual frontend-to-backend integration.
+- Use real local services and a dedicated test database.
+- Ensure tests are independent and repeatable.
+- Do not mark tests as passed when functionality has not actually been validated.
+- If a feature cannot be tested, document the reason.
+- Do not silently ignore console errors, failed network requests, or backend exceptions.
+
+## 12. Final Expected Outcome
+
+At completion, I expect:
+
+1. A fully configured Playwright E2E testing suite.
+2. Comprehensive coverage of every application page.
+3. Desktop and mobile test execution.
+4. Screenshots of every page and important interaction.
+5. Automatic startup and shutdown of the backend and Angular applications.
+6. Automatic clean database initialisation before every full test run.
+7. Individual Markdown files documenting every identified defect.
+8. Playwright HTML execution reports.
+9. A Markdown test execution summary.
+10. Updated documentation explaining how to run and maintain the test suite.
+
+**Final instruction:** Do not stop after analysing the application or creating a test plan. Implement the complete test suite, execute it against the actual local application, investigate failures, and generate all requested reports and defect documentation.
+
+The task is complete only when the tests have actually been executed and the results have been documented.

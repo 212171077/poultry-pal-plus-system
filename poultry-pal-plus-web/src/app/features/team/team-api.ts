@@ -49,6 +49,14 @@ export class TeamApi {
     );
   }
 
+  setProductionAccess(userId: string, granted: boolean): Promise<UserInfo[]> {
+    return this.unwrap(
+      this.http.put<ApiResponse<UserInfo[]>>(`${this.baseUrl}/${enc(userId)}/production-access`, {
+        granted,
+      }),
+    );
+  }
+
   setActive(userId: string, active: boolean): Promise<UserInfo[]> {
     return this.unwrap(
       this.http.patch<ApiResponse<UserInfo[]>>(`${this.baseUrl}/${enc(userId)}/activation`, {
@@ -58,9 +66,7 @@ export class TeamApi {
   }
 
   removeMember(userId: string): Promise<UserInfo[]> {
-    return this.unwrap(
-      this.http.delete<ApiResponse<UserInfo[]>>(`${this.baseUrl}/${enc(userId)}`),
-    );
+    return this.unwrap(this.http.delete<ApiResponse<UserInfo[]>>(`${this.baseUrl}/${enc(userId)}`));
   }
 
   private async unwrap<T>(request: Observable<ApiResponse<T>>): Promise<T> {

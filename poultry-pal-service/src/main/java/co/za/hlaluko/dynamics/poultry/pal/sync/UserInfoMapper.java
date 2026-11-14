@@ -45,6 +45,10 @@ public final class UserInfoMapper {
         .email(user.getEmail())
         .roles(roles)
         .userCoopIds(coopIds)
+        .permissions(
+            user.getPermissions() == null
+                ? List.of()
+                : user.getPermissions().stream().map(Enum::name).sorted().toList())
         .roleFriendlyNames(AuthControllerServiceImpl.getRoleFriendlyNames(roles))
         .build();
   }

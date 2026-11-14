@@ -21,7 +21,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AppConfigAdminService {
   static final String MASK = "********";
-  private static final Set<String> PROTECTED_CODES = Set.of("MAIL_USER", "MAIL_PASS");
+  private static final Set<String> PROTECTED_CODES = Set.of(
+          "MAIL_USER", "MAIL_PASS", "MAIL_HOST", "MAIL_PORT", "MAIL_AUTH", "MAIL_STARTTLS");
   private static final Pattern CODE = Pattern.compile("[A-Z0-9_]{1,50}");
   private static final Pattern SENSITIVE =
       Pattern.compile(".*(PASS|PASSWORD|SECRET|TOKEN|KEY).*");

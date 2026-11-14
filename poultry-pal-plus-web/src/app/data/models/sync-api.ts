@@ -5,7 +5,7 @@
  */
 
 export type SyncEntityType =
-  'FARM' | 'COOP' | 'SALE' | 'MORTALITY' | 'EXPENSE' | 'EGG_PACKAGING' | 'REMINDER';
+  'FARM' | 'COOP' | 'SALE' | 'MORTALITY' | 'EXPENSE' | 'EGG_PACKAGING' | 'REMINDER' | 'PRODUCTION';
 
 export type SyncOperationType = 'UPSERT' | 'DELETE' | 'ACTION';
 
@@ -116,6 +116,7 @@ export interface UserInfo {
   readonly roles?: readonly string[] | null;
   readonly userCoopIds?: readonly string[] | null;
   readonly roleFriendlyNames?: readonly string[] | null;
+  readonly permissions?: readonly string[] | null;
 }
 
 export interface UserSettings {

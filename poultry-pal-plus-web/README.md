@@ -11,19 +11,19 @@ Spring Boot backend (`../poultry-pal-service`, `/api/v1`) when a connection retu
 
 ## Commands
 
-| Command                           | What it does                                                                                                                                                                                                          |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm start` / `npm run start:https` | HTTPS dev server on port 4200; `/api` is proxied over verified HTTPS to `localhost:8090` (`proxy.https.cjs`). No service worker. |
-| `npm run start:http` | HTTP dev server on <http://localhost:4200>; use with `TLS_ENABLED=false` on the backend. |
-| `npm run start:hosted` | HTTP dev server on <http://localhost:4200>; proxies `/api` to `http://154.0.166.216:8091`, the mobile app's current hosted backend. |
-| `npm run test:tls` | Check HTTPS and HTTP development proxy configuration. |
-| `npm run build`                   | Production build in `dist/poultry-pal-plus-web/browser`, with the service worker.                                                                                                                                     |
-| `npm run lint`                    | ESLint (angular-eslint).                                                                                                                                                                                              |
-| `npm run format` / `format:check` | Prettier.                                                                                                                                                                                                             |
-| `npm test` / `npm run test:ci`    | Unit tests (Karma + Jasmine); `test:ci` runs headless once.                                                                                                                                                           |
-| `npm run e2e`                     | Builds, then runs Playwright against the production build in a **visible browser**, one test at a time, pausing 1 s before each action (change with `E2E_SLOWMO=<ms>`). First run: `npx playwright install chromium`. |
-| `npm run e2e:slow`                | Same, pausing 2 s before each action.                                                                                                                                                                                 |
-| `npm run e2e:headless`            | Same tests without opening a browser, in parallel (also the default in CI).                                                                                                                                           |
+| Command                             | What it does                                                                                                                                                                                                          |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm start` / `npm run start:https` | HTTPS dev server on port 4200; `/api` is proxied over verified HTTPS to `localhost:8090` (`proxy.https.cjs`). No service worker.                                                                                      |
+| `npm run start:http`                | HTTP dev server on <http://localhost:4200>; use with `TLS_ENABLED=false` on the backend.                                                                                                                              |
+| `npm run start:hosted`              | HTTP dev server on <http://localhost:4200>; proxies `/api` to `http://154.0.166.216:8091`, the mobile app's current hosted backend.                                                                                   |
+| `npm run test:tls`                  | Check HTTPS and HTTP development proxy configuration.                                                                                                                                                                 |
+| `npm run build`                     | Production build in `dist/poultry-pal-plus-web/browser`, with the service worker.                                                                                                                                     |
+| `npm run lint`                      | ESLint (angular-eslint).                                                                                                                                                                                              |
+| `npm run format` / `format:check`   | Prettier.                                                                                                                                                                                                             |
+| `npm test` / `npm run test:ci`      | Unit tests (Karma + Jasmine); `test:ci` runs headless once.                                                                                                                                                           |
+| `npm run e2e`                       | Builds, then runs Playwright against the production build in a **visible browser**, one test at a time, pausing 1 s before each action (change with `E2E_SLOWMO=<ms>`). First run: `npx playwright install chromium`. |
+| `npm run e2e:slow`                  | Same, pausing 2 s before each action.                                                                                                                                                                                 |
+| `npm run e2e:headless`              | Same tests without opening a browser, in parallel (also the default in CI).                                                                                                                                           |
 
 ### Testing against the mobile app's hosted service
 
@@ -48,6 +48,11 @@ The current upstream is plain HTTP, so credentials and data are not encrypted
 between the dev server and the host; use HTTPS before testing with real credentials.
 The Angular dev server does not enable the service worker. Playwright and
 `e2e/serve.mjs` use a mock API, not this hosted service.
+
+### Live full-stack e2e suite
+
+A second suite runs against the real backend, MongoDB and Mailpit in Docker, with no mocks:
+`../run-e2e-tests.sh`. See [`e2e-live/README.md`](e2e-live/README.md).
 
 ### Running the e2e tests with `scripts/e2e.sh`
 

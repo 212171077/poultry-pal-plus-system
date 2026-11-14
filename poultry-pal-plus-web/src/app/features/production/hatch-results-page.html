@@ -1,0 +1,101 @@
+<div class="pp-page">
+  <app-page-header
+    heading="Hatch results"
+    subtitle="How well each batch hatched, and the trend over time."
+    info="Hatch results are recorded when a batch finishes hatching. This page shows the hatch rate (chicks hatched out of eggs moved to the hatcher), weak chicks, the trend by period and every past result. Filter by date or download a CSV."
+  >
+    <button
+      mat-stroked-button
+      type="button"
+      [disabled]="!connectivity.online()"
+      (click)="download()"
+    >
+      Download CSV
+    </button>
+  </app-page-header>
+
+  @if (error(); as message) {
+    <p class="notice" role="alert">{{ message }}</p>
+  }
+
+  <div class="pp-surface-card panel filters">
+    <app-date-field label="From" hint="Earliest result date" [(value)]="from" />
+    <app-date-field label="To" hint="Latest result date" [(value)]="to" />
+    <button mat-flat-button type="button" (click)="apply()">Apply</button>
+  </div>
+
+  @if (report(); as data) {
+    @if (data.summary.results === 0) {
+      <app-empty-state
+        icon="egg_alt"
+        heading="No hatch results yet"
+        message="Record a result on a batch once its eggs have hatched."
+      />
+    } @else {
+      <section class="pp-surface-card panel" aria-labelledby="summary-heading">
+        <h2 id="summary-heading">Summary</h2>
+        <p class="meta">
+          {{ data.summary.results }} results: {{ data.summary.hatchedChicks }} chicks from
+          {{ data.summary.eggsTransferred }} eggs, a hatch rate of
+          {{ format(data.summary.hatchRate) }}. {{ data.summary.weakChicks }} chicks were weak ({{
+            format(data.summary.weakRate)
+          }}).
+        </p>
+        <table class="pp-table">
+          <thead>
+            <tr>
+              <th>Period</th>
+              <th class="num">Hatched</th>
+              <th class="num">Eggs moved</th>
+              <th class="num">Hatch rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (point of data.trend; track point.period) {
+              <tr>
+                <td>{{ point.period }}</td>
+                <td class="num">{{ point.hatchedChicks }}</td>
+                <td class="num">{{ point.eggsTransferred }}</td>
+                <td class="num">
+                  <strong>{{ format(point.hatchRate) }}</strong>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+
+      <section class="pp-surface-card panel" aria-labelledby="history-heading">
+        <h2 id="history-heading">History</h2>
+        <div class="table-wrap">
+          <table class="pp-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Cycle</th>
+                <th class="num">Hatched</th>
+                <th class="num">Unhatched</th>
+                <th class="num">Eggs moved</th>
+                <th class="num">Hatch rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of data.rows; track row.id) {
+                <tr>
+                  <td>{{ row.resultDate }}</td>
+                  <td>{{ row.cycleReference }}</td>
+                  <td class="num">{{ row.hatchedChicks }}</td>
+                  <td class="num">{{ row.unhatchedEggs }}</td>
+                  <td class="num">{{ row.eggsTransferred }}</td>
+                  <td class="num">
+                    <strong>{{ format(row.hatchRate) }}</strong>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    }
+  }
+</div>

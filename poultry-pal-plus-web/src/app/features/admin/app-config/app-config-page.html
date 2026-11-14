@@ -1,6 +1,14 @@
 <div class="pp-page">
-  <app-page-header heading="App config" subtitle="System settings shared by every farm. Visible to system administrators only.">
-    <button mat-flat-button type="button" [disabled]="!connectivity.online()" (click)="formOpen() ? closeForm() : openCreate()">
+  <app-page-header
+    heading="App config"
+    subtitle="System settings shared by every farm. Visible to system administrators only."
+  >
+    <button
+      mat-flat-button
+      type="button"
+      [disabled]="!connectivity.online()"
+      (click)="formOpen() ? closeForm() : openCreate()"
+    >
       <mat-icon>{{ formOpen() ? 'close' : 'add' }}</mat-icon>
       {{ formOpen() ? 'Cancel' : 'Add entry' }}
     </button>
@@ -41,12 +49,18 @@
           }
         </mat-form-field>
       </div>
-      <button mat-flat-button type="submit" [disabled]="saving() || !connectivity.online()">Save</button>
+      <button mat-flat-button type="submit" [disabled]="saving() || !connectivity.online()">
+        Save
+      </button>
     </form>
   }
 
   @if (entries().length === 0 && !loading()) {
-    <app-empty-state icon="tune" heading="No configuration entries" message="Add an entry to get started." />
+    <app-empty-state
+      icon="tune"
+      heading="No configuration entries"
+      message="Add an entry to get started."
+    />
   } @else {
     <ul class="entries" aria-label="Configuration entries">
       @for (entry of entries(); track entry.id) {
@@ -56,12 +70,25 @@
             <p class="value">{{ entry.description }}</p>
           </div>
           <div class="actions">
-            <button mat-button type="button" [disabled]="saving() || !connectivity.online()" (click)="openEdit(entry)" [attr.aria-label]="'Edit ' + entry.code">
+            <button
+              mat-button
+              type="button"
+              [disabled]="saving() || !connectivity.online()"
+              (click)="openEdit(entry)"
+              [attr.aria-label]="'Edit ' + entry.code"
+            >
               <mat-icon>edit</mat-icon>
               Edit
             </button>
             @if (!entry.protectedEntry) {
-              <button mat-button class="remove" type="button" [disabled]="saving() || !connectivity.online()" (click)="remove(entry)" [attr.aria-label]="'Delete ' + entry.code">
+              <button
+                mat-button
+                class="remove"
+                type="button"
+                [disabled]="saving() || !connectivity.online()"
+                (click)="remove(entry)"
+                [attr.aria-label]="'Delete ' + entry.code"
+              >
                 <mat-icon>delete</mat-icon>
                 Delete
               </button>

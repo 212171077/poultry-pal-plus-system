@@ -2,6 +2,7 @@ package co.za.hlaluko.dynamics.poultry.pal.sync;
 
 import co.za.hlaluko.dynamics.poultry.pal.exception.ApiException;
 import co.za.hlaluko.dynamics.poultry.pal.exception.ErrorCodes;
+import co.za.hlaluko.dynamics.poultry.pal.service.ProductionSyncService;
 import co.za.hlaluko.dynamics.poultry.pal.model.dto.Address;
 import co.za.hlaluko.dynamics.poultry.pal.model.dto.Coop;
 import co.za.hlaluko.dynamics.poultry.pal.model.dto.CoopType;
@@ -103,6 +104,7 @@ public class SyncService {
   private final CoopReminderFactory coopReminderFactory;
   private final ObjectMapper objectMapper;
   private final Validator validator;
+  private final ProductionSyncService productionSyncService;
 
   public SyncService(
       FarmRepository farmRepository,
@@ -113,7 +115,8 @@ public class SyncService {
       FarmServiceImpl farmService,
       CoopReminderFactory coopReminderFactory,
       ObjectMapper objectMapper,
-      Validator validator) {
+      Validator validator,
+      ProductionSyncService productionSyncService) {
     this.farmRepository = farmRepository;
     this.coopArchiveRepository = coopArchiveRepository;
     this.operationLogRepository = operationLogRepository;
@@ -123,6 +126,7 @@ public class SyncService {
     this.coopReminderFactory = coopReminderFactory;
     this.objectMapper = objectMapper;
     this.validator = validator;
+    this.productionSyncService = productionSyncService;
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -227,7 +231,7 @@ public class SyncService {
 
   private Outcome apply(PushContext ctx, SyncOperation op) {
     try {
-      if (op.getEntityType() != SyncEntityType.FARM) {
+      if (op.getEntityType() != SyncEntityType.FARM && op.getEntityType() != SyncEntityType.PRODUCTION) {
         requireValidId(op.getEntityId(), "entityId");
       }
       return switch (op.getEntityType()) {
@@ -235,6 +239,7 @@ public class SyncService {
         case COOP -> applyCoop(ctx, op);
         case SALE, MORTALITY, EXPENSE, EGG_PACKAGING -> applyChild(ctx, op);
         case REMINDER -> applyReminder(ctx, op);
+        case PRODUCTION -> Outcome.done(productionSyncService.apply(ctx.user, op));
       };
     } catch (OperationRejected e) {
       return Outcome.done(

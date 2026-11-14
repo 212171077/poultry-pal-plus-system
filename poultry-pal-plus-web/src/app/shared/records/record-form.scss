@@ -52,3 +52,14 @@ mat-form-field {
 .lead {
   margin: 0 0 var(--pp-space-md);
 }
+
+mat-button-toggle-group {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+}
+
+mat-button-toggle {
+  flex: 1 1 0;
+  min-width: 0;
+}

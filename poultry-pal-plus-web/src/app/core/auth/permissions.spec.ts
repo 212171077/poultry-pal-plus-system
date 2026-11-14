@@ -21,6 +21,18 @@ describe('permissions', () => {
     expect(hasPermission(null, 'SYSTEM_ADMIN')).toBeFalse();
   });
 
+  it('requires an explicit grant for production, except for the farm owner', () => {
+    expect(hasPermission({ id: 'a', farmOwner: true }, 'PRODUCTION_MANAGE')).toBeTrue();
+    expect(
+      hasPermission({ id: 'b', permissions: ['PRODUCTION_MANAGE'] }, 'PRODUCTION_MANAGE'),
+    ).toBeTrue();
+    expect(
+      hasPermission({ id: 'c', roles: ['ROLE_FARM_MANAGER'] }, 'PRODUCTION_MANAGE'),
+    ).toBeFalse();
+    expect(hasPermission({ id: 'd', roles: ['ROLE_ADMIN'] }, 'PRODUCTION_MANAGE')).toBeFalse();
+    expect(hasPermission(null, 'PRODUCTION_MANAGE')).toBeFalse();
+  });
+
   it('describes the role for the account menu', () => {
     expect(roleLabel({ id: 'a', farmOwner: true })).toBe('Farm owner');
     expect(roleLabel({ id: 'b', roles: ['ROLE_FARM_MANAGER'] })).toBe('Farm manager');

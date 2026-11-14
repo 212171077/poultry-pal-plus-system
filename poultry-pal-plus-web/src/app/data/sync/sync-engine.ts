@@ -16,7 +16,9 @@ import {
   pendingKeys,
   setMeta,
 } from './local-store';
+import { SessionRefresher } from '../../core/auth/session-refresher';
 import { SyncApi, SyncHttpError } from './sync-api';
+import { ProductionSnapshotStore } from './production-snapshot';
 import { SyncQueue, opKey } from './sync-queue';
 
 export const PUSH_BATCH_SIZE = 200;
@@ -45,7 +47,9 @@ interface ChannelMessage {
 export class SyncEngine {
   private readonly db = inject(APP_DB);
   private readonly api = inject(SyncApi);
+  private readonly refresher = inject(SessionRefresher);
   private readonly queue = inject(SyncQueue);
+  private readonly production = inject(ProductionSnapshotStore);
   private readonly status = inject(SyncStatusService);
   private readonly connectivity = inject(ConnectivityService);
   private readonly zone = inject(NgZone);
@@ -182,12 +186,19 @@ export class SyncEngine {
   }
 
   private async cycle(): Promise<boolean> {
+    // The system admin has no farm: there is nothing to sync and the server would answer 403.
+    if ((await getMeta<string>(this.db, 'userId')) && !(await getMeta<string>(this.db, 'farmId'))) {
+      await setMeta(this.db, 'lastSyncedAt', new Date().toISOString());
+      this.lastErrorState.set(null);
+      return true;
+    }
     this.setSyncing(true);
     try {
       await this.withAuth(async () => {
         await this.recoverInflight();
         await this.push();
         await this.pull();
+        await this.production.refresh();
       });
       await setMeta(this.db, 'lastSyncedAt', new Date().toISOString());
       this.connectivity.reportServerReachable(true);
@@ -209,7 +220,7 @@ export class SyncEngine {
     } catch (error) {
       if (SyncHttpError.from(error).kind !== 'auth') throw error;
       try {
-        await this.api.refresh();
+        await this.refresher.refresh();
       } catch {
         throw error;
       }

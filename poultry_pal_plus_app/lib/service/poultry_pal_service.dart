@@ -42,8 +42,14 @@ class PoultryPalService {
         final dio = Dio();
         dio.httpClientAdapter = IOHttpClientAdapter();
         dio.interceptors.add(CookieManager(cookieJar));
+        dio.interceptors.add(_SessionRenewalInterceptor(dio));
         return dio;
     }
+
+    /// Credentials of the signed-in user, kept in memory only, so an expired
+    /// access cookie can be renewed without asking the user to sign in again.
+    static String? _email;
+    static String? _password;
 
     Future<MessageResponse> signup({
         required String name,
@@ -139,6 +145,8 @@ class PoultryPalService {
                 ),
             );
 
+            _email = email;
+            _password = password;
             final user = User.fromJson(response.data);
             await SessionManager().set("userData", jsonEncode(response.data));
             await fetchFarmDetails(user.farmId);
@@ -1369,4 +1377,52 @@ class PoultryPalService {
         }
     }
 
+}
+
+
+/// The access cookie lives for a limited time and the legacy sign-in issues no
+/// refresh token, so a request made after it expires is answered with 401
+/// ("Authentication required"). This signs in again once with the credentials
+/// from the current session (concurrent requests share one sign-in) and
+/// retries the request, instead of leaving it to fail until something else
+/// renews the cookie.
+class _SessionRenewalInterceptor extends Interceptor {
+    _SessionRenewalInterceptor(this._dio);
+
+    final Dio _dio;
+    Future<bool>? _renewal;
+
+    @override
+    void onError(DioException err, ErrorInterceptorHandler handler) async {
+        final request = err.requestOptions;
+        final isSignIn = request.path.contains('/signin');
+        if (err.response?.statusCode != 401 ||
+            isSignIn ||
+            request.extra['renewed'] == true) {
+            return handler.next(err);
+        }
+        _renewal ??= _renew().whenComplete(() => _renewal = null);
+        if (!await _renewal!) return handler.next(err);
+        try {
+            request.extra['renewed'] = true;
+            handler.resolve(await _dio.fetch(request));
+        } on DioException catch (e) {
+            handler.next(e);
+        }
+    }
+
+    Future<bool> _renew() async {
+        final email = PoultryPalService._email;
+        final password = PoultryPalService._password;
+        if (email == null || password == null) return false;
+        try {
+            await _dio.post(
+                '${PoultryPalService().authBaseUrl}/signin',
+                data: {'username': email, 'password': password},
+            );
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
 }

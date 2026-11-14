@@ -1,6 +1,7 @@
 package co.za.hlaluko.dynamics.poultry.pal.controller.v1;
 
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.CoopAssignmentRequest;
+import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.ProductionAccessRequest;
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.TeamMemberRequest;
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.TeamRoleRequest;
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.TeamActivationRequest;
@@ -55,6 +56,17 @@ public class TeamController {
         ApiResponse.ok(
             "Team member role updated",
             teamManagementService.changeRole(SecurityUtils.getCurrentUser(), memberId, request)));
+  }
+
+  @PutMapping("/{memberId}/production-access")
+  @Operation(summary = "Grant or revoke a team member's PRODUCTION_MANAGE permission")
+  public ResponseEntity<ApiResponse<List<UserInfoResponse>>> productionAccess(
+      @PathVariable String memberId, @Valid @RequestBody ProductionAccessRequest request) {
+    return ResponseEntity.ok(
+        ApiResponse.ok(
+            "Production access updated",
+            teamManagementService.setProductionAccess(
+                SecurityUtils.getCurrentUser(), memberId, request)));
   }
 
   @PutMapping("/{memberId}/coops")

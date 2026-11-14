@@ -8,6 +8,7 @@ export type ApiErrorCode =
   | 'NOT_FOUND'
   | 'CONFLICT'
   | 'DUPLICATE'
+  | 'CAPACITY_CONFLICT'
   | 'UNSUPPORTED_OPERATION'
   | 'INTERNAL_ERROR';
 

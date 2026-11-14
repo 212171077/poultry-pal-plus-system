@@ -29,7 +29,9 @@
         <mat-form-field>
           <mat-label>Phone number</mat-label>
           <input matInput type="tel" formControlName="phoneNumber" autocomplete="tel" />
-          @if (profileForm.controls.phoneNumber.invalid && profileForm.controls.phoneNumber.touched) {
+          @if (
+            profileForm.controls.phoneNumber.invalid && profileForm.controls.phoneNumber.touched
+          ) {
             <mat-error>Enter a phone number of at most 15 characters.</mat-error>
           }
         </mat-form-field>
@@ -42,21 +44,41 @@
       <div class="fields">
         <mat-form-field>
           <mat-label>Current password</mat-label>
-          <input matInput type="password" formControlName="currentPassword" autocomplete="current-password" />
+          <input
+            matInput
+            type="password"
+            formControlName="currentPassword"
+            autocomplete="current-password"
+          />
         </mat-form-field>
         <mat-form-field>
           <mat-label>New password</mat-label>
-          <input matInput type="password" formControlName="newPassword" autocomplete="new-password" />
-          @if (passwordForm.controls.newPassword.hasError('minlength')) {
-            <mat-error>Use at least 8 characters.</mat-error>
+          <input
+            matInput
+            type="password"
+            formControlName="newPassword"
+            autocomplete="new-password"
+          />
+          @if (
+            passwordForm.controls.newPassword.hasError('minlength') ||
+            passwordForm.controls.newPassword.hasError('weakPassword')
+          ) {
+            <mat-error>{{ passwordHint }}</mat-error>
           }
         </mat-form-field>
         <mat-form-field>
           <mat-label>Confirm new password</mat-label>
-          <input matInput type="password" formControlName="confirmPassword" autocomplete="new-password" />
+          <input
+            matInput
+            type="password"
+            formControlName="confirmPassword"
+            autocomplete="new-password"
+          />
         </mat-form-field>
       </div>
-      <button mat-stroked-button type="submit" [disabled]="savingPassword()">Change password</button>
+      <button mat-stroked-button type="submit" [disabled]="savingPassword()">
+        Change password
+      </button>
     </form>
   </section>
 
@@ -151,14 +173,26 @@
 
   <section class="pp-surface-card panel" aria-labelledby="app-title">
     <h2 id="app-title" class="panel-title">App and updates</h2>
-    <p class="muted">Poultry Pal Plus · {{ updatesEnabled ? 'Offline-ready web app' : 'Browser app' }}</p>
+    <p class="muted">
+      Poultry Pal Plus · {{ updatesEnabled ? 'Offline-ready web app' : 'Browser app' }}
+    </p>
     <p class="muted" aria-live="polite">
       @switch (updateState()) {
-        @case ('checking') { Checking for an update… }
-        @case ('available') { A new version is available and will load after refresh. }
-        @case ('unsupported') { Update checks are not available in this browser. }
-        @case ('error') { The app could not check for updates. Check your connection and try again. }
-        @default { App is up to date. }
+        @case ('checking') {
+          Checking for an update…
+        }
+        @case ('available') {
+          A new version is available and will load after refresh.
+        }
+        @case ('unsupported') {
+          Update checks are not available in this browser.
+        }
+        @case ('error') {
+          The app could not check for updates. Check your connection and try again.
+        }
+        @default {
+          App is up to date.
+        }
       }
     </p>
     <div class="actions">

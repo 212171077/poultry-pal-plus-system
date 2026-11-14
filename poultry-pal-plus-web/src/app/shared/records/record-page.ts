@@ -8,6 +8,7 @@ import { AuthService } from '../../core/auth/auth.service';
 import { liveSignal } from '../../data/db/live-signal';
 import { LocalCoop } from '../../data/models/local';
 import { CoopRepository, FarmContextRepository } from '../../data/repositories/repositories';
+import { SyncStatusService } from '../../core/sync/sync-status.service';
 import { ConfirmDialogService } from '../ui/confirm-dialog/confirm-dialog.service';
 
 /** What every record form needs: the coops to choose from and who is recording. */
@@ -31,6 +32,7 @@ export abstract class RecordListPage<T> {
   private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly syncStatus = inject(SyncStatusService);
 
   protected readonly coops = liveSignal(() => this.coopsRepo.listSorted(), []);
   protected readonly settings = liveSignal(() => this.context.settings());
@@ -63,7 +65,16 @@ export abstract class RecordListPage<T> {
     coopId?: string | null,
     only?: { readonly filter: (coop: LocalCoop) => boolean; readonly emptyMessage: string },
   ): Promise<RecordFormContext | null> {
-    const all = await this.coopsRepo.listSorted();
+    let all = await this.coopsRepo.listSorted();
+    // A deep link can arrive before the first sync has delivered the coops.
+    for (
+      let wait = 0;
+      all.length === 0 && this.syncStatus.state() === 'syncing' && wait < 40;
+      wait++
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      all = await this.coopsRepo.listSorted();
+    }
     const coops = only ? all.filter(only.filter) : all;
     if (coops.length === 0) {
       const message =

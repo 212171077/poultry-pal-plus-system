@@ -2,7 +2,6 @@ package co.za.hlaluko.dynamics.poultry.pal.service;
 
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.lookups.AppConfig;
 import co.za.hlaluko.dynamics.poultry.pal.repository.AppConfigRepository;
-import co.za.hlaluko.dynamics.poultry.pal.utils.ConstantUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +15,7 @@ public class AppConfigValues {
   private final AppConfigRepository repository;
 
   public String adminEmail() {
-    return value(ADMIN_EMAIL, ConstantUtil.MAIL_USER);
+    return value(ADMIN_EMAIL, "");
   }
 
   public String appBaseUrl() {

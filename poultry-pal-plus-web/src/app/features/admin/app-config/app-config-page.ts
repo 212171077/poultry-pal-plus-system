@@ -43,7 +43,10 @@ export default class AppConfigPage {
   protected readonly editing = signal<AppConfigEntry | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
-    code: ['', [Validators.required, Validators.maxLength(50), Validators.pattern(/^[A-Za-z0-9_]+$/)]],
+    code: [
+      '',
+      [Validators.required, Validators.maxLength(50), Validators.pattern(/^[A-Za-z0-9_]+$/)],
+    ],
     description: ['', [Validators.maxLength(250)]],
   });
 

@@ -65,6 +65,19 @@ export abstract class RecordRepository<T extends SyncedRecord> {
     await this.db.transaction('rw', [table, this.db.coops, this.db.outbox], async () => {
       const current = await table.get(id);
       if (!current) throw new Error(`${this.def.noun} not found`);
+      // Only fields that really differ are sent, so edits to different fields merge on the server.
+      const fields = Object.keys(changes).filter(
+        (field) =>
+          this.def.payloadFields.includes(field) &&
+          !sameValue(
+            (current as unknown as Record<string, unknown>)[field],
+            (changes as Record<string, unknown>)[field],
+          ),
+      );
+      if (fields.length === 0) {
+        updated = current;
+        return;
+      }
       const syncStatus = current.syncStatus === 'synced' ? 'pending' : current.syncStatus;
       updated = this.derive({ ...current, ...changes, id, syncStatus } as T);
       await this.validate(updated);
@@ -74,7 +87,7 @@ export abstract class RecordRepository<T extends SyncedRecord> {
         operation: 'UPSERT',
         record: updated,
         before: current,
-        fields: Object.keys(changes).filter((field) => this.def.payloadFields.includes(field)),
+        fields,
       });
     });
     this.queue.notify();
@@ -123,4 +136,21 @@ export abstract class CoopChildRepository<
       throw new Error('Choose a coop that exists on this device');
     }
   }
+}
+
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}T/;
+
+/** Equality for form values vs stored values: null/undefined match, ISO dates compare as instants. */
+function sameValue(a: unknown, b: unknown): boolean {
+  const left = a ?? null;
+  const right = b ?? null;
+  if (
+    typeof left === 'string' &&
+    typeof right === 'string' &&
+    ISO_DATE.test(left) &&
+    ISO_DATE.test(right)
+  ) {
+    return Date.parse(left) === Date.parse(right);
+  }
+  return JSON.stringify(left) === JSON.stringify(right);
 }

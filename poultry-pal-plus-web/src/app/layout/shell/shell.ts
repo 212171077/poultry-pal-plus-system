@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -35,6 +36,7 @@ import { TopBar } from '../top-bar/top-bar';
   host: { '[attr.data-layout]': 'mode()', '(document:keydown)': 'onKeydown($event)' },
 })
 export class Shell {
+  private readonly document = inject(DOCUMENT);
   protected readonly mode = inject(LayoutService).mode;
   private readonly handsetDrawerOpen = signal(false);
   private readonly topBar = viewChild(TopBar);
@@ -57,6 +59,12 @@ export class Shell {
   protected readonly drawerOpen = computed(
     () => this.mode() !== 'handset' || this.handsetDrawerOpen(),
   );
+
+  /** `href="#main-content"` resolves against `<base href="/">`, so move focus ourselves. */
+  protected skipToMain(event: Event): void {
+    event.preventDefault();
+    this.document.getElementById('main-content')?.focus();
+  }
 
   protected onDrawerOpenedChange(opened: boolean): void {
     if (this.mode() === 'handset') {

@@ -53,7 +53,11 @@
 
       <mat-form-field>
         <mat-label>Arrival date</mat-label>
-        <input matInput [matDatepicker]="chickenArrivalDatePicker" formControlName="chickenArrivalDate" />
+        <input
+          matInput
+          [matDatepicker]="chickenArrivalDatePicker"
+          formControlName="chickenArrivalDate"
+        />
         <mat-datepicker-toggle matIconSuffix [for]="chickenArrivalDatePicker" />
         <mat-datepicker #chickenArrivalDatePicker />
         <mat-hint>When the flock arrived (optional)</mat-hint>

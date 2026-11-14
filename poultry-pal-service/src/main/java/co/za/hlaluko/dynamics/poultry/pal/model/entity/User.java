@@ -4,6 +4,7 @@ import co.za.hlaluko.dynamics.poultry.pal.model.dto.ApprovalStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import co.za.hlaluko.dynamics.poultry.pal.model.dto.ProductionPermission;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -48,6 +49,10 @@ public class User {
     private String addedByUserId;
     private String rolesUpdatedByUserId;
     private String removedByUserId;
+    /** Farm-scoped grants; null or empty means none. */
+    private Set<ProductionPermission> permissions;
+    private String permissionsUpdatedByUserId;
+    private Date permissionsUpdatedAt;
     private boolean removed;
     /** Null means a legacy account that never needed approval. */
     private ApprovalStatus approvalStatus;

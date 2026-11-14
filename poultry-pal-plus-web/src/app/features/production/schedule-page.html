@@ -1,0 +1,104 @@
+<div class="pp-page">
+  <app-page-header
+    heading="Plan a batch"
+    subtitle="Find start dates where the incubator, hatcher and house have room."
+    info="Enter how many eggs you want to set and a range of possible start dates. The server checks every day in that range against free incubator, hatcher and chicken-house space and lists the dates that fit. Nothing is reserved."
+  />
+
+  @if (error(); as message) {
+    <p class="notice" role="alert">{{ message }}</p>
+  }
+  @if (!connectivity.online()) {
+    <p class="meta">
+      You are offline. Start dates are calculated on the server, so connect to search.
+    </p>
+  }
+
+  <div class="pp-surface-card panel form">
+    <mat-form-field>
+      <mat-label>Eggs to set</mat-label>
+      <input matInput type="number" min="1" #eggs />
+      <mat-hint>How many eggs you plan to put in the incubator</mat-hint>
+    </mat-form-field>
+    <app-date-field
+      label="Earliest start"
+      hint="The first day you could set the eggs"
+      [min]="today"
+      [(value)]="from"
+    />
+    <app-date-field
+      label="Latest start"
+      hint="The last day you could set the eggs"
+      [min]="today"
+      [(value)]="to"
+    />
+    <button
+      mat-flat-button
+      type="button"
+      [disabled]="busy() || !connectivity.online()"
+      (click)="search(eggs.value)"
+    >
+      Find start dates
+    </button>
+  </div>
+
+  @if (options(); as result) {
+    <section class="pp-surface-card panel" aria-labelledby="result-heading">
+      <h2 id="result-heading">Result</h2>
+      <p>{{ result.explanation }}</p>
+      <p class="meta">
+        About {{ result.expectedChicks }} chicks are expected from {{ result.eggs }} eggs.
+      </p>
+      @for (w of result.windows; track w.from) {
+        <p class="row">
+          <strong>Start between {{ w.from }} and {{ w.to }}</strong>
+        </p>
+      }
+      <h3>Assumptions</h3>
+      <ul>
+        @for (a of result.assumptions; track a) {
+          <li>{{ a }}</li>
+        }
+      </ul>
+      @if (result.recommendedStart) {
+        <p class="meta">
+          Nothing is reserved. Create a batch from the Batches page to book the dates.
+        </p>
+      }
+    </section>
+
+    <section class="pp-surface-card panel" aria-labelledby="days-heading">
+      <h2 id="days-heading">Each start date</h2>
+      <div class="table-wrap">
+        <table class="pp-table">
+          <thead>
+            <tr>
+              <th>Start date</th>
+              <th>Transfer</th>
+              <th>Hatch</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of result.candidates; track c.start) {
+              <tr [class.fits]="c.feasible">
+                <td>{{ c.start }}</td>
+                <td>{{ c.transferDate }}</td>
+                <td>{{ c.hatchDate }}</td>
+                <td>
+                  <span
+                    class="pp-chip"
+                    [class.pp-chip-ok]="c.feasible"
+                    [class.pp-chip-bad]="!c.feasible"
+                  >
+                    {{ c.feasible ? 'Fits' : c.reasons[0] }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</div>

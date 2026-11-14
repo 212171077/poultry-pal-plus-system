@@ -76,6 +76,7 @@ public class AuthControllerServiceImpl implements AuthControllerService {
               .email(userDetails.getEmail())
               .roles(roles)
               .roleFriendlyNames(getRoleFriendlyNames(roles))
+              .permissions(userDetails.getPermissions().stream().map(Enum::name).sorted().toList())
               .build();
 
       return ResponseEntity.ok()

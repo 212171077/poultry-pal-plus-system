@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 /** Standard response envelope used by all {@code /api/v1} endpoints. */
 @Data
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -19,6 +19,7 @@ public class ApiResponse<T> {
   private T data;
   private String errorCode;
   private List<FieldError> errors;
+  private Object details;
 
   public static <T> ApiResponse<T> ok(String message, T data) {
     return ApiResponse.<T>builder().success(true).message(message).data(data).build();

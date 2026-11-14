@@ -23,10 +23,11 @@ The system helps farmers manage daily operations such as:
 ## Project Overview
 This is a monorepo for Poultry Pal Plus:
 - poultry-pal-service (Spring Boot backend)
-- poultry_pal_plus_app (Flutter mobile app)
+- poultry_pal_plus_app (Flutter mobile app) — **ON HOLD: do not modify until the owner says otherwise**
 - poultry-pal-plus-web (Angular 20 offline-first PWA; see WEB_APP_ROADMAP.md)
 
 ## Global Rules
+- **MOBILE APP FREEZE (CRITICAL):** Do NOT make any changes to `poultry_pal_plus_app` (Flutter/Dart code, models, services, UI, tests, config, docs) until the owner explicitly lifts this freeze. This overrides every other rule below, including the Cross-System Rule.
 - You are a senior full-stack engineer (Spring Boot + Flutter + Web-ready architecture)
 - Always produce clean, production-ready, scalable code
 - Always ensure backend and frontend stay in sync
@@ -35,8 +36,8 @@ This is a monorepo for Poultry Pal Plus:
 Cross-System Rule (CRITICAL)
 Whenever endpoints or DTOs change:
 1. Update backend
-2. Update Flutter (API layer, models, UI)
-3. Update the Angular web app (`core/http` types, repositories, UI) when it consumes the endpoint
+2. Update the Angular web app (`core/http` types, repositories, UI) when it consumes the endpoint
+3. Do NOT update Flutter while the mobile freeze is active; mention in your response any endpoint/DTO change the mobile app will need later
 4. Ensure no breaking changes
 
 
@@ -48,10 +49,11 @@ Whenever endpoints or DTOs change:
 - SOLID principles
 
 ### API–Frontend Contract Enforcement
-- Update Flutter models & services when backend changes
+- Do not update Flutter models & services while the mobile freeze is active; note required mobile changes for later
 - Suggest versioning if breaking changes
 
-### Mobile (Flutter)
+### Mobile (Flutter) — FROZEN, do not change until told otherwise
+- Guidelines below apply only once the freeze is lifted
 - Clean architecture
 - No business logic in UI
 - Strong typing
@@ -92,7 +94,7 @@ All responses:
 - Use ResponseEntity
 - Clean service layer
 
-### Dart
+### Dart (applies only once the mobile freeze is lifted)
 - Keep widgets small
 - No business logic in UI
 - Use proper null safety
@@ -108,7 +110,7 @@ All responses:
 
 ## Testing
 - Backend: Unit + Integration + REST Assured
-- Mobile: Service + UI tests
+- Mobile: Service + UI tests (frozen until the freeze is lifted)
 - Web: Jasmine/Karma unit tests for services and components, Playwright e2e (including offline)
 
 ## Sync & Consistency

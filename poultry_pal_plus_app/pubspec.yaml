@@ -37,8 +37,13 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: PoultryIcons
+      fonts:
+        - asset: assets/icons/poultry_icons.ttf
   assets:
     - assets/
+    - assets/icons/LICENSE
     - assets/lottie/
 
 flutter_native_splash:

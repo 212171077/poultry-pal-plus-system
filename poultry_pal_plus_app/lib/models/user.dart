@@ -11,6 +11,7 @@ class User {
   final List<String> roleFriendlyNames;
   final bool active;
   final bool farmOwner;
+  final List<String> permissions;
 
   User({
     required this.id,
@@ -25,6 +26,7 @@ class User {
     required this.active,
     required this.farmOwner,
     required this.userCoopIds,
+    this.permissions = const [],
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -41,8 +43,12 @@ class User {
       roleFriendlyNames: List<String>.from(json['roleFriendlyNames']),
       active: json['active'],
       farmOwner: json['farmOwner'],
+      permissions: json['permissions'] != null ? List<String>.from(json['permissions']) : [],
     );
   }
+
+  /// The farm owner always manages production; others need an explicit grant.
+  bool get canManageProduction => farmOwner || permissions.contains('PRODUCTION_MANAGE');
 
   String getFormattedRoles() {
     return roleFriendlyNames.join(' | ');

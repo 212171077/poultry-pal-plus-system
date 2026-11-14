@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -73,15 +80,12 @@ export class SaleFormDialog {
       },
       Validators.required,
     ],
-    saleDate: [
-      this.sale ? new Date(this.sale.saleDate) : this.today,
-      Validators.required,
-    ],
+    saleDate: [this.sale ? new Date(this.sale.saleDate) : this.today, Validators.required],
     eggSize: [
       SALE_EGG_SIZES.find((s) => s.toLowerCase() === this.sale?.eggSize?.toLowerCase()) ??
         DEFAULT_EGG_SIZE,
     ],
-    eggPackaging: [this.sale?.eggPackaging ?? '', this.sale ? [] : [Validators.required]],
+    eggPackaging: [this.sale?.eggPackaging ?? ''],
     quantity: [
       this.sale?.quantitySold || this.sale?.numberOfChickensSold || (null as number | null),
       [Validators.required, Validators.min(1)],
@@ -102,6 +106,14 @@ export class SaleFormDialog {
   protected readonly sellsEggs = computed(() => {
     const coopId = this.value().coopId ?? this.form.getRawValue().coopId;
     return this.coops.find((coop) => coop.id === coopId)?.coopType !== 'BROILER';
+  });
+
+  /** Packaging is only asked for (and required) when the coop sells eggs and the sale is new. */
+  private readonly packagingRule = effect(() => {
+    const control = this.form.controls.eggPackaging;
+    if (this.sellsEggs() && !this.sale) control.addValidators(Validators.required);
+    else control.removeValidators(Validators.required);
+    control.updateValueAndValidity({ emitEvent: false });
   });
 
   private readonly unit = computed(

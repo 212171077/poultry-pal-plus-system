@@ -1,0 +1,159 @@
+<div class="pp-page">
+  <app-page-header
+    heading="Production plans"
+    subtitle="Work back from the date you want birds ready."
+    info="A plan works backwards from the date you want birds ready to tell you when to set eggs or order chicks, and checks that the equipment and a chicken house have space. A draft reserves nothing until you commit it."
+  />
+  <app-offline-data-note [since]="repo.offlineSince()" />
+
+  @if (error(); as message) {
+    <p class="notice" role="alert">{{ message }}</p>
+  }
+  @if (!connectivity.online()) {
+    <p class="meta">
+      You are offline. Plans are calculated on the server, so connect to calculate or change one.
+    </p>
+  }
+
+  <section class="pp-surface-card panel" aria-labelledby="calc-heading">
+    <h2 id="calc-heading">Calculate</h2>
+    <div class="form">
+      <mat-form-field>
+        <mat-label>Chicks from</mat-label>
+        <select matNativeControl #method>
+          <option value="INCUBATE_EGGS">Own eggs</option>
+          <option value="PURCHASE_DAY_OLD_CHICKS">Bought day-old chicks</option>
+        </select>
+        <mat-hint>Hatch your own eggs or buy chicks that are one day old</mat-hint>
+      </mat-form-field>
+      <app-date-field
+        label="Birds ready on"
+        hint="The day the birds must be fully grown"
+        [(value)]="ready"
+      />
+      <mat-form-field>
+        <mat-label>Birds needed</mat-label>
+        <input matInput type="number" min="1" #qty />
+        <mat-hint>How many live birds you want on that day</mat-hint>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Age when ready (days, optional)</mat-label>
+        <input matInput type="number" min="1" #age />
+        <mat-hint>Leave empty to use the grow-out days from settings</mat-hint>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Name (optional)</mat-label>
+        <input matInput #name />
+        <mat-hint>A label to find this plan later</mat-hint>
+      </mat-form-field>
+      <button
+        mat-flat-button
+        type="button"
+        [disabled]="busy() || !connectivity.online()"
+        (click)="calculate(method.value, ready(), qty.value, age.value, name.value)"
+      >
+        Calculate
+      </button>
+    </div>
+
+    @if (preview(); as calc) {
+      <h3>{{ calc.feasible ? 'This plan fits' : 'This plan does not fit' }}</h3>
+      <p>{{ describe(calc) }}</p>
+      @if (calc.transferDate) {
+        <p class="meta">Move to the hatcher on {{ calc.transferDate }}.</p>
+      }
+      @if (calc.sourceMethod === 'PURCHASE_DAY_OLD_CHICKS') {
+        <p class="meta">
+          {{
+            calc.latestOrderDate
+              ? 'Order by ' + calc.latestOrderDate + '.'
+              : 'Set a supplier lead time in settings to get an order deadline.'
+          }}
+        </p>
+      }
+      <ul>
+        @for (c of calc.constraints; track c) {
+          <li class="notice">{{ c }}</li>
+        }
+      </ul>
+      <h4>Assumptions</h4>
+      <ul>
+        @for (a of calc.assumptions; track a) {
+          <li>{{ a }}</li>
+        }
+      </ul>
+      <button mat-stroked-button type="button" [disabled]="busy()" (click)="save()">
+        Save as draft
+      </button>
+    }
+  </section>
+
+  @for (plan of plans(); track plan.id) {
+    <section class="pp-surface-card panel">
+      <h2>
+        {{ plan.name || 'Plan' }} <span class="meta">{{ labels[plan.status] }}</span>
+      </h2>
+      <p>{{ describe(plan.calculation) }}</p>
+      @for (c of plan.calculation.constraints; track c) {
+        <p class="notice">{{ c }}</p>
+      }
+      @if (plan.recalculation; as next) {
+        <p class="notice">Numbers changed. If accepted: {{ describe(next) }}</p>
+        @for (c of next.constraints; track c) {
+          <p class="notice">{{ c }}</p>
+        }
+      }
+      @if (plan.status !== 'CANCELLED' && plan.status !== 'COMPLETED') {
+        <div class="form">
+          @if (plan.status === 'NEEDS_REVIEW') {
+            <mat-form-field>
+              <mat-label>Reason for accepting</mat-label>
+              <input matInput #why />
+              <mat-hint>Kept in the plan history</mat-hint>
+            </mat-form-field>
+            <button
+              mat-flat-button
+              type="button"
+              [disabled]="busy()"
+              (click)="command(plan.id, 'accept-recalculation', why.value)"
+            >
+              Accept new dates
+            </button>
+          }
+          @if (plan.status === 'DRAFT') {
+            <button
+              mat-flat-button
+              type="button"
+              [disabled]="busy()"
+              (click)="command(plan.id, 'commit')"
+            >
+              Commit
+            </button>
+          }
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="busy()"
+            (click)="command(plan.id, 'recalculate')"
+          >
+            Recalculate
+          </button>
+          <button
+            mat-stroked-button
+            type="button"
+            [disabled]="busy()"
+            (click)="command(plan.id, 'cancel')"
+          >
+            Cancel plan
+          </button>
+        </div>
+      }
+    </section>
+  } @empty {
+    <app-empty-state
+      icon="event"
+      heading="No saved plans"
+      message="Calculate a plan above and save it as a draft."
+    />
+  }
+</div>

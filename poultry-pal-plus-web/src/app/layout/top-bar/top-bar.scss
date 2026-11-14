@@ -36,6 +36,10 @@
 }
 
 .avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   background: var(--mat-sys-primary-container);
   color: var(--mat-sys-on-primary-container);
 }
@@ -46,6 +50,9 @@
 }
 
 .initials {
+  display: block;
+  width: 100%;
+  text-align: center;
   font-family: var(--pp-font-brand);
   font-size: 0.95rem;
   font-weight: 600;

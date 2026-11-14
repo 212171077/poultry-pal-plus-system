@@ -190,6 +190,7 @@ export function toLocalUser(member: UserInfo, currentUserId: string): LocalUser 
     roles: member.roles ?? [],
     roleFriendlyNames: member.roleFriendlyNames ?? [],
     userCoopIds: member.userCoopIds ?? [],
+    permissions: member.permissions ?? [],
     current: member.id === currentUserId,
   };
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poultry_pal_plus_app/theme/app_icons.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:poultry_pal_plus_app/theme/app_theme.dart';
@@ -19,6 +20,7 @@ import '../service/poultry_pal_service.dart';
 import 'common.dart';
 import 'farm_dashboard.dart';
 import 'login_screen.dart';
+import 'production/production_screen.dart';
 
 class HomeScreen extends StatefulWidget {
     const HomeScreen({super.key});
@@ -264,6 +266,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         FadeTransition(opacity: animation, child: child),
                     child: _buildAppBarAction(context),
                 ),
+                if (user!.canManageProduction)
+                    IconButton(
+                        icon: Icon(AppIcons.hatch, color: AppColors.adaptivePrimary(context)),
+                        tooltip: 'Production',
+                        onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
+                            builder: (_) => ProductionScreen(user: user!),
+                        )),
+                    ),
                 // Logout
                 IconButton(
                     icon: Icon(Icons.logout_sharp, color: AppColors.adaptivePrimary(context)),
@@ -390,7 +400,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Icons.home_work_outlined, AppColors.adaptivePrimary(context)),
                     const SizedBox(width: 8),
                     _buildStatCard('Chickens', '$_totalChickens',
-                        Icons.egg_alt_outlined, AppColors.secondaryDark),
+                        AppIcons.chicken, AppColors.secondaryDark),
                     const SizedBox(width: 8),
                     _buildStatCard("Eggs Today", '$_todayEggCount',
                         Icons.egg_outlined, AppColors.success),
@@ -601,7 +611,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 const SizedBox(height: 18),
                                                                 Common.buildTextField(
                                                                     label: 'Number of Chickens (Optional)',
-                                                                    icon: Icons.fact_check_outlined,
+                                                                    icon: AppIcons.chicken,
                                                                     keyboardType: TextInputType.number,
                                                                     onChanged: (value) =>
                                                                     numberOfChickens = int.tryParse(value) ?? 0,
@@ -936,4 +946,3 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
 }
-

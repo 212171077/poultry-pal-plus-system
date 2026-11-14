@@ -10,3 +10,4 @@ e2e
 *.md
 Dockerfile
 .dockerignore
+e2e-live

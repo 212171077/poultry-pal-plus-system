@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import co.za.hlaluko.dynamics.poultry.pal.containers.ContainerBase;
+import co.za.hlaluko.dynamics.poultry.pal.model.dto.ApprovalStatus;
 import co.za.hlaluko.dynamics.poultry.pal.model.dto.ERole;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.Role;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.User;
@@ -80,6 +81,10 @@ abstract class V1TestSupport extends ContainerBase {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(body)))
         .andExpect(status().isCreated());
+    User owner = userRepository.findByEmail(email).orElseThrow();
+    owner.setApprovalStatus(ApprovalStatus.APPROVED);
+    owner.setActive(true);
+    userRepository.save(owner);
     return email;
   }
 

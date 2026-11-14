@@ -27,6 +27,7 @@ export const PRIMARY_NAV: readonly NavItem[] = [
   { label: 'Reminders', icon: 'notifications_active', path: '/reminders' },
   { label: 'Reports', icon: 'insights', path: '/reports' },
   { label: 'Team', icon: 'groups', path: '/team', requires: 'FARM_MANAGER' },
+  { label: 'Production', icon: 'egg_alt', path: '/production', requires: 'PRODUCTION_MANAGE' },
 ];
 
 export const SECONDARY_NAV: readonly NavItem[] = [

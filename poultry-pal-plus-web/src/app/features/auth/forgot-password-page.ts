@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { strongPassword, PASSWORD_RULES_HINT } from '../../shared/validators/password-rules';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -29,6 +30,7 @@ import { AuthLayout } from './auth-layout/auth-layout';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ForgotPasswordPage {
+  protected readonly passwordHint = PASSWORD_RULES_HINT;
   private readonly api = inject(AuthApi);
   private readonly router = inject(Router);
   private readonly fb = inject(NonNullableFormBuilder);
@@ -44,7 +46,10 @@ export default class ForgotPasswordPage {
   });
   protected readonly resetForm = this.fb.group({
     code: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
-    newPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(100)]],
+    newPassword: [
+      '',
+      [Validators.required, Validators.minLength(8), strongPassword, Validators.maxLength(100)],
+    ],
   });
 
   protected async requestCode(): Promise<void> {

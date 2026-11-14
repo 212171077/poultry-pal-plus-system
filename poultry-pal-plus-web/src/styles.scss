@@ -154,3 +154,54 @@ a {
     }
   }
 }
+
+// Touch targets: 48px minimum on handsets.
+@media (max-width: 599.98px) {
+  .mat-mdc-icon-button.mat-mdc-button-base,
+  .mat-mdc-icon-button.mat-mdc-button-base.mdc-icon-button {
+    --mat-icon-button-state-layer-size: 48px;
+    width: 48px;
+    height: 48px;
+    padding: 12px;
+  }
+
+  .mat-mdc-button-base:not(.mat-mdc-icon-button),
+  .mat-button-toggle-button {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  mat-button-toggle {
+    --mat-button-toggle-height: 48px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+  }
+
+  .mat-mdc-select,
+  select.mat-mdc-input-element {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+  }
+
+  // The visible switch stays 32px; the control grows to the 48px target around it.
+  .mat-mdc-slide-toggle .mdc-switch {
+    height: 48px;
+
+    .mdc-switch__track,
+    .mdc-switch__handle-track {
+      top: 8px;
+      height: 32px;
+    }
+  }
+}
+
+// Keyboard focus indicator for segmented toggles.
+.mat-button-toggle-appearance-standard .mat-button-toggle-button:focus-visible {
+  outline: 3px solid var(--pp-focus-ring);
+  outline-offset: -3px;
+}

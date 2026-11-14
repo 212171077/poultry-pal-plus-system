@@ -36,7 +36,10 @@ export class AppConfigApi {
 
   update(id: string, input: AppConfigInput): Promise<AppConfigEntry> {
     return this.unwrap(
-      this.http.put<ApiResponse<AppConfigEntry>>(`${this.baseUrl}/${encodeURIComponent(id)}`, input),
+      this.http.put<ApiResponse<AppConfigEntry>>(
+        `${this.baseUrl}/${encodeURIComponent(id)}`,
+        input,
+      ),
     );
   }
 

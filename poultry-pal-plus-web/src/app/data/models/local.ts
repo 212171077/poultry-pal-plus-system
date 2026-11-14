@@ -175,6 +175,8 @@ export interface LocalUser {
   readonly roles?: readonly string[] | null;
   readonly roleFriendlyNames?: readonly string[] | null;
   readonly userCoopIds?: readonly string[] | null;
+  /** Farm-scoped grants such as `PRODUCTION_MANAGE`. */
+  readonly permissions?: readonly string[] | null;
   /** True for the signed-in user. */
   readonly current?: boolean;
 }
@@ -202,4 +204,11 @@ export type SyncMetaKey =
 export interface SyncMetaEntry {
   readonly key: SyncMetaKey;
   readonly value: string | number | null;
+}
+
+/** One section of the production snapshot kept for offline reading (`productionCache`). */
+export interface ProductionCacheEntry {
+  readonly key: string;
+  readonly data: unknown;
+  readonly fetchedAt: string;
 }

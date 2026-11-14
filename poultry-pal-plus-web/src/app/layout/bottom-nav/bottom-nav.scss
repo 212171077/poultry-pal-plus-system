@@ -22,6 +22,7 @@
   justify-content: center;
   gap: 2px;
   height: 100%;
+  text-align: center;
   border: 0;
   background: none;
   color: var(--mat-sys-on-surface-variant);
@@ -32,6 +33,9 @@
   cursor: pointer;
 
   mat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 56px;
     border-radius: var(--pp-radius-pill);
     transition: background-color var(--pp-transition);

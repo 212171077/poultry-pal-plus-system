@@ -59,9 +59,7 @@ export class ExpenseFormDialog {
       Validators.required,
     ],
     expenseDate: [
-      this.data.expense
-        ? new Date(this.data.expense.expenseDate)
-        : this.today,
+      this.data.expense ? new Date(this.data.expense.expenseDate) : this.today,
       Validators.required,
     ],
     expenseType: [

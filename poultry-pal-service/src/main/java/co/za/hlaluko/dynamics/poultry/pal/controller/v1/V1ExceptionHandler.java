@@ -30,7 +30,10 @@ public class V1ExceptionHandler {
   @ExceptionHandler(ApiException.class)
   public ResponseEntity<ApiResponse<Void>> handleApi(ApiException e) {
     return ResponseEntity.status(e.getStatus())
-        .body(ApiResponse.error(e.getErrorCode(), e.getMessage()));
+        .body(
+            ApiResponse.<Void>error(e.getErrorCode(), e.getMessage()).toBuilder()
+                .details(e.getDetails())
+                .build());
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
