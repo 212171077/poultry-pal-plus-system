@@ -74,4 +74,34 @@ test.describe('reminders', () => {
     await expect(done.first()).toContainText('Synced', { timeout: 30_000 });
     expect(await count('Completed')).toBeGreaterThan(0);
   });
+
+  test('reminders can be filtered by coop and the selected filter is labelled', async ({
+    freshFarm,
+    farmApi,
+    signInAs,
+    page,
+    shot,
+  }) => {
+    const farm = await freshFarm();
+    const api = await farmApi(farm.owner);
+    for (const coopName of ['Coop One', 'Coop Two']) {
+      await api.createCoop({ coopName, numberOfChickens: 200, chickenArrivalDate: isoDaysAgo(5) });
+    }
+    await signInAs(farm.owner, '/reminders');
+    const label = page.getByTestId('reminders-filter-label');
+    await expect(label).toHaveText('Tasks needing attention');
+    await page.getByRole('radio', { name: /Upcoming/ }).click();
+    await expect(label).toHaveText('Upcoming Tasks');
+
+    const rows = page.getByTestId('reminder-row');
+    await expect(rows.first()).toBeVisible();
+    const all = await rows.count();
+    await page.getByRole('combobox', { name: 'Coop' }).click();
+    await page.getByRole('option', { name: 'Coop One' }).click();
+    await expect(label).toHaveText('Upcoming Tasks · Coop One');
+    await expect(rows.first()).toBeVisible();
+    expect(await rows.count()).toBeLessThan(all);
+    await expect(rows.filter({ hasNotText: 'Coop One' })).toHaveCount(0);
+    await shot(page, 'reminders', 'coop-filter');
+  });
 });

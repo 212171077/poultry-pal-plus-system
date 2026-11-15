@@ -18,20 +18,27 @@ import {
   LocalSale,
 } from '../../data/models/local';
 
-export type RangeKey = '7d' | '30d' | 'month' | '90d' | 'year';
+export type RangeKey = '7d' | 'month' | '90d' | 'year';
 
 export interface RangeOption {
   readonly key: RangeKey;
   readonly label: string;
+  readonly icon: string;
+  /** Completes "Summary for …". */
+  readonly summary: string;
 }
 
 export const RANGE_OPTIONS: readonly RangeOption[] = [
-  { key: '7d', label: '7 days' },
-  { key: '30d', label: '30 days' },
-  { key: 'month', label: 'This month' },
-  { key: '90d', label: '90 days' },
-  { key: 'year', label: 'This year' },
+  { key: '7d', label: '7 days', icon: 'date_range', summary: 'the last 7 days' },
+  { key: 'month', label: 'Month', icon: 'calendar_month', summary: 'this month' },
+  { key: '90d', label: '90 days', icon: 'calendar_view_month', summary: 'the last 90 days' },
+  { key: 'year', label: 'Year', icon: 'event_note', summary: 'this year' },
 ];
+
+export function rangeSummaryLabel(key: RangeKey): string {
+  const option = RANGE_OPTIONS.find((o) => o.key === key);
+  return `Summary for ${option?.summary ?? ''}`.trim();
+}
 
 /** Inclusive date range. */
 export interface DateRange {
@@ -44,8 +51,6 @@ export function rangeFor(key: RangeKey, now: Date): DateRange {
   switch (key) {
     case '7d':
       return { from: subDays(startOfDay(now), 6), to };
-    case '30d':
-      return { from: subDays(startOfDay(now), 29), to };
     case '90d':
       return { from: subDays(startOfDay(now), 89), to };
     case 'month':
@@ -102,7 +107,11 @@ export interface CoopSummary {
   readonly coopId: string;
   readonly coopName: string;
   readonly coopType: string;
+  readonly totalBirds: number;
   readonly liveBirds: number;
+  readonly chickenAge: string;
+  /** Deaths recorded against the current batch, regardless of the selected period. */
+  readonly totalDeaths: number;
   readonly sales: number;
   readonly expenses: number;
   readonly profit: number;
@@ -222,6 +231,9 @@ export function summarizeByCoop(data: FarmData, range: DateRange): CoopSummary[]
         coopId: coop.id,
         coopName: coop.coopName,
         coopType: coop.coopType === 'LAYERS' ? 'Layers' : 'Broilers',
+        totalBirds: placed,
+        chickenAge: coop.chickenAge ?? '',
+        totalDeaths: allDeaths,
         liveBirds: coop.active === false ? 0 : Math.max(0, placed - allDeaths),
         sales,
         expenses,

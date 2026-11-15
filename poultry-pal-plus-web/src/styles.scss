@@ -175,15 +175,18 @@ a {
     --mat-button-toggle-height: 48px;
   }
 
-  .brand {
-    display: inline-flex;
+  // The select grows to the 48px target by overlapping the field's own padding, so the field
+  // keeps the same height as the text inputs.
+  .mat-mdc-form-field .mat-mdc-select,
+  .mat-mdc-form-field select.mat-mdc-input-element {
+    display: flex;
     align-items: center;
     min-height: 48px;
+    margin: -12px 0;
   }
 
-  .mat-mdc-select,
-  select.mat-mdc-input-element {
-    display: flex;
+  .brand {
+    display: inline-flex;
     align-items: center;
     min-height: 48px;
   }

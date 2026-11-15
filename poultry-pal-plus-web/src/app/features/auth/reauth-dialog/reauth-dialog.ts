@@ -63,7 +63,7 @@ import { authErrorMessage } from '../auth-errors';
       display: flex;
       flex-direction: column;
       gap: var(--pp-space-xs);
-      min-width: min(400px, 80vw);
+      min-width: min(400px, calc(100vw - 32px));
     }
     .lead {
       margin: 0 0 var(--pp-space-md);

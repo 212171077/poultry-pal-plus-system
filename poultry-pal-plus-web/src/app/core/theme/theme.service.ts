@@ -1,14 +1,14 @@
 import { DOCUMENT, DestroyRef, Injectable, computed, effect, inject, signal } from '@angular/core';
 
-export type ThemePreference = 'system' | 'light' | 'dark' | 'sunlight';
+export type ThemePreference = 'system' | 'meadow' | 'dark' | 'sunlight';
 
-const PREFERENCES: readonly ThemePreference[] = ['system', 'light', 'dark', 'sunlight'];
+const PREFERENCES: readonly ThemePreference[] = ['system', 'meadow', 'dark', 'sunlight'];
 
 const STORAGE_KEY = 'pp.theme';
 const DARK_QUERY = '(prefers-color-scheme: dark)';
 
 /**
- * Applies the light, dark or high-contrast "sunlight" theme. "system" follows the operating
+ * Applies the Meadow (green light), dark or high-contrast "sunlight" theme. "system" follows the operating
  * system's light/dark setting.
  */
 @Injectable({ providedIn: 'root' })
@@ -37,7 +37,7 @@ export class ThemeService {
     effect(() => {
       const classes = this.document.documentElement.classList;
       const preference = this.preferenceState();
-      classes.toggle('theme-light', preference === 'light');
+      classes.toggle('theme-meadow', preference === 'meadow');
       classes.toggle('theme-dark', preference === 'dark');
       classes.toggle('theme-sunlight', preference === 'sunlight');
     });
@@ -54,7 +54,9 @@ export class ThemeService {
 
   private readPreference(): ThemePreference {
     try {
-      const stored = this.window?.localStorage.getItem(STORAGE_KEY);
+      const raw = this.window?.localStorage.getItem(STORAGE_KEY);
+      // "light" was replaced by "meadow".
+      const stored = raw === 'light' ? 'meadow' : raw;
       return PREFERENCES.find((preference) => preference === stored) ?? 'system';
     } catch {
       return 'system';

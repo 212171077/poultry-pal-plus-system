@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,6 +25,8 @@ import {
 } from '../../data/repositories/repositories';
 import { formatMoney } from '../../shared/format/money';
 import { ConfirmDialogService } from '../../shared/ui/confirm-dialog/confirm-dialog.service';
+import { CoopFilter } from '../../shared/ui/coop-filter/coop-filter';
+import { KpiCard } from '../../shared/ui/kpi-card/kpi-card';
 import { EmptyState } from '../../shared/ui/empty-state/empty-state';
 import { PageHeader } from '../../shared/ui/page-header/page-header';
 import { SyncChip } from '../../shared/ui/sync-chip/sync-chip';
@@ -34,7 +43,16 @@ interface ExpenseRow {
 
 @Component({
   selector: 'app-expenses-page',
-  imports: [PageHeader, EmptyState, SyncChip, MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [
+    PageHeader,
+    EmptyState,
+    SyncChip,
+    CoopFilter,
+    KpiCard,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+  ],
   templateUrl: './expenses-page.html',
   styleUrl: '../../shared/records/record-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,11 +69,18 @@ export default class ExpensesPage {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
-  private readonly expenses = liveSignal(() => this.expensesRepo.listRecent());
+  private readonly allExpenses = liveSignal(() => this.expensesRepo.listRecent());
+  protected readonly coopId = signal<string | null>(null);
+  private readonly expenses = computed(() => {
+    const coopId = this.coopId();
+    const all = this.allExpenses();
+    return coopId && all ? all.filter((expense) => expense.coopId === coopId) : all;
+  });
   protected readonly coops = liveSignal(() => this.coopsRepo.listSorted(), []);
   private readonly settings = liveSignal(() => this.context.settings());
 
-  protected readonly loading = computed(() => this.expenses() === undefined);
+  protected readonly loading = computed(() => this.allExpenses() === undefined);
+  protected readonly hasRecords = computed(() => (this.allExpenses()?.length ?? 0) > 0);
 
   protected readonly rows = computed<ExpenseRow[]>(() => {
     const names = new Map(this.coops().map((coop) => [coop.id, coop.coopName]));

@@ -56,6 +56,11 @@ import { MatIcon } from '@angular/material/icon';
       flex-wrap: wrap;
       gap: var(--pp-space-sm);
     }
+    @media (max-width: 599.98px) {
+      .actions {
+        width: 100%;
+      }
+    }
     .actions:empty {
       display: none;
     }

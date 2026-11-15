@@ -65,8 +65,34 @@
   }
 }
 
+.placeholder {
+  opacity: 0.45;
+  pointer-events: none;
+  filter: grayscale(1);
+
+  mat-icon {
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
 .range {
+  margin-bottom: var(--pp-space-xs);
+}
+
+.range-summary {
   margin-bottom: var(--pp-space-md);
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-small);
+}
+
+.coops {
+  margin-top: var(--pp-space-md);
+}
+
+.coop-cards {
+  display: grid;
+  gap: var(--pp-space-md);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
 }
 
 .rows {
@@ -109,4 +135,37 @@
 .overdue {
   color: var(--pp-error);
   font-weight: 600;
+}
+
+.egg-status {
+  display: flex;
+  align-items: center;
+  gap: var(--pp-space-sm);
+  margin: 0;
+  color: var(--mat-sys-on-surface);
+
+  &[data-tone='success'] mat-icon {
+    color: var(--pp-success);
+  }
+  &[data-tone='info'] mat-icon {
+    color: var(--pp-info);
+  }
+  &[data-tone='error'] mat-icon {
+    color: var(--pp-error);
+  }
+}
+
+.egg-detail {
+  margin: var(--pp-space-xs) 0 var(--pp-space-md);
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-medium);
+}
+
+.egg-panel {
+  margin: var(--pp-space-md) 0;
+}
+
+app-email-log-panel {
+  display: block;
+  margin-top: var(--pp-space-md);
 }

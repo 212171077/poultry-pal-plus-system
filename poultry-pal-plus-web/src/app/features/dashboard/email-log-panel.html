@@ -1,0 +1,56 @@
+<section class="pp-surface-card panel" aria-labelledby="email-log-title" data-testid="email-log">
+  <div class="head">
+    <h2 id="email-log-title" class="panel-title">Email log</h2>
+    <button
+      mat-stroked-button
+      type="button"
+      [disabled]="loading()"
+      (click)="refresh()"
+      data-testid="email-log-refresh"
+    >
+      <mat-icon>refresh</mat-icon>
+      Refresh
+    </button>
+  </div>
+
+  @if (error(); as message) {
+    <p class="state error" role="alert">{{ message }}</p>
+  } @else if (entries().length > 0) {
+    <div class="scroll" tabindex="0" role="region" aria-label="Recent emails">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Sent</th>
+            <th scope="col">To</th>
+            <th scope="col">Subject</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entry of entries(); track entry.id) {
+            <tr data-testid="email-log-row">
+              <td class="nowrap">{{ when(entry) }}</td>
+              <td>{{ entry.toEmail }}</td>
+              <td>{{ entry.subject }}</td>
+              <td>
+                <span class="status" [class.failed]="!entry.success">
+                  <mat-icon aria-hidden="true">{{
+                    entry.success ? 'check_circle' : 'error'
+                  }}</mat-icon>
+                  {{ entry.success ? 'Sent' : 'Failed' }}
+                </span>
+                @if (!entry.success && entry.errorMessage) {
+                  <span class="reason">{{ entry.errorMessage }}</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else if (loading()) {
+    <p class="state">Loading…</p>
+  } @else {
+    <p class="state" data-testid="email-log-empty">No emails have been sent yet.</p>
+  }
+</section>

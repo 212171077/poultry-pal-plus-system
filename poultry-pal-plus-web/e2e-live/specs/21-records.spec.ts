@@ -384,18 +384,6 @@ test.describe('eggs', () => {
     await confirmDelete(page, /Delete/);
     await expect(row).toHaveCount(0);
   });
-
-  test('broiler coops cannot log eggs: the coop card offers no Eggs link', async ({
-    freshFarm,
-    farmApi,
-    signInAs,
-    page,
-  }) => {
-    const { farm } = await farmWithCoops(freshFarm, farmApi);
-    await signInAs(farm.owner, '/coops');
-    await expect(coopCard(page, 'Broiler Coop').getByRole('link', { name: 'Eggs' })).toHaveCount(0);
-    await expect(coopCard(page, 'Layer Coop').getByRole('link', { name: 'Eggs' })).toBeVisible();
-  });
 });
 
 test.describe('worker access to records', () => {

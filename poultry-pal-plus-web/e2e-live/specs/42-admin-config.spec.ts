@@ -119,4 +119,19 @@ test.describe('admin app config', () => {
     );
     await expect(entry(page, 'MAIL_HOST')).not.toContainText('evil.example.com');
   });
+
+  test('the dashboard shows the email log table for the system admin', async ({
+    admin,
+    signInAs,
+    page,
+    shot,
+  }) => {
+    await signInAs(admin, '/dashboard');
+    const log = page.getByTestId('email-log');
+    await expect(log.getByRole('heading', { name: 'Email log' })).toBeVisible();
+    await expect(
+      log.getByTestId('email-log-row').or(log.getByTestId('email-log-empty')).first(),
+    ).toBeVisible();
+    await shot(page, 'admin-config', 'email-log');
+  });
 });

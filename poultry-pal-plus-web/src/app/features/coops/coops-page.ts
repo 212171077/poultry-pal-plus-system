@@ -1,4 +1,4 @@
-import { NgTemplateOutlet } from '@angular/common';
+import { NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -55,6 +55,7 @@ const VIEW_KEY = 'pp.coops.view';
     MatIconModule,
     MatMenuModule,
     NgTemplateOutlet,
+    NgOptimizedImage,
     RouterLink,
   ],
   templateUrl: './coops-page.html',

@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Document(collection = "mail_log")
 public class EmailLog {
 

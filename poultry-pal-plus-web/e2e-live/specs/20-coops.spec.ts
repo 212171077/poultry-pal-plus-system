@@ -20,8 +20,9 @@ test.describe('coops: read-only views', () => {
     await expect(layers).toContainText('Layers');
     await expect(broilers).toContainText('Broiler');
     await expect(page.getByTestId('coops-live-birds')).toHaveText('1,483');
-    await expect(layers.getByRole('link', { name: 'Eggs' })).toBeVisible();
-    await expect(broilers.getByRole('link', { name: 'Eggs' })).toHaveCount(0);
+    await expect(layers.getByRole('img', { name: 'Layers coop' })).toBeVisible();
+    await expect(broilers.getByRole('img', { name: /Broilers? coop/ })).toBeVisible();
+    await expect(layers.getByRole('link')).toHaveCount(0);
     await shot(page, 'coops', 'cards');
   });
 

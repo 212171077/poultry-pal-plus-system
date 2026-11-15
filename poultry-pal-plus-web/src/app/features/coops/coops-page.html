@@ -1,11 +1,11 @@
 <div class="pp-page">
   <app-page-header heading="Coops & batches" subtitle="Your flocks, their age, phase and losses.">
     @if (canManage()) {
-      <a mat-stroked-button routerLink="/coops/archive">
+      <a mat-stroked-button class="header-btn" routerLink="/coops/archive">
         <mat-icon>inventory_2</mat-icon>
         Archived batches
       </a>
-      <button mat-flat-button type="button" (click)="openForm()">
+      <button mat-flat-button class="header-btn" type="button" (click)="openForm()">
         <mat-icon>add</mat-icon>
         Add coop
       </button>
@@ -14,20 +14,29 @@
 
   @if (!loading()) {
     @if (cards().length > 0) {
-      <section class="summary pp-surface-card" aria-label="Summary">
-        <div>
-          <span class="summary-label">Coops</span>
-          <strong class="summary-value">{{ summary().coops }}</strong>
+      <section class="stats-row" aria-label="Summary">
+        <div class="stat-tile pp-surface-card" data-tone="brand">
+          <span class="stat-icon" aria-hidden="true"><mat-icon>home_work</mat-icon></span>
+          <div>
+            <span class="summary-label">Coops</span>
+            <strong class="summary-value">{{ summary().coops }}</strong>
+          </div>
         </div>
-        <div>
-          <span class="summary-label">Active flocks</span>
-          <strong class="summary-value">{{ summary().active }}</strong>
+        <div class="stat-tile pp-surface-card" data-tone="success">
+          <span class="stat-icon" aria-hidden="true"><mat-icon>check_circle</mat-icon></span>
+          <div>
+            <span class="summary-label">Active flocks</span>
+            <strong class="summary-value">{{ summary().active }}</strong>
+          </div>
         </div>
-        <div>
-          <span class="summary-label">Live birds</span>
-          <strong class="summary-value" data-testid="coops-live-birds">{{
-            summary().alive
-          }}</strong>
+        <div class="stat-tile pp-surface-card" data-tone="accent">
+          <span class="stat-icon" aria-hidden="true"><mat-icon>flutter_dash</mat-icon></span>
+          <div>
+            <span class="summary-label">Live birds</span>
+            <strong class="summary-value" data-testid="coops-live-birds">{{
+              summary().alive
+            }}</strong>
+          </div>
         </div>
       </section>
 
@@ -62,17 +71,23 @@
       @if (view() === 'cards') {
         <ul class="grid" aria-label="Coops">
           @for (card of cards(); track card.coop.id) {
-            <li class="card pp-surface-card" data-testid="coop-card">
+            <li
+              class="card pp-surface-card"
+              data-testid="coop-card"
+              [class.layers]="card.coop.coopType === 'LAYERS'"
+            >
               <header>
-                <span
+                <img
                   class="avatar"
-                  [class.layers]="card.coop.coopType === 'LAYERS'"
-                  aria-hidden="true"
-                >
-                  <mat-icon>{{
-                    card.coop.coopType === 'LAYERS' ? 'egg' : 'flutter_dash'
-                  }}</mat-icon>
-                </span>
+                  [ngSrc]="
+                    card.coop.coopType === 'LAYERS'
+                      ? '/images/coop-layer.jpg'
+                      : '/images/coop-broiler.jpg'
+                  "
+                  width="64"
+                  height="64"
+                  [alt]="card.typeLabel + ' coop'"
+                />
                 <div class="name">
                   <h2>{{ card.coop.coopName }}</h2>
                   <span>{{ card.typeLabel }} · {{ card.phaseLabel }}</span>
@@ -114,32 +129,6 @@
                   </button>
                 </div>
               }
-
-              <nav class="links" [attr.aria-label]="'Record for ' + card.coop.coopName">
-                <a
-                  mat-stroked-button
-                  routerLink="/sales"
-                  [queryParams]="{ action: 'new', coop: card.coop.id }"
-                >
-                  <mat-icon>point_of_sale</mat-icon>Sale
-                </a>
-                <a
-                  mat-stroked-button
-                  routerLink="/mortality"
-                  [queryParams]="{ action: 'new', coop: card.coop.id }"
-                >
-                  <mat-icon>monitor_heart</mat-icon>Loss
-                </a>
-                @if (card.coop.coopType === 'LAYERS') {
-                  <a
-                    mat-stroked-button
-                    routerLink="/eggs"
-                    [queryParams]="{ action: 'new', coop: card.coop.id }"
-                  >
-                    <mat-icon>egg</mat-icon>Eggs
-                  </a>
-                }
-              </nav>
             </li>
           }
         </ul>

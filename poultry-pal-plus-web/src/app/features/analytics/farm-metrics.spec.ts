@@ -79,7 +79,7 @@ describe('farm metrics', () => {
   });
 
   it('summarises each coop with the mobile mortality formula', () => {
-    const [alpha, beta] = summarizeByCoop(DATA, rangeFor('30d', NOW));
+    const [alpha, beta] = summarizeByCoop(DATA, rangeFor('month', NOW));
     expect(alpha.coopName).toBe('Alpha');
     expect(alpha.profit).toBe(380);
     expect(alpha.mortalityRate).toBeCloseTo((4 / 104) * 100);

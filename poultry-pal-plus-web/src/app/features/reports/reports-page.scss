@@ -11,6 +11,25 @@
   gap: var(--pp-space-md);
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
   margin-bottom: var(--pp-space-md);
+
+  @media (max-width: 599.98px) {
+    gap: var(--pp-space-sm);
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.kpi-placeholder {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pp-space-sm);
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.45;
+  filter: grayscale(1);
+
+  @media (max-width: 599.98px) {
+    display: flex;
+  }
 }
 
 .panel {
@@ -75,15 +94,32 @@ thead th {
 
 .coop-select {
   width: min(100%, 320px);
+
+  @media (max-width: 599.98px) {
+    width: 100%;
+  }
 }
 
 .buttons {
   display: flex;
   flex-wrap: wrap;
+  align-items: stretch;
   gap: var(--pp-space-sm);
 
   button {
+    flex: 1 1 auto;
     min-height: 48px;
+    white-space: nowrap;
+  }
+
+  // Not enough room for one row: stack, each button full width.
+  @media (max-width: 599.98px) {
+    flex-direction: column;
+
+    button {
+      flex: none;
+      width: 100%;
+    }
   }
 }
 

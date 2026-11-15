@@ -25,6 +25,20 @@
   --pp-focus-ring: var(--pp-accent);
 }
 
+// "Meadow": a fresh green light theme.
+@mixin meadow {
+  --pp-brand: #2f6b3a;
+  --pp-brand-strong: #1f4d29;
+  --pp-accent: #e0a526;
+  --pp-accent-strong: #b8830f;
+  --pp-surface-warm: #eaf2e6;
+  --pp-border: #d3e0cf;
+  --pp-shadow: 0 1px 2px rgb(20 50 25 / 6%), 0 2px 8px rgb(20 50 25 / 6%);
+  --pp-shadow-lg: 0 4px 12px rgb(20 50 25 / 10%), 0 12px 32px rgb(20 50 25 / 8%);
+  --pp-skeleton: #dfe9db;
+  --pp-skeleton-shine: #f3f8f0;
+}
+
 // "Sunlight" high-contrast palette for reading screens outdoors. Text and key colours reach
 // WCAG AAA (7:1) on white; borders are solid so cards and inputs stay visible in glare.
 @mixin sunlight {

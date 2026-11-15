@@ -1,12 +1,8 @@
 <div class="pp-page">
-  <app-page-header [heading]="greeting()" [subtitle]="today">
-    <a mat-flat-button routerLink="/eggs" [queryParams]="{ action: 'new' }">
-      <mat-icon>add</mat-icon>
-      Log eggs
-    </a>
-  </app-page-header>
+  <app-page-header [heading]="greeting()" [subtitle]="today" />
 
   <app-range-filter class="range" [(value)]="rangeKey" />
+  <p class="range-summary" data-testid="range-summary" aria-live="polite">{{ summaryLabel() }}</p>
 
   <section class="kpis" aria-label="Key figures">
     @for (kpi of kpis(); track kpi.label) {
@@ -20,6 +16,58 @@
       />
     }
   </section>
+
+  @if (coopCards().length > 0) {
+    <section class="coops" aria-labelledby="coops-title">
+      <h2 id="coops-title" class="panel-title">Coops</h2>
+      <div class="coop-cards">
+        @for (coop of coopCards(); track coop.coopId) {
+          <app-coop-summary-card [coop]="coop" [currency]="currency()" />
+        }
+      </div>
+    </section>
+  }
+
+  @if (eggs(); as eggs) {
+    <section
+      class="pp-surface-card panel egg-panel"
+      aria-labelledby="eggs-title"
+      data-testid="egg-production"
+    >
+      <h2 id="eggs-title" class="panel-title">Egg production (layers)</h2>
+      @if (eggs.verdict; as verdict) {
+        <p class="egg-status" [attr.data-tone]="verdict.tone" data-testid="egg-status">
+          <mat-icon aria-hidden="true">{{ verdict.icon }}</mat-icon>
+          <strong>{{ verdict.text }}</strong>
+        </p>
+        <p class="egg-detail">
+          {{ eggs.averageEggs | number: '1.0-0' }} eggs a day from {{ eggs.hens }} hens ({{
+            eggs.rate | number: '1.0-0'
+          }}% hen-day rate).
+        </p>
+        <app-line-chart
+          [labels]="eggs.labels"
+          [values]="eggs.eggsPerDay"
+          name="Eggs per day"
+          color="var(--pp-accent)"
+          [markers]="eggMarkers()"
+          [summary]="
+            'Eggs collected per day. ' +
+            verdict.text +
+            ', ' +
+            (eggs.averageEggs | number: '1.0-0') +
+            ' eggs a day on average.'
+          "
+        />
+      } @else {
+        <app-empty-state
+          icon="egg"
+          heading="No egg records in this period"
+          message="Record egg production to see the daily trend and how your layers are performing."
+        />
+      }
+    </section>
+  }
 
   <div class="columns">
     <section class="pp-surface-card panel" aria-labelledby="money-title">
@@ -58,6 +106,12 @@
             <mat-icon aria-hidden="true">{{ action.icon }}</mat-icon>
             <span>{{ action.label }}</span>
           </a>
+        }
+        @if (quickActions().length % 2 === 1) {
+          <div class="action placeholder" aria-hidden="true">
+            <mat-icon>add_circle_outline</mat-icon>
+            <span>More soon</span>
+          </div>
         }
       </div>
     </section>
@@ -111,4 +165,8 @@
       />
     }
   </section>
+
+  @if (isAdmin()) {
+    <app-email-log-panel />
+  }
 </div>

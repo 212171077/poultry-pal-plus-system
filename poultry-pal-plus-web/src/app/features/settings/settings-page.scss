@@ -38,6 +38,12 @@
   width: min(100%, 260px);
 }
 
+@media (max-width: 599.98px) {
+  .inline-form mat-form-field {
+    width: 100%;
+  }
+}
+
 .subform {
   margin-top: var(--pp-space-xl);
   padding-top: var(--pp-space-lg);
@@ -67,6 +73,71 @@
   color: var(--mat-sys-error);
 }
 
-mat-button-toggle-group {
-  flex-wrap: wrap;
+.themes {
+  display: grid;
+  gap: var(--pp-space-sm);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  @media (max-width: 899.98px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.theme-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 48px;
+  padding: var(--pp-space-md);
+  border: 2px solid var(--pp-border);
+  border-radius: var(--pp-radius-lg);
+  background: var(--mat-sys-surface-container-lowest);
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &.selected {
+    border-color: var(--pp-brand);
+    background: color-mix(in srgb, var(--pp-brand) 10%, var(--mat-sys-surface-container-lowest));
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--pp-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+.theme-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: var(--pp-space-xs, 4px);
+  border-radius: var(--pp-radius-pill);
+  background: color-mix(in srgb, var(--pp-brand) 14%, transparent);
+  color: var(--pp-brand);
+}
+
+.theme-label {
+  font-weight: 600;
+}
+
+.theme-hint {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.78rem;
+}
+
+.theme-check {
+  position: absolute;
+  top: var(--pp-space-sm);
+  right: var(--pp-space-sm);
+  color: var(--pp-brand);
+  visibility: hidden;
+
+  .selected & {
+    visibility: visible;
+  }
 }

@@ -61,7 +61,7 @@ export default class ReportsPage {
   protected readonly connectivity = inject(ConnectivityService);
 
   private readonly now = new Date();
-  protected readonly rangeKey = signal<RangeKey>('30d');
+  protected readonly rangeKey = signal<RangeKey>('month');
   protected readonly scheduleCoopId = signal<string | null>(null);
   protected readonly busy = signal(false);
 

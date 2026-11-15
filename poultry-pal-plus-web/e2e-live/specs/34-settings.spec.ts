@@ -120,4 +120,11 @@ test.describe('settings and account', () => {
     await page.reload();
     await expect(page.getByRole('radio', { name: /Farm night/ })).toBeChecked();
   });
+
+  test('Meadow replaces the duplicate Light theme', async ({ sharedFarm, signInAs, page }) => {
+    await signInAs(sharedFarm.owner, '/settings');
+    await expect(page.getByRole('radio', { name: /^Light/ })).toHaveCount(0);
+    await page.getByRole('radio', { name: /Meadow/ }).click();
+    await expect(page.locator('html')).toHaveClass(/theme-meadow/);
+  });
 });

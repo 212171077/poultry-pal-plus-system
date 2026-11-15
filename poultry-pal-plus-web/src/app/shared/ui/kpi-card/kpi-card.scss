@@ -2,7 +2,14 @@
   --tone: var(--pp-brand);
 
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  overflow: hidden;
+  border-top: 3px solid var(--tone);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--tone) 12%, var(--mat-sys-surface-container-lowest)),
+    var(--mat-sys-surface-container-lowest) 75%
+  );
   gap: var(--pp-space-md);
   padding: var(--pp-space-md) var(--pp-space-lg) var(--pp-space-md) var(--pp-space-md);
   transition:
@@ -16,6 +23,7 @@
   // Narrow cards (two per row on phones): stack the icon above the figures.
   @media (max-width: 599.98px) {
     flex-direction: column;
+    align-items: flex-start;
     gap: var(--pp-space-sm);
     padding: var(--pp-space-md);
 
@@ -52,8 +60,9 @@
   flex: none;
   width: 48px;
   height: 48px;
-  border-radius: var(--pp-radius-md);
-  background: color-mix(in srgb, var(--tone) 14%, transparent);
+  border-radius: var(--pp-radius-pill);
+  background: color-mix(in srgb, var(--tone) 18%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tone) 30%, transparent);
   color: var(--tone);
 }
 
@@ -81,4 +90,33 @@
 .hint {
   color: var(--mat-sys-on-surface-variant);
   font-size: 0.78rem;
+}
+
+:host([data-compact]) {
+  @media (max-width: 599.98px) {
+    gap: var(--pp-space-xs);
+    padding: var(--pp-space-sm);
+    border-top-width: 2px;
+
+    .icon {
+      width: 28px;
+      height: 28px;
+
+      mat-icon {
+        width: 18px;
+        height: 18px;
+        font-size: 18px;
+      }
+    }
+
+    .label {
+      font-size: 0.7rem;
+      line-height: 1.2;
+    }
+
+    .value {
+      font-size: 1rem;
+      overflow-wrap: anywhere;
+    }
+  }
 }

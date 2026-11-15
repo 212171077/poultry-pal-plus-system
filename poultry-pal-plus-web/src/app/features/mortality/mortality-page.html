@@ -7,23 +7,40 @@
   </app-page-header>
 
   @if (!loading()) {
-    @if (rows().length > 0) {
-      <section class="summary pp-surface-card" aria-label="Summary">
-        <div>
-          <span class="summary-label">Last 7 days</span>
-          <strong class="summary-value">{{ summary().week }}</strong>
-        </div>
-        <div>
-          <span class="summary-label">This month</span>
-          <strong class="summary-value">{{ summary().month }}</strong>
-        </div>
-        <div>
-          <span class="summary-label">Most common cause</span>
-          <strong class="summary-value">{{ summary().topReason }}</strong>
-        </div>
+    @if (hasRecords()) {
+      <app-coop-filter [coops]="coops()" [(value)]="coopId" />
+      <section class="kpis" aria-label="Summary">
+        <app-kpi-card
+          [compact]="true"
+          label="Last 7 days"
+          icon="date_range"
+          tone="error"
+          [value]="summary().week"
+        />
+        <app-kpi-card
+          [compact]="true"
+          label="This month"
+          icon="calendar_month"
+          tone="warning"
+          [value]="summary().month"
+        />
+        <app-kpi-card
+          [compact]="true"
+          label="Most common cause"
+          icon="medical_information"
+          tone="info"
+          [value]="summary().topReason"
+        />
       </section>
 
-      <ul class="list pp-surface-card" aria-label="Mortality records">
+      @if (rows().length === 0) {
+        <p class="filtered-empty pp-surface-card">No losses recorded for this coop.</p>
+      }
+      <ul
+        class="list pp-surface-card"
+        aria-label="Mortality records"
+        [hidden]="rows().length === 0"
+      >
         @for (row of rows(); track row.record.id) {
           <li class="item" data-testid="mortality-row">
             <span class="icon" aria-hidden="true">

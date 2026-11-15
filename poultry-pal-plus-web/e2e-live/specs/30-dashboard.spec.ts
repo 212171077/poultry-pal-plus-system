@@ -25,6 +25,48 @@ test.describe('dashboard', () => {
     await shot(page, 'dashboard', 'seeded');
   });
 
+  test('the period filter fits, is labelled and each coop has a summary card', async ({
+    seededFarm,
+    signInAs,
+    page,
+    shot,
+  }) => {
+    await signInAs(seededFarm.owner, '/dashboard');
+    const summary = page.getByTestId('range-summary');
+    await expect(summary).toHaveText('Summary for this month');
+    const group = page.locator('app-range-filter');
+    await expect(group.getByText('30 days', { exact: true })).toHaveCount(0);
+    await group.getByText('7 days', { exact: true }).click();
+    await expect(summary).toHaveText('Summary for the last 7 days');
+    await group.getByText('90 days', { exact: true }).click();
+    await expect(summary).toHaveText('Summary for the last 90 days');
+    const box = await group.boundingBox();
+    const viewport = page.viewportSize();
+    expect(box!.x + box!.width).toBeLessThanOrEqual(viewport!.width);
+
+    const cards = page.locator('app-coop-summary-card');
+    await expect(cards.first()).toBeVisible();
+    await expect(cards.first()).toContainText(/Total/);
+    await expect(cards.first()).toContainText(/Available/);
+    await expect(cards.first()).toContainText(/Financial summary/);
+    await shot(page, 'dashboard', 'coop-cards');
+  });
+
+  test('layers coops show the daily egg trend and a production verdict', async ({
+    seededFarm,
+    signInAs,
+    page,
+    shot,
+  }) => {
+    await signInAs(seededFarm.owner, '/dashboard');
+    const panel = page.getByTestId('egg-production');
+    await expect(panel).toBeVisible();
+    await expect(panel.locator('app-line-chart svg')).toBeVisible();
+    await expect(page.getByTestId('egg-status')).toContainText(/production/i);
+    await panel.scrollIntoViewIfNeeded();
+    await shot(page, 'dashboard', 'egg-production');
+  });
+
   test('a new farm shows empty states instead of charts', async ({
     freshFarm,
     signInAs,
@@ -55,11 +97,15 @@ test.describe('dashboard', () => {
     await expect(dialog(page, 'Record a sale')).toBeVisible();
   });
 
-  test('the Log eggs button opens the egg form', async ({ seededFarm, signInAs, page }) => {
+  test('the header has no duplicate Log eggs button and non-admins get no email log', async ({
+    seededFarm,
+    signInAs,
+    page,
+  }) => {
     await signInAs(seededFarm.owner, '/dashboard');
     await expect(kpi(page, 'Live birds')).toContainText(/1[\s,]?483/);
-    await page.getByRole('link', { name: 'Log eggs' }).click();
-    await expect(dialog(page, 'Log egg packaging')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Log eggs' })).toHaveCount(0);
+    await expect(page.getByTestId('email-log')).toHaveCount(0);
   });
 
   test('workers do not get the manager-only quick action', async ({

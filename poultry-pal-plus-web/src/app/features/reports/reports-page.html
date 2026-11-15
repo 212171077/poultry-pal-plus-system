@@ -29,6 +29,10 @@
       />
       <app-kpi-card label="Eggs" icon="egg" tone="accent" [value]="totals().eggs" />
       <app-kpi-card label="Losses" icon="monitor_heart" tone="error" [value]="totals().deaths" />
+      <div class="kpi-placeholder pp-surface-card" aria-hidden="true">
+        <mat-icon>add_chart</mat-icon>
+        <span>More soon</span>
+      </div>
     </section>
 
     <section class="pp-surface-card panel" aria-labelledby="coops-title">

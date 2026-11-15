@@ -33,6 +33,43 @@ $_typography: (
   @include tokens.dark;
 }
 
+// Fresh green light theme. Builds on the base light theme and overrides the colours.
+@mixin _meadow {
+  color-scheme: light;
+  @include mat.theme-overrides(
+    (
+      primary: #2f6b3a,
+      on-primary: #ffffff,
+      primary-container: #b9f0bf,
+      on-primary-container: #00210a,
+      secondary: #526350,
+      on-secondary: #ffffff,
+      secondary-container: #d5e8d0,
+      on-secondary-container: #101f10,
+      tertiary: #7a5900,
+      on-tertiary: #ffffff,
+      tertiary-container: #ffdf9e,
+      on-tertiary-container: #261900,
+      background: #f6fbf3,
+      on-background: #181d17,
+      surface: #f6fbf3,
+      surface-bright: #f6fbf3,
+      surface-dim: #d7dbd3,
+      surface-container-lowest: #ffffff,
+      surface-container-low: #f0f5ed,
+      surface-container: #eaf0e7,
+      surface-container-high: #e5eae1,
+      surface-container-highest: #dfe4dc,
+      surface-variant: #dde5d9,
+      on-surface: #181d17,
+      on-surface-variant: #424940,
+      outline: #727970,
+      outline-variant: #c1c9be,
+    )
+  );
+  @include tokens.meadow;
+}
+
 // High-contrast light theme for bright sunlight: pure white surfaces, near-black text and
 // solid outlines. Builds on the light theme and only overrides colours.
 @mixin _sunlight {
@@ -78,7 +115,7 @@ $_typography: (
   @include tokens.sunlight;
 }
 
-// The theme follows the OS by default. ThemeService adds `theme-light`, `theme-dark` or
+// The theme follows the OS by default. ThemeService adds `theme-meadow`, `theme-dark` or
 // `theme-sunlight` to <html> when the user picks a theme manually.
 @mixin apply {
   html {
@@ -118,6 +155,8 @@ $_typography: (
     @include mat.dialog-overrides(
       (
         container-shape: var(--pp-radius-xl),
+        container-max-width: calc(100vw - 32px),
+        container-small-max-width: calc(100vw - 32px),
       )
     );
     @include mat.snack-bar-overrides(
@@ -131,12 +170,16 @@ $_typography: (
     @include _dark;
   }
 
+  html.theme-meadow {
+    @include _meadow;
+  }
+
   html.theme-sunlight {
     @include _sunlight;
   }
 
   @media (prefers-color-scheme: dark) {
-    html:not(.theme-light):not(.theme-sunlight) {
+    html:not(.theme-meadow):not(.theme-sunlight) {
       @include _dark;
     }
   }

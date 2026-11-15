@@ -6,6 +6,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
@@ -16,14 +17,26 @@ import { liveSignal } from '../../data/db/live-signal';
 import { FarmContextRepository } from '../../data/repositories/repositories';
 import { injectQuickActions } from '../../layout/quick-actions';
 import { formatMoney } from '../../shared/format/money';
+import { ChartMarker, LineChart } from '../../shared/ui/line-chart/line-chart';
 import { BarChart, ChartSeries } from '../../shared/ui/bar-chart/bar-chart';
 import { EmptyState } from '../../shared/ui/empty-state/empty-state';
+import { CoopSummaryCard } from '../../shared/ui/coop-summary-card/coop-summary-card';
 import { KpiCard, KpiTone } from '../../shared/ui/kpi-card/kpi-card';
 import { PageHeader } from '../../shared/ui/page-header/page-header';
 import { RangeFilter } from '../../shared/ui/range-filter/range-filter';
-import { FarmData, RangeKey, loadFarmData, rangeFor, summarize } from '../analytics/farm-metrics';
+import {
+  FarmData,
+  RangeKey,
+  loadFarmData,
+  rangeFor,
+  rangeSummaryLabel,
+  summarize,
+  summarizeByCoop,
+} from '../analytics/farm-metrics';
+import { EmailLogPanel } from './email-log-panel';
 import { ReminderNotifications } from '../reminders/reminder-notifications';
 import { groupReminders } from '../reminders/reminder-groups';
+import { NORMAL_RATE, PEAK_RATE, eggProduction } from './egg-production';
 import { recentActivity } from './activity';
 import { greetingFor } from './greeting';
 
@@ -42,12 +55,16 @@ const EMPTY: FarmData = { coops: [], sales: [], mortalities: [], expenses: [], e
   imports: [
     PageHeader,
     KpiCard,
+    CoopSummaryCard,
     EmptyState,
     BarChart,
+    LineChart,
     RangeFilter,
+    EmailLogPanel,
     MatButtonModule,
     MatIconModule,
     RouterLink,
+    DecimalPipe,
   ],
   templateUrl: './dashboard-page.html',
   styleUrl: './dashboard-page.scss',
@@ -57,6 +74,7 @@ export default class DashboardPage {
   private readonly now = new Date();
 
   private readonly auth = inject(AuthService);
+  protected readonly isAdmin = computed(() => this.auth.can('SYSTEM_ADMIN'));
   protected readonly greeting = computed(() => {
     const firstName = this.auth.user()?.name?.trim();
     const greeting = greetingFor(this.now.getHours());
@@ -69,7 +87,7 @@ export default class DashboardPage {
   private readonly context = inject(FarmContextRepository);
   private readonly notifications = inject(ReminderNotifications);
 
-  protected readonly rangeKey = signal<RangeKey>('30d');
+  protected readonly rangeKey = signal<RangeKey>('month');
 
   /** All figures come from IndexedDB, so the dashboard works without a network connection. */
   private readonly data = liveSignal(async () => {
@@ -85,8 +103,42 @@ export default class DashboardPage {
   private readonly summary = computed(() =>
     summarize(this.data()?.farm ?? EMPTY, rangeFor(this.rangeKey(), this.now)),
   );
-  private readonly currency = computed(() => this.data()?.settings?.currency);
+  protected readonly summaryLabel = computed(() => rangeSummaryLabel(this.rangeKey()));
+  protected readonly currency = computed(() => this.data()?.settings?.currency);
 
+  /** Coops that hold (or held) birds, with figures for the selected period. */
+  protected readonly coopCards = computed(() =>
+    summarizeByCoop(this.data()?.farm ?? EMPTY, rangeFor(this.rangeKey(), this.now)).filter(
+      (coop) => coop.totalBirds > 0,
+    ),
+  );
+
+  protected readonly eggs = computed(() => {
+    const range = rangeFor(this.rangeKey(), this.now);
+    const production = eggProduction(this.data()?.farm ?? EMPTY, range, this.now);
+    if (!production) return null;
+    const verdicts = {
+      peak: { text: 'At peak production', icon: 'trending_up', tone: 'success' },
+      normal: { text: 'Normal production', icon: 'check_circle', tone: 'info' },
+      below: { text: 'Below average production', icon: 'trending_down', tone: 'error' },
+    } as const;
+    return { ...production, verdict: production.level ? verdicts[production.level] : null };
+  });
+  protected readonly eggMarkers = computed<readonly ChartMarker[]>(() => {
+    const hens = this.eggs()?.hens ?? 0;
+    return [
+      {
+        value: Math.round((hens * PEAK_RATE) / 100),
+        label: 'Peak level',
+        color: 'var(--pp-success)',
+      },
+      {
+        value: Math.round((hens * NORMAL_RATE) / 100),
+        label: 'Normal level',
+        color: 'var(--pp-warning)',
+      },
+    ];
+  });
   protected readonly kpis = computed<readonly DashboardKpi[]>(() => {
     const ready = !this.loading();
     const summary = this.summary();

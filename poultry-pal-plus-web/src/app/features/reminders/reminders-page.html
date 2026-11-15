@@ -9,6 +9,18 @@
   </app-page-header>
 
   @if (!loading()) {
+    @if (coops().length > 1) {
+      <mat-form-field class="coop-filter" subscriptSizing="dynamic">
+        <mat-label>Coop</mat-label>
+        <mat-select [value]="coopId()" (selectionChange)="coopId.set($event.value)">
+          <mat-option value="">All coops</mat-option>
+          @for (coop of coops(); track coop.id) {
+            <mat-option [value]="coop.id">{{ coop.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+
     <mat-button-toggle-group
       class="tabs"
       hideSingleSelectionIndicator
@@ -17,11 +29,27 @@
       (change)="tab.set($event.value)"
     >
       <mat-button-toggle value="attention">
-        Needs attention ({{ counts().attention }})
+        <span class="option">
+          <mat-icon aria-hidden="true">notification_important</mat-icon>
+          <span class="text">Needs attention ({{ counts().attention }})</span>
+        </span>
       </mat-button-toggle>
-      <mat-button-toggle value="upcoming">Upcoming ({{ counts().upcoming }})</mat-button-toggle>
-      <mat-button-toggle value="done">Completed ({{ counts().done }})</mat-button-toggle>
+      <mat-button-toggle value="upcoming">
+        <span class="option">
+          <mat-icon aria-hidden="true">upcoming</mat-icon>
+          <span class="text">Upcoming ({{ counts().upcoming }})</span>
+        </span>
+      </mat-button-toggle>
+      <mat-button-toggle value="done">
+        <span class="option">
+          <mat-icon aria-hidden="true">task_alt</mat-icon>
+          <span class="text">Completed ({{ counts().done }})</span>
+        </span>
+      </mat-button-toggle>
     </mat-button-toggle-group>
+    <p class="tab-label" data-testid="reminders-filter-label" aria-live="polite">
+      {{ tabLabel() }}
+    </p>
 
     @if (rows().length > 0) {
       <ul class="list pp-surface-card" aria-label="Reminders">

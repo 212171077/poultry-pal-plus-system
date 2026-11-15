@@ -18,9 +18,18 @@ export class AuthLayout {
   protected readonly highlights = [
     {
       icon: 'cloud_off',
+      title: 'Works offline',
       text: 'Keeps working without internet and syncs when you are back online',
     },
-    { icon: 'egg', text: 'Batches, eggs, sales, mortality and expenses in one place' },
-    { icon: 'groups', text: 'Your whole team on the same, up-to-date farm records' },
+    {
+      icon: 'egg',
+      title: 'Everything in one place',
+      text: 'Batches, eggs, sales, mortality and expenses in one place',
+    },
+    {
+      icon: 'groups',
+      title: 'Built for your team',
+      text: 'Your whole team on the same, up-to-date farm records',
+    },
   ] as const;
 }

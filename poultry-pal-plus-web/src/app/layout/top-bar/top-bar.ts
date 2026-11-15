@@ -7,12 +7,11 @@ import {
   inject,
   input,
   signal,
-  viewChild,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -22,7 +21,7 @@ import { APP_DB } from '../../data/db/app-db';
 import { liveSignal } from '../../data/db/live-signal';
 import { ThemePreference, ThemeService } from '../../core/theme/theme.service';
 import { SyncBadge } from '../../shared/ui/sync-badge/sync-badge';
-import { injectQuickActions } from '../quick-actions';
+import { QuickAddService } from '../quick-add/quick-add.service';
 
 interface ThemeOption {
   readonly value: ThemePreference;
@@ -51,14 +50,13 @@ export class TopBar {
   readonly compact = input(false);
   /** Shows the "Quick add" menu (tablet and desktop; phones use the bottom bar's FAB). */
   readonly quickAdd = input(false);
-  protected readonly quickActions = injectQuickActions();
-  private readonly quickAddTrigger = viewChild('quickAddTrigger', { read: MatMenuTrigger });
+  private readonly quickAddService = inject(QuickAddService);
 
-  /** Opens the "Quick add" menu; returns false when it is not shown. */
+  /** Opens the "Quick add" dialog; returns false when it is not shown. */
   openQuickAdd(): boolean {
-    const trigger = this.quickAddTrigger();
-    trigger?.openMenu();
-    return !!trigger;
+    if (!this.quickAdd()) return false;
+    void this.quickAddService.open();
+    return true;
   }
 
   private readonly theme = inject(ThemeService);
@@ -70,8 +68,8 @@ export class TopBar {
     return this.theme.isDark() ? 'dark_mode' : 'light_mode';
   });
   protected readonly themeOptions: readonly ThemeOption[] = [
-    { value: 'system', label: 'Match device', icon: 'brightness_auto' },
-    { value: 'light', label: 'Light', icon: 'light_mode' },
+    { value: 'system', label: 'Dawn & Dusk', icon: 'brightness_auto' },
+    { value: 'meadow', label: 'Meadow', icon: 'eco' },
     { value: 'dark', label: 'Farm night', icon: 'dark_mode' },
     { value: 'sunlight', label: 'Sunlight (high contrast)', icon: 'wb_sunny' },
   ];

@@ -2,7 +2,9 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialog } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { format } from 'date-fns';
 import { liveSignal } from '../../data/db/live-signal';
@@ -29,6 +31,12 @@ interface ReminderRow {
   readonly bucket: ReminderBucket;
 }
 
+const TAB_LABELS: Readonly<Record<Tab, string>> = {
+  attention: 'Tasks needing attention',
+  upcoming: 'Upcoming Tasks',
+  done: 'Completed Tasks',
+};
+
 const EMPTY_MESSAGES: Readonly<Record<Tab, { heading: string; message: string }>> = {
   attention: {
     heading: 'Nothing needs attention',
@@ -50,6 +58,8 @@ const EMPTY_MESSAGES: Readonly<Record<Tab, { heading: string; message: string }>
     MatButtonModule,
     MatButtonToggleModule,
     MatIconModule,
+    MatFormFieldModule,
+    MatSelectModule,
   ],
   templateUrl: './reminders-page.html',
   styleUrl: './reminders-page.scss',
@@ -67,13 +77,29 @@ export default class RemindersPage {
       this.db.reminders.toArray(),
       this.db.coops.toArray(),
     ]);
-    return { reminders, names: new Map(coops.map((coop) => [coop.id, coop.coopName])) };
+    const sorted = [...coops].sort((a, b) => a.coopName.localeCompare(b.coopName));
+    return {
+      reminders,
+      coops: sorted.map((coop) => ({ id: coop.id, name: coop.coopName })),
+      names: new Map(coops.map((coop) => [coop.id, coop.coopName])),
+    };
   });
 
   protected readonly tab = signal<Tab>('attention');
+  /** Selected coop id, or '' for all coops. */
+  protected readonly coopId = signal('');
+  protected readonly coops = computed(() => this.data()?.coops ?? []);
+  protected readonly tabLabel = computed(() => {
+    const coop = this.coops().find((c) => c.id === this.coopId());
+    return coop ? `${TAB_LABELS[this.tab()]} · ${coop.name}` : TAB_LABELS[this.tab()];
+  });
   protected readonly loading = computed(() => this.data() === undefined);
 
-  private readonly groups = computed(() => groupReminders(this.data()?.reminders ?? [], this.now));
+  private readonly groups = computed(() => {
+    const coopId = this.coopId();
+    const all = this.data()?.reminders ?? [];
+    return groupReminders(coopId ? all.filter((r) => r.coopId === coopId) : all, this.now);
+  });
 
   protected readonly counts = computed(() => {
     const groups = this.groups();

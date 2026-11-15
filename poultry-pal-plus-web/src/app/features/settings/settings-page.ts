@@ -3,7 +3,6 @@ import { strongPassword, PASSWORD_RULES_HINT } from '../../shared/validators/pas
 import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -33,7 +32,6 @@ const CURRENCIES = ['ZAR', 'BWP', 'KES', 'NGN', 'TZS', 'UGX', 'USD', 'EUR', 'GBP
     PageHeader,
     ReactiveFormsModule,
     MatButtonModule,
-    MatButtonToggleModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -61,6 +59,22 @@ export default class SettingsPage {
   protected readonly user = this.auth.user;
   protected readonly canManage = this.auth.canManageFarm;
   protected readonly themePreference = this.theme.preference;
+  protected readonly themeOptions: readonly {
+    value: ThemePreference;
+    label: string;
+    icon: string;
+    hint: string;
+  }[] = [
+    {
+      value: 'system',
+      label: 'Dawn & Dusk',
+      icon: 'brightness_auto',
+      hint: 'Light by day, dark by night',
+    },
+    { value: 'meadow', label: 'Meadow', icon: 'eco', hint: 'Fresh green, light' },
+    { value: 'dark', label: 'Farm night', icon: 'dark_mode', hint: 'Easy on the eyes' },
+    { value: 'sunlight', label: 'Sunlight', icon: 'wb_sunny', hint: 'High contrast' },
+  ];
   protected readonly canInstall = this.installPrompt.canInstall;
   protected readonly updateState = this.updates.state;
   protected readonly currencies = CURRENCIES;

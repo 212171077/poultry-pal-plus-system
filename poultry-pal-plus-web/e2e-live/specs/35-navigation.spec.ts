@@ -59,7 +59,7 @@ test.describe('navigation', () => {
       await page.getByRole('button', { name: 'Quick add' }).click();
     }
     await shot(page, 'navigation', 'quick-add');
-    await page.getByRole('menuitem', { name: 'Record mortality' }).click();
+    await page.getByRole('dialog').getByRole('link', { name: 'Record mortality' }).click();
     await expect(page).toHaveURL(/\/mortality/);
     await expect(dialog(page, /Record mortality/)).toBeVisible();
   });
@@ -74,10 +74,10 @@ test.describe('navigation', () => {
     await signInAs(sharedFarm.owner, '/settings');
     await page.getByLabel('First name').focus();
     await page.keyboard.type('n');
-    await expect(page.getByRole('menu')).toHaveCount(0);
+    await expect(page.getByRole('dialog')).toHaveCount(0);
     await page.locator('#main-content').click({ position: { x: 5, y: 5 } });
     await page.keyboard.press('n');
-    await expect(page.getByRole('menu')).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Quick add' })).toBeVisible();
   });
 
   test('the handset bottom bar reaches the main areas', async ({

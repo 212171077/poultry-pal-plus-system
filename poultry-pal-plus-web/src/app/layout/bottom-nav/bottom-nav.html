@@ -9,18 +9,17 @@
   </a>
 
   <div class="fab-slot">
-    <button mat-fab type="button" class="fab" [matMenuTriggerFor]="quickAdd" aria-label="Quick add">
+    <button
+      mat-fab
+      type="button"
+      class="fab"
+      aria-label="Quick add"
+      aria-haspopup="dialog"
+      (click)="openQuickAdd()"
+    >
       <mat-icon>add</mat-icon>
     </button>
   </div>
-  <mat-menu #quickAdd="matMenu" yPosition="above">
-    @for (action of quickActions(); track action.path) {
-      <a mat-menu-item [routerLink]="action.path" [queryParams]="{ action: 'new' }">
-        <mat-icon>{{ action.icon }}</mat-icon>
-        <span>{{ action.label }}</span>
-      </a>
-    }
-  </mat-menu>
 
   <a class="tab" routerLink="/reminders" routerLinkActive="active" ariaCurrentWhenActive="page">
     <mat-icon aria-hidden="true">notifications_active</mat-icon>

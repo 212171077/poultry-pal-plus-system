@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -10,6 +10,8 @@ import { SALE_PACKAGING } from '../../data/models/record-options';
 import { SaleRepository } from '../../data/repositories/repositories';
 import { formatMoney } from '../../shared/format/money';
 import { RecordListPage } from '../../shared/records/record-page';
+import { CoopFilter } from '../../shared/ui/coop-filter/coop-filter';
+import { KpiCard } from '../../shared/ui/kpi-card/kpi-card';
 import { EmptyState } from '../../shared/ui/empty-state/empty-state';
 import { PageHeader } from '../../shared/ui/page-header/page-header';
 import { SyncChip } from '../../shared/ui/sync-chip/sync-chip';
@@ -27,16 +29,32 @@ interface SaleRow {
 
 @Component({
   selector: 'app-sales-page',
-  imports: [PageHeader, EmptyState, SyncChip, MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [
+    PageHeader,
+    EmptyState,
+    SyncChip,
+    CoopFilter,
+    KpiCard,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+  ],
   templateUrl: './sales-page.html',
   styleUrl: '../../shared/records/record-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SalesPage extends RecordListPage<LocalSale> {
   private readonly salesRepo = inject(SaleRepository);
-  private readonly sales = liveSignal(() => this.salesRepo.listRecent());
+  private readonly allSales = liveSignal(() => this.salesRepo.listRecent());
+  protected readonly coopId = signal<string | null>(null);
+  private readonly sales = computed(() => {
+    const coopId = this.coopId();
+    const all = this.allSales();
+    return coopId && all ? all.filter((sale) => sale.coopId === coopId) : all;
+  });
 
-  protected readonly loading = computed(() => this.sales() === undefined);
+  protected readonly loading = computed(() => this.allSales() === undefined);
+  protected readonly hasRecords = computed(() => (this.allSales()?.length ?? 0) > 0);
 
   protected readonly rows = computed<SaleRow[]>(() => {
     const names = new Map(this.coops().map((coop) => [coop.id, coop.coopName]));

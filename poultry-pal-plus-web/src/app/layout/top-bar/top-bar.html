@@ -13,22 +13,14 @@
       mat-flat-button
       type="button"
       class="quick-add"
-      #quickAddTrigger
-      [matMenuTriggerFor]="quickAddMenu"
+      aria-haspopup="dialog"
+      (click)="openQuickAdd()"
       matTooltip="Shortcut: N"
       aria-keyshortcuts="N"
     >
       <mat-icon>add</mat-icon>
       Quick add
     </button>
-    <mat-menu #quickAddMenu="matMenu" xPosition="before">
-      @for (action of quickActions(); track action.path) {
-        <a mat-menu-item [routerLink]="action.path" [queryParams]="{ action: 'new' }">
-          <mat-icon>{{ action.icon }}</mat-icon>
-          <span>{{ action.label }}</span>
-        </a>
-      }
-    </mat-menu>
   }
 
   <app-sync-badge [compact]="compact()" />

@@ -10,7 +10,11 @@ export type KpiTone = 'brand' | 'accent' | 'success' | 'warning' | 'error' | 'in
   templateUrl: './kpi-card.html',
   styleUrl: './kpi-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'pp-surface-card', '[attr.data-tone]': 'tone()' },
+  host: {
+    class: 'pp-surface-card',
+    '[attr.data-tone]': 'tone()',
+    '[attr.data-compact]': 'compact() || null',
+  },
 })
 export class KpiCard {
   readonly label = input.required<string>();
@@ -19,4 +23,6 @@ export class KpiCard {
   readonly hint = input<string>();
   readonly tone = input<KpiTone>('brand');
   readonly loading = input(false);
+  /** Smaller card for dense summary rows. */
+  readonly compact = input(false);
 }

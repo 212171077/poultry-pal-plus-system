@@ -45,13 +45,48 @@
   }
 }
 
+.story {
+  position: relative;
+  overflow: hidden;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  &::before {
+    top: -120px;
+    right: -120px;
+    width: 340px;
+    height: 340px;
+    border: 48px solid rgb(255 255 255 / 7%);
+  }
+
+  &::after {
+    bottom: -90px;
+    left: -90px;
+    width: 260px;
+    height: 260px;
+    background: rgb(255 255 255 / 6%);
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
 .pitch {
   h2 {
-    margin: 0 0 var(--pp-space-lg);
+    margin: var(--pp-space-md) 0 var(--pp-space-xl);
     font-family: var(--pp-font-brand);
     font-size: clamp(1.75rem, 2.6vw, 2.5rem);
     line-height: 1.2;
     font-weight: 600;
+    color: #fff;
   }
 
   ul {
@@ -64,24 +99,70 @@
 
   li {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--pp-space-md);
-    font-size: 1rem;
-    line-height: 1.5;
+    padding: var(--pp-space-md);
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: var(--pp-radius-lg);
+    background: rgb(255 255 255 / 10%);
+    backdrop-filter: blur(6px);
+    line-height: 1.4;
   }
+}
+
+.accent {
+  color: var(--pp-accent, #f4a623);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pp-space-xs);
+  padding: var(--pp-space-xs) var(--pp-space-md) var(--pp-space-xs) var(--pp-space-sm);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 16%);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 
   mat-icon {
-    flex: none;
-    padding: var(--pp-space-sm);
-    border-radius: var(--pp-radius-md);
-    background: rgb(255 255 255 / 16%);
-    box-sizing: content-box;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+  }
+}
+
+.badge {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--pp-radius-md);
+  background: #fff;
+  color: var(--pp-brand);
+}
+
+.copy {
+  display: grid;
+  gap: 2px;
+
+  strong {
+    font-size: 1.05rem;
+  }
+
+  span {
+    font-size: 0.9rem;
+    opacity: 0.88;
   }
 }
 
 .footnote {
+  display: flex;
+  align-items: center;
+  gap: var(--pp-space-sm);
   margin: 0;
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
 .main {

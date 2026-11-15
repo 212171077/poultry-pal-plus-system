@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { LayoutMode, LayoutService } from '../layout.service';
+import { QuickAddService } from '../quick-add/quick-add.service';
 import { Shell } from './shell';
 
 describe('Shell', () => {
@@ -14,6 +15,7 @@ describe('Shell', () => {
       providers: [
         provideRouter([]),
         { provide: LayoutService, useValue: { mode } },
+        { provide: QuickAddService, useValue: { open: jasmine.createSpy('open') } },
         {
           provide: AuthService,
           useValue: {
@@ -70,7 +72,7 @@ describe('Shell', () => {
       render();
       const event = press(document.body);
       expect(event.defaultPrevented).toBeTrue();
-      expect(document.querySelector('.mat-mdc-menu-panel')).not.toBeNull();
+      expect(TestBed.inject(QuickAddService).open).toHaveBeenCalled();
     });
 
     it('ignores typing and modifier keys', () => {

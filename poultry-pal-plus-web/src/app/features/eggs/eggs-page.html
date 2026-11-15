@@ -7,23 +7,40 @@
   </app-page-header>
 
   @if (!loading()) {
-    @if (rows().length > 0) {
-      <section class="summary pp-surface-card" aria-label="Summary">
-        <div>
-          <span class="summary-label">Eggs today</span>
-          <strong class="summary-value">{{ summary().today }}</strong>
-        </div>
-        <div>
-          <span class="summary-label">Eggs, last 7 days</span>
-          <strong class="summary-value">{{ summary().week }}</strong>
-        </div>
-        <div>
-          <span class="summary-label">Boxes, last 7 days</span>
-          <strong class="summary-value">{{ summary().boxes }}</strong>
-        </div>
+    @if (hasRecords()) {
+      <app-coop-filter [coops]="layerCoops()" [(value)]="coopId" />
+      <section class="kpis" aria-label="Summary">
+        <app-kpi-card
+          [compact]="true"
+          label="Eggs today"
+          icon="egg"
+          tone="accent"
+          [value]="summary().today"
+        />
+        <app-kpi-card
+          [compact]="true"
+          label="Eggs, last 7 days"
+          icon="date_range"
+          tone="success"
+          [value]="summary().week"
+        />
+        <app-kpi-card
+          [compact]="true"
+          label="Boxes, last 7 days"
+          icon="inventory_2"
+          tone="info"
+          [value]="summary().boxes"
+        />
       </section>
 
-      <ul class="list pp-surface-card" aria-label="Egg packaging records">
+      @if (rows().length === 0) {
+        <p class="filtered-empty pp-surface-card">No egg records for this coop yet.</p>
+      }
+      <ul
+        class="list pp-surface-card"
+        aria-label="Egg packaging records"
+        [hidden]="rows().length === 0"
+      >
         @for (row of rows(); track row.record.id) {
           <li class="item" data-testid="egg-row">
             <span class="icon" aria-hidden="true">

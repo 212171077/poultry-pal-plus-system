@@ -7,19 +7,29 @@
   </app-page-header>
 
   @if (!loading()) {
-    @if (rows().length > 0) {
-      <section class="summary pp-surface-card" aria-label="Summary">
-        <div>
-          <span class="summary-label">This month</span>
-          <strong class="summary-value">{{ monthTotal() }}</strong>
-        </div>
-        <div>
-          <span class="summary-label">Records</span>
-          <strong class="summary-value">{{ rows().length }}</strong>
-        </div>
+    @if (hasRecords()) {
+      <app-coop-filter [coops]="coops()" [(value)]="coopId" />
+      <section class="kpis" aria-label="Summary">
+        <app-kpi-card
+          [compact]="true"
+          label="This month"
+          icon="payments"
+          tone="error"
+          [value]="monthTotal()"
+        />
+        <app-kpi-card
+          [compact]="true"
+          label="Records"
+          icon="receipt_long"
+          tone="info"
+          [value]="rows().length"
+        />
       </section>
 
-      <ul class="list pp-surface-card" aria-label="Expenses">
+      @if (rows().length === 0) {
+        <p class="filtered-empty pp-surface-card">No expenses for this coop yet.</p>
+      }
+      <ul class="list pp-surface-card" aria-label="Expenses" [hidden]="rows().length === 0">
         @for (row of rows(); track row.expense.id) {
           <li class="item" data-testid="expense-row">
             <span class="icon" aria-hidden="true">
