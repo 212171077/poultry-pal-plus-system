@@ -64,6 +64,8 @@ export interface SyncPushResponse {
 }
 
 export interface AddressDto {
+  readonly id?: string | null;
+  readonly label?: string | null;
   readonly addressLine1?: string | null;
   readonly addressLine2?: string | null;
   readonly state?: string | null;
@@ -76,6 +78,7 @@ export interface FarmSnapshot {
   readonly id: string;
   readonly farmName: string;
   readonly address?: AddressDto | null;
+  readonly addresses?: readonly AddressDto[] | null;
   readonly createdDate?: WireDate | null;
   readonly updatedAt?: WireDate | null;
   readonly version: number;

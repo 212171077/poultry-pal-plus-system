@@ -141,3 +141,27 @@
     visibility: visible;
   }
 }
+
+.panel-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--pp-space-md);
+  width: 100%;
+
+  .panel-title,
+  p {
+    margin: 0;
+  }
+}
+
+.address-grid {
+  display: grid;
+  gap: var(--pp-space-md);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

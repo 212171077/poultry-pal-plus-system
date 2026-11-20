@@ -92,35 +92,43 @@
             <mat-label>Farm name</mat-label>
             <input matInput formControlName="farmName" autocomplete="organization" />
           </mat-form-field>
-          <mat-form-field>
-            <mat-label>Address line 1</mat-label>
-            <input matInput formControlName="addressLine1" autocomplete="address-line1" />
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Address line 2</mat-label>
-            <input matInput formControlName="addressLine2" autocomplete="address-line2" />
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>City / town</mat-label>
-            <input matInput formControlName="city" autocomplete="address-level2" />
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Province / state</mat-label>
-            <input matInput formControlName="state" autocomplete="address-level1" />
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Postal code</mat-label>
-            <input matInput formControlName="postalCode" autocomplete="postal-code" />
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Country</mat-label>
-            <input matInput formControlName="country" autocomplete="country-name" />
-          </mat-form-field>
         </div>
         <button mat-flat-button type="submit" [disabled]="savingFarm()">Save farm details</button>
       </form>
     </section>
   }
+
+  <section class="pp-surface-card panel" aria-labelledby="addresses-title">
+    <div class="panel-head">
+      <div>
+        <h2 id="addresses-title" class="panel-title">Farm addresses</h2>
+        <p class="muted">The first address is the primary one. Add more for sheds or sites.</p>
+      </div>
+      @if (canManage()) {
+        <button mat-flat-button type="button" (click)="openAddressDialog()">
+          <mat-icon>add</mat-icon>
+          Add address
+        </button>
+      }
+    </div>
+    @if (addresses().length > 0) {
+      <ul class="address-grid">
+        @for (address of addresses(); track address.id ?? $index; let first = $first) {
+          <li>
+            <app-address-card
+              [address]="address"
+              [primary]="first"
+              [editable]="canManage()"
+              (edit)="openAddressDialog(address)"
+              (remove)="deleteAddress(address)"
+            />
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="muted">No addresses yet.</p>
+    }
+  </section>
 
   <section class="pp-surface-card panel" aria-labelledby="currency-title">
     <h2 id="currency-title" class="panel-title">Currency</h2>

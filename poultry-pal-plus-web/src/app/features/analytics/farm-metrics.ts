@@ -18,7 +18,7 @@ import {
   LocalSale,
 } from '../../data/models/local';
 
-export type RangeKey = '7d' | 'month' | '90d' | 'year';
+export type RangeKey = '7d' | 'month' | '90d' | 'year' | 'all';
 
 export interface RangeOption {
   readonly key: RangeKey;
@@ -29,6 +29,7 @@ export interface RangeOption {
 }
 
 export const RANGE_OPTIONS: readonly RangeOption[] = [
+  { key: 'all', label: 'All', icon: 'all_inclusive', summary: 'all recorded data' },
   { key: '7d', label: '7 days', icon: 'date_range', summary: 'the last 7 days' },
   { key: 'month', label: 'Month', icon: 'calendar_month', summary: 'this month' },
   { key: '90d', label: '90 days', icon: 'calendar_view_month', summary: 'the last 90 days' },
@@ -46,7 +47,21 @@ export interface DateRange {
   readonly to: Date;
 }
 
-export function rangeFor(key: RangeKey, now: Date): DateRange {
+/** Start of the earliest record in `data`, or the start of this year when there are none. */
+function earliestRecord(data: FarmData | undefined, now: Date): Date {
+  const dates = data
+    ? [
+        ...data.sales.map((r) => r.saleDate),
+        ...data.expenses.map((r) => r.expenseDate),
+        ...data.mortalities.map((r) => r.dateOccurred),
+        ...data.eggRecords.map((r) => r.createdDate),
+      ]
+    : [];
+  const times = dates.map((d) => new Date(d).getTime()).filter((t) => Number.isFinite(t));
+  return times.length > 0 ? startOfDay(new Date(Math.min(...times))) : startOfYear(now);
+}
+
+export function rangeFor(key: RangeKey, now: Date, data?: FarmData): DateRange {
   const to = endOfDay(now);
   switch (key) {
     case '7d':
@@ -57,6 +72,8 @@ export function rangeFor(key: RangeKey, now: Date): DateRange {
       return { from: startOfMonth(now), to };
     case 'year':
       return { from: startOfYear(now), to };
+    case 'all':
+      return { from: earliestRecord(data, now), to };
   }
 }
 
@@ -171,6 +188,8 @@ export function summarize(data: FarmData, range: DateRange): FarmSummary {
   const eggs = data.eggRecords.filter((r) => inRange(r.createdDate, range));
 
   const granularity = granularityFor(range);
+  const multiYear = differenceInCalendarDays(range.to, range.from) > 365;
+  const labelFormat = granularity === 'month' ? (multiYear ? 'MMM yy' : 'MMM') : 'd MMM';
   const buckets = new Map<number, Record<Measure, number>>();
   for (
     let cursor = bucketStart(range.from, granularity);
@@ -204,7 +223,7 @@ export function summarize(data: FarmData, range: DateRange): FarmSummary {
     series: [...buckets.entries()]
       .sort(([a], [b]) => a - b)
       .map(([time, values]) => ({
-        label: format(new Date(time), granularity === 'month' ? 'MMM' : 'd MMM'),
+        label: format(new Date(time), labelFormat),
         ...values,
       })),
   };

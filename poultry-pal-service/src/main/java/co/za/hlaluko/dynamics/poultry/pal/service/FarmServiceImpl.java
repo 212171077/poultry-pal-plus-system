@@ -18,6 +18,7 @@ import co.za.hlaluko.dynamics.poultry.pal.repository.*;
 import co.za.hlaluko.dynamics.poultry.pal.security.SecurityUtils;
 import co.za.hlaluko.dynamics.poultry.pal.security.services.UserDetailsImpl;
 import co.za.hlaluko.dynamics.poultry.pal.utils.ConstantUtil;
+import co.za.hlaluko.dynamics.poultry.pal.utils.FarmAddresses;
 import co.za.hlaluko.dynamics.poultry.pal.utils.EggBoxSizes;
 import co.za.hlaluko.dynamics.poultry.pal.utils.EggSalePackaging;
 import co.za.hlaluko.dynamics.poultry.pal.utils.PoultryPalUtil;
@@ -228,14 +229,14 @@ public class FarmServiceImpl implements FarmService {
     if (farmOptional.isPresent()) {
       Farm farm = farmOptional.get();
       farm.setFarmName(request.getFarmName());
-      Address address = farm.getAddress() == null ? new Address() : farm.getAddress();
-      address.setAddressLine1(request.getFarmAddressLine1());
-      address.setAddressLine2(request.getFarmAddressLine2());
-      address.setCity(request.getFarmCity());
-      address.setState(request.getFarmState());
-      address.setPostalCode(request.getFarmPostalCode());
-      address.setCountry(request.getFarmCountry());
-      farm.setAddress(address);
+      FarmAddresses.updatePrimary(
+          farm,
+          request.getFarmAddressLine1(),
+          request.getFarmAddressLine2(),
+          request.getFarmCity(),
+          request.getFarmState(),
+          request.getFarmPostalCode(),
+          request.getFarmCountry());
       farm.setUpdatedByUserId(request.getUpdatedByUserId());
       farmRepository.save(farm);
       logger.info("Farm details updated");
@@ -1722,7 +1723,8 @@ public class FarmServiceImpl implements FarmService {
     return FarmResponse.builder()
         .id(farm.getId())
         .farmName(farm.getFarmName())
-        .address(farm.getAddress())
+        .address(FarmAddresses.primary(farm))
+        .addresses(FarmAddresses.list(farm))
         .coops(builCoopList(farm.getCoops()))
         .users(getUserInfoResponseList(users, farm, "Build Farm"))
         .createdDate(farm.getCreatedDate())

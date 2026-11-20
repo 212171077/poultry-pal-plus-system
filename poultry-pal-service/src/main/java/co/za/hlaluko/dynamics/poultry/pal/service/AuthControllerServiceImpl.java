@@ -1,6 +1,6 @@
 package co.za.hlaluko.dynamics.poultry.pal.service;
 
-import co.za.hlaluko.dynamics.poultry.pal.model.dto.Address;
+import co.za.hlaluko.dynamics.poultry.pal.utils.FarmAddresses;
 import co.za.hlaluko.dynamics.poultry.pal.model.dto.ERole;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.Farm;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.Role;
@@ -116,16 +116,15 @@ public class AuthControllerServiceImpl implements AuthControllerService {
           Farm.builder()
               .farmName(request.getFarmName())
               .createdDate(new Date())
-              .address(
-                  Address.builder()
-                      .addressLine1(request.getFarmAddressLine1())
-                      .addressLine2(request.getFarmAddressLine2())
-                      .state(request.getFarmState())
-                      .city(request.getFarmCity())
-                      .postalCode(request.getFarmPostalCode())
-                      .country(request.getFarmCountry())
-                      .build())
               .build();
+      FarmAddresses.updatePrimary(
+          farm,
+          request.getFarmAddressLine1(),
+          request.getFarmAddressLine2(),
+          request.getFarmCity(),
+          request.getFarmState(),
+          request.getFarmPostalCode(),
+          request.getFarmCountry());
 
       farmRepository.save(farm);
 

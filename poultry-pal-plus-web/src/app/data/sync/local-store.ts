@@ -121,6 +121,7 @@ export async function applyChanges(
       id: farm.id,
       farmName: farm.farmName,
       address: farm.address ?? null,
+      addresses: farm.addresses ?? null,
       createdDate: toIsoDate(farm.createdDate),
       updatedAt: toIsoDate(farm.updatedAt),
       version: farm.version,

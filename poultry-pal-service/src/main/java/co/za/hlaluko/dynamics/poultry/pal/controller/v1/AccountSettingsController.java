@@ -1,6 +1,7 @@
 package co.za.hlaluko.dynamics.poultry.pal.controller.v1;
 
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.CurrencyPreferenceRequest;
+import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.FarmAddressRequest;
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.FarmDetailsUpdateV1Request;
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.PasswordChangeRequest;
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.ProfileUpdateRequest;
@@ -21,7 +22,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,6 +74,36 @@ public class AccountSettingsController {
         ApiResponse.ok(
             "Farm details updated",
             accountSettingsService.updateFarmDetails(SecurityUtils.getCurrentUser(), request)));
+  }
+
+  @PostMapping("/farm/addresses")
+  @Operation(summary = "Add a farm address (owner or manager only)")
+  public ResponseEntity<ApiResponse<FarmSnapshot>> addAddress(
+      @Valid @RequestBody FarmAddressRequest request) {
+    return ResponseEntity.ok(
+        ApiResponse.ok(
+            "Address added",
+            accountSettingsService.addAddress(SecurityUtils.getCurrentUser(), request)));
+  }
+
+  @PutMapping("/farm/addresses/{addressId}")
+  @Operation(summary = "Update a farm address (owner or manager only)")
+  public ResponseEntity<ApiResponse<FarmSnapshot>> updateAddress(
+      @PathVariable String addressId, @Valid @RequestBody FarmAddressRequest request) {
+    return ResponseEntity.ok(
+        ApiResponse.ok(
+            "Address updated",
+            accountSettingsService.updateAddress(
+                SecurityUtils.getCurrentUser(), addressId, request)));
+  }
+
+  @DeleteMapping("/farm/addresses/{addressId}")
+  @Operation(summary = "Delete a farm address (owner or manager only)")
+  public ResponseEntity<ApiResponse<FarmSnapshot>> deleteAddress(@PathVariable String addressId) {
+    return ResponseEntity.ok(
+        ApiResponse.ok(
+            "Address deleted",
+            accountSettingsService.deleteAddress(SecurityUtils.getCurrentUser(), addressId)));
   }
 
   @PutMapping("/account/settings/currency")

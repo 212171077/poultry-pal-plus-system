@@ -78,6 +78,15 @@ describe('farm metrics', () => {
     expect(year.series.reduce((sum, point) => sum + point.sales, 0)).toBe(1499);
   });
 
+  it('covers every recorded record for the "all" range', () => {
+    const range = rangeFor('all', NOW, DATA);
+    const earliest = Math.min(...DATA.sales.map((sale) => new Date(sale.saleDate).getTime()));
+    expect(range.from.getTime()).toBeLessThanOrEqual(earliest);
+    const all = summarize(DATA, range);
+    expect(all.sales).toBe(1499);
+    expect(all.series.length).toBeGreaterThan(0);
+  });
+
   it('summarises each coop with the mobile mortality formula', () => {
     const [alpha, beta] = summarizeByCoop(DATA, rangeFor('month', NOW));
     expect(alpha.coopName).toBe('Alpha');

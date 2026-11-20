@@ -208,3 +208,35 @@ a {
   outline: 3px solid var(--pp-focus-ring);
   outline-offset: -3px;
 }
+
+// Toast notifications (MatSnackBar): a raised card with a brand accent bar.
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-shape: var(--pp-radius-lg);
+  --mdc-snackbar-container-color: var(--mat-sys-inverse-surface);
+  --mdc-snackbar-supporting-text-color: var(--mat-sys-inverse-on-surface);
+  --mat-snack-bar-button-color: var(--mat-sys-inverse-primary);
+  --mat-snack-bar-container-shape: var(--pp-radius-lg);
+  --mat-snack-bar-container-color: var(--mat-sys-inverse-surface);
+  --mat-snack-bar-supporting-text-color: var(--mat-sys-inverse-on-surface);
+
+  .mdc-snackbar__surface {
+    min-width: min(344px, calc(100vw - 32px));
+    border-left: 6px solid var(--pp-brand);
+    border-radius: var(--pp-radius-lg);
+    box-shadow: var(--pp-shadow-lg);
+    overflow: hidden;
+  }
+
+  .mdc-snackbar__label {
+    padding: 14px 8px 14px 16px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .mdc-snackbar__actions .mat-mdc-button {
+    min-height: 48px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+}

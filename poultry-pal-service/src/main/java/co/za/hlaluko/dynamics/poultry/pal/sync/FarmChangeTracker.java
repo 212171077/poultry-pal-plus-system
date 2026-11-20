@@ -7,6 +7,7 @@ import co.za.hlaluko.dynamics.poultry.pal.model.dto.SyncTracked;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.Farm;
 import co.za.hlaluko.dynamics.poultry.pal.security.SecurityUtils;
 import co.za.hlaluko.dynamics.poultry.pal.security.services.UserDetailsImpl;
+import co.za.hlaluko.dynamics.poultry.pal.utils.FarmAddresses;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -151,7 +152,8 @@ public class FarmChangeTracker implements BeforeConvertCallback<Farm>, Ordered {
   private JsonNode detailsOf(Farm farm) {
     ObjectNode node = mapper.createObjectNode();
     node.put("farmName", farm.getFarmName());
-    node.set("address", mapper.valueToTree(farm.getAddress()));
+    node.set("address", mapper.valueToTree(FarmAddresses.primary(farm)));
+    node.set("addresses", mapper.valueToTree(FarmAddresses.list(farm)));
     return node;
   }
 

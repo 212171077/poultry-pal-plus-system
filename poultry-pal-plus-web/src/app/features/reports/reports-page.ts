@@ -85,7 +85,7 @@ export default class ReportsPage {
     () => this.scheduleCoopId() ?? this.coopOptions()[0]?.id ?? null,
   );
 
-  protected readonly range = computed(() => rangeFor(this.rangeKey(), this.now));
+  protected readonly range = computed(() => rangeFor(this.rangeKey(), this.now, this.farmData()));
   protected readonly period = computed(() => rangeLabel(this.range()));
   protected readonly summary = computed(() => summarize(this.farmData(), this.range()));
   protected readonly coops = computed(() => summarizeByCoop(this.farmData(), this.range()));

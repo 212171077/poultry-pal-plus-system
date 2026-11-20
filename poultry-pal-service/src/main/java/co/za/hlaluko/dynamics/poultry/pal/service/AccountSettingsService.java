@@ -8,6 +8,7 @@ import co.za.hlaluko.dynamics.poultry.pal.model.entity.Farm;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.User;
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.UserSettings;
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.CurrencyPreferenceRequest;
+import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.FarmAddressRequest;
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.FarmDetailsUpdateV1Request;
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.PasswordChangeRequest;
 import co.za.hlaluko.dynamics.poultry.pal.model.payload.request.ProfileUpdateRequest;
@@ -19,7 +20,9 @@ import co.za.hlaluko.dynamics.poultry.pal.repository.UserRepository;
 import co.za.hlaluko.dynamics.poultry.pal.repository.UserSettingsRepository;
 import co.za.hlaluko.dynamics.poultry.pal.security.services.UserDetailsImpl;
 import co.za.hlaluko.dynamics.poultry.pal.sync.UserInfoMapper;
+import co.za.hlaluko.dynamics.poultry.pal.utils.FarmAddresses;
 import co.za.hlaluko.dynamics.poultry.pal.utils.ValidationUtil;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AccountSettingsService {
+  private static final int MAX_ADDRESSES = 10;
   private final UserRepository userRepository;
   private final FarmRepository farmRepository;
   private final UserSettingsRepository userSettingsRepository;
@@ -80,25 +84,90 @@ public class AccountSettingsService {
       UserDetailsImpl actor, FarmDetailsUpdateV1Request request) {
     requireManager(actor);
     Farm farm = requireFarm(actor);
-    Address address = farm.getAddress() == null ? new Address() : farm.getAddress();
-    address.setAddressLine1(trimToNull(request.getAddressLine1()));
-    address.setAddressLine2(trimToNull(request.getAddressLine2()));
-    address.setState(trimToNull(request.getState()));
-    address.setCity(trimToNull(request.getCity()));
-    address.setPostalCode(trimToNull(request.getPostalCode()));
-    address.setCountry(trimToNull(request.getCountry()));
     farm.setFarmName(request.getFarmName().trim());
-    farm.setAddress(address);
+    // Address fields are optional: clients that manage addresses separately only send the name.
+    if (request.getAddressLine1() != null
+        || request.getAddressLine2() != null
+        || request.getState() != null
+        || request.getCity() != null
+        || request.getPostalCode() != null
+        || request.getCountry() != null) {
+      FarmAddresses.updatePrimary(
+          farm,
+          trimToNull(request.getAddressLine1()),
+          trimToNull(request.getAddressLine2()),
+          trimToNull(request.getCity()),
+          trimToNull(request.getState()),
+          trimToNull(request.getPostalCode()),
+          trimToNull(request.getCountry()));
+    }
+    return saveFarm(actor, farm);
+  }
+
+  public FarmSnapshot addAddress(UserDetailsImpl actor, FarmAddressRequest request) {
+    requireManager(actor);
+    Farm farm = requireFarm(actor);
+    List<Address> addresses = new ArrayList<>(FarmAddresses.list(farm));
+    if (addresses.size() >= MAX_ADDRESSES) {
+      throw ApiException.badRequest("A farm can have at most " + MAX_ADDRESSES + " addresses");
+    }
+    addresses.add(toAddress(null, request));
+    FarmAddresses.replace(farm, addresses);
+    return saveFarm(actor, farm);
+  }
+
+  public FarmSnapshot updateAddress(
+      UserDetailsImpl actor, String addressId, FarmAddressRequest request) {
+    requireManager(actor);
+    Farm farm = requireFarm(actor);
+    List<Address> addresses = new ArrayList<>(FarmAddresses.list(farm));
+    int index = indexOf(addresses, addressId);
+    addresses.set(index, toAddress(addresses.get(index).getId(), request));
+    FarmAddresses.replace(farm, addresses);
+    return saveFarm(actor, farm);
+  }
+
+  public FarmSnapshot deleteAddress(UserDetailsImpl actor, String addressId) {
+    requireManager(actor);
+    Farm farm = requireFarm(actor);
+    List<Address> addresses = new ArrayList<>(FarmAddresses.list(farm));
+    addresses.remove(indexOf(addresses, addressId));
+    FarmAddresses.replace(farm, addresses);
+    return saveFarm(actor, farm);
+  }
+
+  private FarmSnapshot saveFarm(UserDetailsImpl actor, Farm farm) {
     farm.setUpdatedByUserId(actor.getId());
     farm.setUpdatedAt(new java.util.Date());
     Farm saved = farmRepository.save(farm);
     return FarmSnapshot.builder()
         .id(saved.getId())
         .farmName(saved.getFarmName())
-        .address(saved.getAddress())
+        .address(FarmAddresses.primary(saved))
+        .addresses(FarmAddresses.list(saved))
         .createdDate(saved.getCreatedDate())
         .updatedAt(saved.getUpdatedAt())
         .version(saved.getDetailsVersion() == null ? 0 : saved.getDetailsVersion())
+        .build();
+  }
+
+  private static int indexOf(List<Address> addresses, String addressId) {
+    for (int i = 0; i < addresses.size(); i++) {
+      if (Objects.equals(addresses.get(i).getId(), addressId)) return i;
+    }
+    throw ApiException.notFound("Address not found");
+  }
+
+  private static Address toAddress(String id, FarmAddressRequest request) {
+    return Address.builder()
+        .id(id)
+        .label(trimToNull(request.getLabel()))
+        .addressLine1(trimToNull(request.getAddressLine1()))
+        .addressLine2(trimToNull(request.getAddressLine2()))
+        .city(trimToNull(request.getCity()))
+        .state(trimToNull(request.getState()))
+        .postalCode(trimToNull(request.getPostalCode()))
+        .country(trimToNull(request.getCountry()))
         .build();
   }
 

@@ -6,6 +6,15 @@ test.beforeEach(async ({ context, baseURL, page }, testInfo) => {
   await signIn(page);
 });
 
+test('the dashboard lists "All" first and selects it by default', async ({ page }) => {
+  const options = page.getByRole('radio');
+  await expect(options.first()).toHaveAccessibleName(/All/);
+  await expect(page.getByRole('radio', { name: /All/ })).toBeChecked();
+  await expect(page.getByTestId('range-summary')).toHaveText('Summary for all recorded data');
+  await page.getByRole('radio', { name: '7 days' }).click();
+  await expect(page.getByTestId('range-summary')).toHaveText('Summary for the last 7 days');
+});
+
 test('the dashboard, reminders and reports work without a network connection', async ({
   page,
   context,
@@ -18,7 +27,9 @@ test('the dashboard, reminders and reports work without a network connection', a
   await context.setOffline(true);
   await page.goto('/dashboard');
   await expect(page.getByText('Live birds')).toBeVisible();
-  await expect(page.getByText('500', { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('region', { name: 'Key figures' }).getByText('500', { exact: true }),
+  ).toBeVisible();
   await expect(page.getByTestId('due-reminder')).toHaveCount(2);
   await page.getByRole('radio', { name: '7 days' }).click();
 

@@ -24,7 +24,10 @@ public class Farm {
   @NotBlank
   @Size(max = 50)
   private String farmName;
+  /** Primary address, kept for clients that only know about one address. */
   private Address address;
+  /** All farm addresses; the first one is the primary address. */
+  private List<Address> addresses;
   private List<Coop> coops;
   @NotBlank private Date createdDate;
   @NotBlank private String updatedByUserId;

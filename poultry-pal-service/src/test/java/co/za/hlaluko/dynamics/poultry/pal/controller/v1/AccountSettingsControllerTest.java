@@ -1,5 +1,6 @@
 package co.za.hlaluko.dynamics.poultry.pal.controller.v1;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -107,5 +108,81 @@ class AccountSettingsControllerTest extends V1TestSupport {
                             "username", owner.user().get("email").asText(),
                             "password", "NewPassword1!"))))
         .andExpect(status().isOk());
+  }
+
+  @Test
+  @DisplayName("an owner can add, update and delete several farm addresses")
+  void ownerManagesFarmAddresses() throws Exception {
+    Session owner = newOwnerSession();
+
+    String firstResponse =
+        mvc.perform(
+                post("/api/v1/farm/addresses")
+                    .cookie(accessCookie(owner))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(addressJson("Main farm", "1 Farm Road")))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.addresses.length()").value(2))
+            .andExpect(jsonPath("$.data.addresses[1].addressLine1").value("1 Farm Road"))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    String firstId = mapper.readTree(firstResponse).at("/data/addresses/1/id").asText();
+
+    String secondResponse =
+        mvc.perform(
+                post("/api/v1/farm/addresses")
+                    .cookie(accessCookie(owner))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(addressJson("Packing shed", "2 Shed Lane")))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.addresses.length()").value(3))
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    String secondId = mapper.readTree(secondResponse).at("/data/addresses/2/id").asText();
+
+    mvc.perform(
+            put("/api/v1/farm/addresses/" + secondId)
+                .cookie(accessCookie(owner))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(addressJson("Cold room", "3 Cold Street")))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.addresses[2].id").value(secondId))
+        .andExpect(jsonPath("$.data.addresses[2].label").value("Cold room"))
+        .andExpect(jsonPath("$.data.addresses[2].addressLine1").value("3 Cold Street"));
+
+    mvc.perform(delete("/api/v1/farm/addresses/" + firstId).cookie(accessCookie(owner)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.addresses.length()").value(2))
+        .andExpect(jsonPath("$.data.addresses[1].addressLine1").value("3 Cold Street"));
+
+    mvc.perform(delete("/api/v1/farm/addresses/" + firstId).cookie(accessCookie(owner)))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  @DisplayName("farm workers cannot manage addresses and an address needs a first line")
+  void addressRulesAreEnforced() throws Exception {
+    Session owner = newOwnerSession();
+    Session worker = signin(createWorker(owner.farmId()));
+
+    mvc.perform(
+            post("/api/v1/farm/addresses")
+                .cookie(accessCookie(worker))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(addressJson("Main", "1 Farm Road")))
+        .andExpect(status().isForbidden());
+    mvc.perform(
+            post("/api/v1/farm/addresses")
+                .cookie(accessCookie(owner))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(addressJson("Main", "")))
+        .andExpect(status().isBadRequest());
+  }
+
+  private String addressJson(String label, String line1) throws Exception {
+    return mapper.writeValueAsString(
+        mapper.createObjectNode().put("label", label).put("addressLine1", line1).put("city", "Pretoria"));
   }
 }

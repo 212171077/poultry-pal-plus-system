@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Address {
+  /** Stable identifier so a single address can be updated or deleted. */
+  private String id;
+  private String label;
   private String addressLine1;
   private String addressLine2;
   private String state;

@@ -3,7 +3,7 @@ package co.za.hlaluko.dynamics.poultry.pal.sync;
 import co.za.hlaluko.dynamics.poultry.pal.exception.ApiException;
 import co.za.hlaluko.dynamics.poultry.pal.exception.ErrorCodes;
 import co.za.hlaluko.dynamics.poultry.pal.service.ProductionSyncService;
-import co.za.hlaluko.dynamics.poultry.pal.model.dto.Address;
+import co.za.hlaluko.dynamics.poultry.pal.utils.FarmAddresses;
 import co.za.hlaluko.dynamics.poultry.pal.model.dto.Coop;
 import co.za.hlaluko.dynamics.poultry.pal.model.dto.CoopType;
 import co.za.hlaluko.dynamics.poultry.pal.model.dto.EggPackagingRecord;
@@ -271,14 +271,14 @@ public class SyncService {
     }
     FarmPayload payload = payload(op, FarmPayload.class);
     farm.setFarmName(payload.getFarmName());
-    Address address = farm.getAddress() == null ? new Address() : farm.getAddress();
-    address.setAddressLine1(payload.getAddressLine1());
-    address.setAddressLine2(payload.getAddressLine2());
-    address.setCity(payload.getCity());
-    address.setState(payload.getState());
-    address.setPostalCode(payload.getPostalCode());
-    address.setCountry(payload.getCountry());
-    farm.setAddress(address);
+    FarmAddresses.updatePrimary(
+        farm,
+        payload.getAddressLine1(),
+        payload.getAddressLine2(),
+        payload.getCity(),
+        payload.getState(),
+        payload.getPostalCode(),
+        payload.getCountry());
     farm.setUpdatedByUserId(ctx.user.getId());
     ctx.mutated = true;
     return Outcome.appliedFarm(base(op).entityId(farm.getId()));
@@ -1012,7 +1012,8 @@ public class SyncService {
     return FarmSnapshot.builder()
         .id(farm.getId())
         .farmName(farm.getFarmName())
-        .address(farm.getAddress())
+        .address(FarmAddresses.primary(farm))
+        .addresses(FarmAddresses.list(farm))
         .createdDate(farm.getCreatedDate())
         .updatedAt(farm.getUpdatedAt())
         .version(nz(farm.getDetailsVersion()))

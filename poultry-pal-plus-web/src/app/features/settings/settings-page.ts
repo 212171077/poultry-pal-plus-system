@@ -1,11 +1,19 @@
 import { DOCUMENT } from '@angular/common';
 import { strongPassword, PASSWORD_RULES_HINT } from '../../shared/validators/password-rules';
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SwUpdate } from '@angular/service-worker';
@@ -18,10 +26,13 @@ import { ThemePreference, ThemeService } from '../../core/theme/theme.service';
 import { APP_DB } from '../../data/db/app-db';
 import { liveSignal } from '../../data/db/live-signal';
 import { LocalFarm, LocalSettings } from '../../data/models/local';
+import { AddressDto } from '../../data/models/sync-api';
 import { SyncEngine } from '../../data/sync/sync-engine';
 import { ConnectivityService } from '../../core/network/connectivity.service';
 import { ConfirmDialogService } from '../../shared/ui/confirm-dialog/confirm-dialog.service';
 import { PageHeader } from '../../shared/ui/page-header/page-header';
+import { AddressCard } from './address-card';
+import { AddressDialog, AddressDialogData } from './address-dialog/address-dialog';
 import { FarmDetailsUpdate, FarmSettingsApi, ProfileUpdate } from './farm-settings-api';
 
 const CURRENCIES = ['ZAR', 'BWP', 'KES', 'NGN', 'TZS', 'UGX', 'USD', 'EUR', 'GBP'] as const;
@@ -29,6 +40,7 @@ const CURRENCIES = ['ZAR', 'BWP', 'KES', 'NGN', 'TZS', 'UGX', 'USD', 'EUR', 'GBP
 @Component({
   selector: 'app-settings-page',
   imports: [
+    AddressCard,
     PageHeader,
     ReactiveFormsModule,
     MatButtonModule,
@@ -49,6 +61,7 @@ export default class SettingsPage {
   private readonly engine = inject(SyncEngine);
   private readonly connectivity = inject(ConnectivityService);
   private readonly confirm = inject(ConfirmDialogService);
+  private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
   private readonly theme = inject(ThemeService);
   private readonly installPrompt = inject(InstallPromptService);
@@ -99,12 +112,6 @@ export default class SettingsPage {
   });
   protected readonly farmForm = this.fb.nonNullable.group({
     farmName: ['', Validators.required],
-    addressLine1: [''],
-    addressLine2: [''],
-    state: [''],
-    city: [''],
-    postalCode: [''],
-    country: [''],
   });
   protected readonly currencyForm = this.fb.nonNullable.group({
     currency: ['ZAR', Validators.required],
@@ -124,6 +131,13 @@ export default class SettingsPage {
     return userId ? this.db.settings.get(userId) : undefined;
   });
 
+  /** Farms saved before multiple addresses existed only carry the single primary address. */
+  protected readonly addresses = computed<readonly AddressDto[]>(() => {
+    const farm = this.farmRow();
+    if (farm?.addresses?.length) return farm.addresses;
+    return farm?.address?.addressLine1 ? [{ ...farm.address, id: farm.address.id ?? 'primary' }] : [];
+  });
+
   constructor() {
     void this.load();
     effect(() => {
@@ -131,15 +145,7 @@ export default class SettingsPage {
       if (!farm) return;
       this.currentFarm = farm;
       if (this.farmForm.dirty) return;
-      this.farmForm.patchValue({
-        farmName: farm.farmName,
-        addressLine1: farm.address?.addressLine1 ?? '',
-        addressLine2: farm.address?.addressLine2 ?? '',
-        state: farm.address?.state ?? '',
-        city: farm.address?.city ?? '',
-        postalCode: farm.address?.postalCode ?? '',
-        country: farm.address?.country ?? '',
-      });
+      this.farmForm.patchValue({ farmName: farm.farmName });
     });
     effect(() => {
       const settings = this.settingsRow();
@@ -225,6 +231,44 @@ export default class SettingsPage {
     } finally {
       this.savingFarm.set(false);
     }
+  }
+
+  protected openAddressDialog(address?: AddressDto): void {
+    if (!this.onlineOrWarn()) return;
+    this.dialog
+      .open<AddressDialog, AddressDialogData, boolean>(AddressDialog, {
+        data: { address },
+        autoFocus: 'first-tabbable',
+        maxWidth: '95vw',
+      })
+      .afterClosed()
+      .subscribe((saved) => {
+        if (saved) void this.refreshAfterAddressChange(address ? 'Address updated.' : 'Address added.');
+      });
+  }
+
+  protected async deleteAddress(address: AddressDto): Promise<void> {
+    if (!address.id || !this.onlineOrWarn()) return;
+    const accepted = await firstValueFrom(
+      this.confirm.confirm({
+        title: 'Delete address?',
+        message: `${address.label || address.addressLine1 || 'This address'} will be removed from the farm.`,
+        confirmText: 'Delete',
+        destructive: true,
+      }),
+    );
+    if (!accepted) return;
+    try {
+      await this.api.deleteAddress(address.id);
+      await this.refreshAfterAddressChange('Address deleted.');
+    } catch (error) {
+      this.showError(error, 'Could not delete the address.');
+    }
+  }
+
+  private async refreshAfterAddressChange(message: string): Promise<void> {
+    await this.engine.redownload();
+    this.snackBar.open(message, 'OK', { duration: 3000 });
   }
 
   protected async saveCurrency(): Promise<void> {

@@ -32,6 +32,7 @@ function createTenant(name, { user = {}, farmName = 'Sunrise Poultry', withCoop 
     version: 1,
     farmId: `farm-${name}`,
     farmName,
+    addresses: [],
     user: {
       id: `user-${name}`,
       name: 'Thandi',
@@ -153,7 +154,13 @@ async function readJson(req) {
 }
 
 function farmSnapshot(tenant) {
-  return { id: tenant.farmId, farmName: tenant.farmName, version: 1, address: null };
+  return {
+    id: tenant.farmId,
+    farmName: tenant.farmName,
+    version: 1,
+    address: tenant.addresses[0] ?? null,
+    addresses: tenant.addresses,
+  };
 }
 
 function changesSince(tenant, since) {
@@ -401,6 +408,22 @@ export async function handleMockApi(req, res) {
         userCoopIds: ['coop-1'],
       },
     ]);
+  } else if (path === '/api/v1/farm/addresses' && req.method === 'POST') {
+    const body = await readJson(req);
+    tenant.addresses.push({ ...body, id: `addr-${tenant.addresses.length + 1}-${Date.now()}` });
+    tenant.version += 1;
+    ok(res, farmSnapshot(tenant));
+  } else if (path.startsWith('/api/v1/farm/addresses/') && ['PUT', 'DELETE'].includes(req.method)) {
+    const id = decodeURIComponent(path.split('/').pop());
+    const index = tenant.addresses.findIndex((address) => address.id === id);
+    if (index < 0) {
+      fail(res, 404, 'NOT_FOUND', 'Address not found');
+      return;
+    }
+    if (req.method === 'PUT') tenant.addresses[index] = { ...(await readJson(req)), id };
+    else tenant.addresses.splice(index, 1);
+    tenant.version += 1;
+    ok(res, farmSnapshot(tenant));
   } else if (req.method === 'GET' && path === '/api/v1/farm/archived-batches') {
     ok(res, [
       {

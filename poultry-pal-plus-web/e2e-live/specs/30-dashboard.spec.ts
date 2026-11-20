@@ -33,9 +33,10 @@ test.describe('dashboard', () => {
   }) => {
     await signInAs(seededFarm.owner, '/dashboard');
     const summary = page.getByTestId('range-summary');
-    await expect(summary).toHaveText('Summary for this month');
+    await expect(summary).toHaveText('Summary for all recorded data');
     const group = page.locator('app-range-filter');
     await expect(group.getByText('30 days', { exact: true })).toHaveCount(0);
+    await expect(group.getByText('All', { exact: true })).toBeVisible();
     await group.getByText('7 days', { exact: true }).click();
     await expect(summary).toHaveText('Summary for the last 7 days');
     await group.getByText('90 days', { exact: true }).click();

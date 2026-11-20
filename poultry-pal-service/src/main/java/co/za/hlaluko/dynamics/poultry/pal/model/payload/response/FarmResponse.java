@@ -17,6 +17,7 @@ public class FarmResponse {
   private String id;
   private String farmName;
   private Address address;
+  private List<Address> addresses;
   private List<Coop> coops;
   private List<UserInfoResponse> users;
   private Date createdDate;

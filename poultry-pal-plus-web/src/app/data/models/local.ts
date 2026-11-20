@@ -21,6 +21,7 @@ export type ReminderType = 'FEED' | 'VACCINE' | 'MEDICINE';
 export interface LocalFarm extends SyncedRecord {
   readonly farmName: string;
   readonly address?: AddressDto | null;
+  readonly addresses?: readonly AddressDto[] | null;
   readonly createdDate?: string | null;
 }
 

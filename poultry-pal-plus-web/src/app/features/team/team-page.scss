@@ -54,10 +54,10 @@ h2 {
   align-items: start;
   gap: var(--pp-space-lg);
   grid-template-columns: minmax(200px, 1fr) minmax(220px, 1.2fr) minmax(190px, auto);
-  border-left: 4px solid var(--pp-brand);
+  border-top: 4px solid var(--pp-brand);
 
   &:has(.chip-inactive) {
-    border-left-color: var(--mat-sys-error);
+    border-top-color: var(--mat-sys-error);
   }
 }
 

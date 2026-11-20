@@ -90,7 +90,6 @@ test.describe('settings and account', () => {
       await signInAs(farm.owner, '/settings');
       await expect(page.getByLabel('Farm name')).not.toHaveValue('');
       await page.getByLabel('Farm name').fill('Renamed Farm E2E');
-      await page.getByLabel('City / town').fill('Polokwane');
       await page.getByRole('button', { name: 'Save farm details' }).click();
       await expect(toast(page, 'Farm details were updated.')).toBeVisible();
       await expect.poll(() => api.farmName(), { timeout: 30_000 }).toBe('Renamed Farm E2E');

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
 import { APP_CONFIG } from '../../core/config/app-config';
 import { ApiResponse } from '../../core/http/api-response';
 import { unwrapApi } from '../../core/http/api-error';
@@ -36,14 +37,37 @@ export class FarmSettingsApi {
     const farm = await unwrapApi(
       this.http.patch<ApiResponse<FarmSnapshot>>(`${this.baseUrl}/farm/details`, {
         farmName: details.farmName.trim(),
-        addressLine1: details.addressLine1.trim(),
-        addressLine2: details.addressLine2.trim(),
-        state: details.state.trim(),
-        city: details.city.trim(),
-        postalCode: details.postalCode.trim(),
-        country: details.country.trim(),
       }),
     );
+    if (!farm) throw new Error('The server did not return the updated farm.');
+    return farm;
+  }
+
+  addAddress(address: FarmAddressInput): Promise<FarmSnapshot> {
+    return this.addressCall(
+      this.http.post<ApiResponse<FarmSnapshot>>(`${this.baseUrl}/farm/addresses`, body(address)),
+    );
+  }
+
+  updateAddress(id: string, address: FarmAddressInput): Promise<FarmSnapshot> {
+    return this.addressCall(
+      this.http.put<ApiResponse<FarmSnapshot>>(
+        `${this.baseUrl}/farm/addresses/${encodeURIComponent(id)}`,
+        body(address),
+      ),
+    );
+  }
+
+  deleteAddress(id: string): Promise<FarmSnapshot> {
+    return this.addressCall(
+      this.http.delete<ApiResponse<FarmSnapshot>>(
+        `${this.baseUrl}/farm/addresses/${encodeURIComponent(id)}`,
+      ),
+    );
+  }
+
+  private async addressCall(request: Observable<ApiResponse<FarmSnapshot>>): Promise<FarmSnapshot> {
+    const farm = await unwrapApi(request);
     if (!farm) throw new Error('The server did not return the updated farm.');
     return farm;
   }
@@ -68,10 +92,26 @@ export interface ProfileUpdate {
 
 export interface FarmDetailsUpdate {
   readonly farmName: string;
+}
+
+export interface FarmAddressInput {
+  readonly label: string;
   readonly addressLine1: string;
   readonly addressLine2: string;
-  readonly state: string;
   readonly city: string;
+  readonly state: string;
   readonly postalCode: string;
   readonly country: string;
+}
+
+function body(address: FarmAddressInput): FarmAddressInput {
+  return {
+    label: address.label.trim(),
+    addressLine1: address.addressLine1.trim(),
+    addressLine2: address.addressLine2.trim(),
+    city: address.city.trim(),
+    state: address.state.trim(),
+    postalCode: address.postalCode.trim(),
+    country: address.country.trim(),
+  };
 }
