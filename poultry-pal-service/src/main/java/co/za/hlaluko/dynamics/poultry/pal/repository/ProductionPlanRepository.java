@@ -14,4 +14,6 @@ public interface ProductionPlanRepository extends MongoRepository<ProductionPlan
 
   List<ProductionPlan> findByFarmIdAndStatusInOrderByCreatedAtDesc(
       String farmId, Collection<PlanStatus> statuses);
+
+  void deleteByFarmId(String farmId);
 }

@@ -21,7 +21,7 @@ public class EmailLogAdminService {
 
   private final EmailLogRepository repository;
 
-  public List<EmailLogResponse> latest(UserDetailsImpl actor, Integer limit) {
+  public List<EmailLogResponse> latest(UserDetailsImpl actor, Integer limit, Integer page) {
     boolean admin =
         actor != null
             && actor.getAuthorities().stream()
@@ -29,7 +29,7 @@ public class EmailLogAdminService {
     if (!admin) throw ApiException.forbidden("System administrator permission required");
     int size = limit == null ? DEFAULT_LIMIT : Math.max(1, Math.min(limit, MAX_LIMIT));
     return repository
-        .findAll(PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "createDate")))
+        .findAll(PageRequest.of(Math.max(0, page == null ? 0 : page), size, Sort.by(Sort.Direction.DESC, "createDate")))
         .stream()
         .map(this::toResponse)
         .toList();

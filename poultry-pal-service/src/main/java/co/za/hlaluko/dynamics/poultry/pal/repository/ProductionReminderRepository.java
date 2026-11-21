@@ -15,4 +15,6 @@ public interface ProductionReminderRepository extends MongoRepository<Production
 
   List<ProductionReminder> findByFarmIdAndStatusOrderByDueDateAsc(
       String farmId, ReminderStatus status, Pageable pageable);
+
+  void deleteByFarmId(String farmId);
 }

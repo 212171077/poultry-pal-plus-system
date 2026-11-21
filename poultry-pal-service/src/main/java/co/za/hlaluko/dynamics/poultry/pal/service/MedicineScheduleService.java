@@ -151,6 +151,25 @@ public class MedicineScheduleService {
                 null,
                 true));
 
+        medicines.add(
+            new Medicine(
+                UUID.randomUUID().toString(),
+                22,
+                28,
+                "Oregro L",
+                "Essential oil (oregano) supplement for gut health and growth performance",
+                "1ml per 10 liters of water",
+                "Drinking water",
+                "Daily in the morning for 7 days",
+                "Week 4: give in clean drinking water every morning for 7 days. No withdrawal period. Follow the product label.",
+                PoultryPalUtil.addDays(hatchDate, 28),
+                null,
+                false,
+                null,
+                null,
+                null,
+                true));
+
         break;
 
       case PRODUCTION_FINISHING_PHASE:

@@ -134,4 +134,23 @@ test.describe('admin app config', () => {
     ).toBeVisible();
     await shot(page, 'admin-config', 'email-log');
   });
+
+  test('the email log shows ten emails at a time and pages through them', async ({
+    admin,
+    signInAs,
+    page,
+  }) => {
+    await signInAs(admin, '/dashboard');
+    const log = page.getByTestId('email-log');
+    const rows = log.getByTestId('email-log-row');
+    await expect(rows.first()).toBeVisible();
+    expect(await rows.count()).toBeLessThanOrEqual(10);
+    await expect(log.getByTestId('email-log-prev')).toBeDisabled();
+    const next = log.getByTestId('email-log-next');
+    if (await next.isEnabled()) {
+      await next.click();
+      await expect(log.getByText('Page 2')).toBeVisible();
+      await expect(log.getByTestId('email-log-prev')).toBeEnabled();
+    }
+  });
 });

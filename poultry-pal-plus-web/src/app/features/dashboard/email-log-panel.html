@@ -48,6 +48,27 @@
         </tbody>
       </table>
     </div>
+    <nav class="pager" aria-label="Email log pages">
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="page() === 0 || loading()"
+        (click)="load(page() - 1)"
+        data-testid="email-log-prev"
+      >
+        Previous
+      </button>
+      <span>Page {{ page() + 1 }}</span>
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="!hasNext() || loading()"
+        (click)="load(page() + 1)"
+        data-testid="email-log-next"
+      >
+        Next
+      </button>
+    </nav>
   } @else if (loading()) {
     <p class="state">Loading…</p>
   } @else {

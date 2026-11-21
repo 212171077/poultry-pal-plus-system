@@ -6,4 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface CoopArchiveRepository extends MongoRepository<CoopArchive, String> {
   List<CoopArchive> findByFarmIdOrderByCreatedDateDesc(String farmId);
+
+  void deleteByFarmId(String farmId);
 }

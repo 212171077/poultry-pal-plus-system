@@ -17,4 +17,6 @@ public interface HatcherCycleRepository extends MongoRepository<HatcherCycle, St
       String farmId, String hatcherId, Collection<CycleStatus> statuses);
 
   long countByFarmIdAndIncubationBatchId(String farmId, String batchId);
+
+  void deleteByFarmId(String farmId);
 }

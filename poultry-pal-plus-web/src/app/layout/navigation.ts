@@ -33,6 +33,7 @@ export const PRIMARY_NAV: readonly NavItem[] = [
 export const SECONDARY_NAV: readonly NavItem[] = [
   { label: 'Sync center', shortLabel: 'Sync', icon: 'sync', path: '/sync' },
   { label: 'Settings', icon: 'settings', path: '/settings' },
+  { label: 'Farms', icon: 'agriculture', path: '/admin/farms', requires: 'SYSTEM_ADMIN' },
   { label: 'App config', icon: 'tune', path: '/admin/app-config', requires: 'SYSTEM_ADMIN' },
 ];
 

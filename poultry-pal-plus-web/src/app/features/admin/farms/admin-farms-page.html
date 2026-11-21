@@ -1,0 +1,119 @@
+<div class="pp-page">
+  <app-page-header
+    heading="Registered farms"
+    subtitle="Review every farm and grant or disable access for its users."
+  />
+
+  @if (!connectivity.online()) {
+    <p class="notice" role="status">Farms can only be managed while online.</p>
+  }
+  @if (loadError(); as message) {
+    <p class="notice" role="alert">{{ message }}</p>
+  }
+
+  <form class="search" (submit)="$event.preventDefault(); find()">
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label>Search by farm name</mat-label>
+      <input matInput type="search" [formControl]="search" autocomplete="off" />
+    </mat-form-field>
+    <button mat-flat-button type="submit" [disabled]="loading() || !connectivity.online()">
+      <mat-icon>search</mat-icon>
+      Search
+    </button>
+  </form>
+
+  @if (farms().length === 0 && !loading() && !loadError()) {
+    <app-empty-state icon="agriculture" heading="No farms found" message="Try a different name." />
+  }
+
+  <ul class="farms" aria-label="Registered farms">
+    @for (farm of farms(); track farm.id) {
+      <li class="pp-surface-card farm" [attr.data-testid]="'farm-' + farm.id">
+        <header>
+          <div>
+            <h2>{{ farm.farmName }}</h2>
+            <p>
+              {{ farm.coopCount }} {{ farm.coopCount === 1 ? 'coop' : 'coops' }}
+              @if (farm.city) {
+                · {{ farm.city }}
+              }
+            </p>
+          </div>
+          <button
+            mat-stroked-button
+            type="button"
+            class="danger"
+            [disabled]="busyFarm() === farm.id || !connectivity.online()"
+            [attr.aria-label]="'Delete farm ' + farm.farmName"
+            (click)="deleteFarm(farm)"
+          >
+            <mat-icon>delete</mat-icon>
+            Delete farm
+          </button>
+        </header>
+        <ul class="members" [attr.aria-label]="farm.farmName + ' users'">
+          @for (member of farm.members; track member.id) {
+            <li class="member">
+              <div class="who">
+                <strong>{{ member.name }} {{ member.surname }}</strong>
+                <span>{{ member.email }}</span>
+                <span>{{ member.owner ? 'Owner' : member.roles.join(', ') }}</span>
+              </div>
+              <span class="chip" [class]="'chip status-' + member.status.toLowerCase()">
+                {{ label(member.status) }}
+              </span>
+              @if (member.status === 'ACTIVE') {
+                <button
+                  mat-stroked-button
+                  type="button"
+                  class="danger"
+                  [disabled]="busyUser() === member.id || !connectivity.online()"
+                  [attr.aria-label]="'Disable access for ' + member.name"
+                  (click)="setAccess(member, false)"
+                >
+                  <mat-icon>block</mat-icon>
+                  Disable
+                </button>
+              } @else {
+                <button
+                  mat-flat-button
+                  type="button"
+                  [disabled]="busyUser() === member.id || !connectivity.online()"
+                  [attr.aria-label]="'Grant access to ' + member.name"
+                  (click)="setAccess(member, true)"
+                >
+                  <mat-icon>check_circle</mat-icon>
+                  Grant
+                </button>
+              }
+            </li>
+          } @empty {
+            <li class="member muted">No users on this farm.</li>
+          }
+        </ul>
+      </li>
+    }
+  </ul>
+
+  @if (total() > 0) {
+    <nav class="pager" aria-label="Pagination">
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="page() === 0 || loading()"
+        (click)="load(page() - 1)"
+      >
+        Previous
+      </button>
+      <span>Page {{ page() + 1 }} of {{ pageCount() }}</span>
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="page() + 1 >= pageCount() || loading()"
+        (click)="load(page() + 1)"
+      >
+        Next
+      </button>
+    </nav>
+  }
+</div>

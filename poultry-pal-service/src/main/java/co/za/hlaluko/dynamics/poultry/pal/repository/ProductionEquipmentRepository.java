@@ -16,4 +16,6 @@ public interface ProductionEquipmentRepository
       String farmId, EquipmentType type, String name);
 
   long countByFarmId(String farmId);
+
+  void deleteByFarmId(String farmId);
 }

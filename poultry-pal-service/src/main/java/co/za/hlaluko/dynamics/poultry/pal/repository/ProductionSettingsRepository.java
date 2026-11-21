@@ -6,4 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface ProductionSettingsRepository extends MongoRepository<ProductionSettings, String> {
   Optional<ProductionSettings> findByFarmId(String farmId);
+
+  void deleteByFarmId(String farmId);
 }

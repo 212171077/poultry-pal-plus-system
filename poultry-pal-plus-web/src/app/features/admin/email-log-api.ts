@@ -19,9 +19,9 @@ export class EmailLogApi {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${inject(APP_CONFIG).apiBaseUrl}/v1/admin/email-logs`;
 
-  recent(limit = 25): Promise<EmailLogEntry[]> {
+  recent(limit = 10, page = 0): Promise<EmailLogEntry[]> {
     return unwrapApi(
-      this.http.get<ApiResponse<EmailLogEntry[]>>(this.baseUrl, { params: { limit } }),
+      this.http.get<ApiResponse<EmailLogEntry[]>>(this.baseUrl, { params: { limit, page } }),
     ).then((entries) => entries ?? []);
   }
 }

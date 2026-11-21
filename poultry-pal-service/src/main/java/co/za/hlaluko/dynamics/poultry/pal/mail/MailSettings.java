@@ -5,6 +5,7 @@ import co.za.hlaluko.dynamics.poultry.pal.repository.AppConfigRepository;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
  * startup from the {@code poultry.pal.app.mail.*} properties (Gmail by default, overridable per
  * environment, e.g. Mailpit for local testing); the stored values are what the app then uses.
  */
+@Slf4j
 @Component
 public class MailSettings {
   public static final String HOST = "MAIL_HOST";
@@ -60,9 +62,11 @@ public class MailSettings {
 
   public String get(String code) {
     AppConfig config = repository.findByCode(code);
-    return config == null || config.getDescription() == null || config.getDescription().isBlank()
-        ? defaults.get(code)
-        : config.getDescription().trim();
+    if (config == null || config.getDescription() == null || config.getDescription().isBlank()) {
+      log.error("Mail setting {} was not found in app_config; using the configured default.", code);
+      return defaults.get(code);
+    }
+    return config.getDescription().trim();
   }
 
   public boolean flag(String code) {

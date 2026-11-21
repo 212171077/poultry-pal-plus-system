@@ -13,4 +13,6 @@ public interface BirdMovementRepository extends MongoRepository<BirdMovement, St
       String farmId, String placementId);
 
   Optional<BirdMovement> findByFarmIdAndIdempotencyKey(String farmId, String idempotencyKey);
+
+  void deleteByFarmId(String farmId);
 }

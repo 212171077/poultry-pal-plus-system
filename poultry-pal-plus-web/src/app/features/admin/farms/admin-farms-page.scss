@@ -1,0 +1,129 @@
+:host {
+  display: block;
+}
+
+.notice {
+  color: var(--mat-sys-error);
+}
+
+.search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pp-space-sm);
+  align-items: center;
+  margin-bottom: var(--pp-space-md);
+}
+
+.search mat-form-field {
+  flex: 1 1 240px;
+}
+
+.search button,
+.member button {
+  min-height: 48px;
+}
+
+.farms,
+.members {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.farms {
+  gap: var(--pp-space-md);
+}
+
+.farm {
+  padding: var(--pp-space-lg);
+}
+
+h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pp-space-sm);
+  align-items: center;
+  justify-content: space-between;
+}
+
+header button {
+  min-height: 48px;
+}
+
+header p {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.members {
+  gap: var(--pp-space-sm);
+  margin-top: var(--pp-space-md);
+}
+
+.member {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pp-space-sm) var(--pp-space-md);
+  align-items: center;
+  padding: var(--pp-space-sm) var(--pp-space-md);
+  border-radius: var(--mat-sys-corner-medium);
+  background: var(--mat-sys-surface-container-low);
+}
+
+.who {
+  display: grid;
+  flex: 1 1 200px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.who strong {
+  color: var(--mat-sys-on-surface);
+}
+
+.chip {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-active {
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.status-pending {
+  background: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
+}
+
+.status-disabled {
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+
+.danger {
+  color: var(--mat-sys-error);
+}
+
+.muted {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.pager {
+  display: flex;
+  gap: var(--pp-space-md);
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--pp-space-lg);
+}

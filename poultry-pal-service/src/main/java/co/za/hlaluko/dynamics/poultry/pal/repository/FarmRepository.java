@@ -1,6 +1,10 @@
 package co.za.hlaluko.dynamics.poultry.pal.repository;
 
 import co.za.hlaluko.dynamics.poultry.pal.model.entity.Farm;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface FarmRepository extends MongoRepository<Farm, String> {}
+public interface FarmRepository extends MongoRepository<Farm, String> {
+  Page<Farm> findByFarmNameContainingIgnoreCase(String farmName, Pageable pageable);
+}

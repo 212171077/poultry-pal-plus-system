@@ -77,3 +77,15 @@ th {
     color: var(--pp-error);
   }
 }
+
+.pager {
+  display: flex;
+  gap: var(--pp-space-md);
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--pp-space-md);
+
+  button {
+    min-height: 48px;
+  }
+}

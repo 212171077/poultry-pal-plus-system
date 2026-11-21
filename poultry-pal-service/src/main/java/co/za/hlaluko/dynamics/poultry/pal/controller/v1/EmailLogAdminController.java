@@ -24,8 +24,9 @@ public class EmailLogAdminController {
   @GetMapping
   @Operation(summary = "Latest outgoing emails and whether they were delivered (newest first)")
   public ResponseEntity<ApiResponse<List<EmailLogResponse>>> latest(
-      @RequestParam(required = false) Integer limit) {
+      @RequestParam(required = false) Integer limit,
+      @RequestParam(required = false) Integer page) {
     return ResponseEntity.ok(
-        ApiResponse.ok("Email log retrieved", service.latest(SecurityUtils.getCurrentUser(), limit)));
+        ApiResponse.ok("Email log retrieved", service.latest(SecurityUtils.getCurrentUser(), limit, page)));
   }
 }

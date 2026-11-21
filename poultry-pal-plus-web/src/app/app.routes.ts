@@ -59,6 +59,11 @@ export const routes: Routes = [
         canActivate: [permissionGuard('SYSTEM_ADMIN')],
         loadChildren: () => import('./features/admin/app-config/app-config.routes'),
       },
+      {
+        path: 'admin/farms',
+        canActivate: [permissionGuard('SYSTEM_ADMIN')],
+        loadChildren: () => import('./features/admin/farms/admin-farms.routes'),
+      },
       { path: 'sync', loadChildren: () => import('./features/sync/sync.routes') },
       { path: 'settings', loadChildren: () => import('./features/settings/settings.routes') },
       {

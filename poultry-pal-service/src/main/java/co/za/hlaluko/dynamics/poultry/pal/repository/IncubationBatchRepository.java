@@ -24,4 +24,6 @@ public interface IncubationBatchRepository extends MongoRepository<IncubationBat
   boolean existsByFarmIdAndReferenceIgnoreCase(String farmId, String reference);
 
   long countByFarmId(String farmId);
+
+  void deleteByFarmId(String farmId);
 }

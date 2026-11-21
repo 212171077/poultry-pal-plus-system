@@ -12,4 +12,6 @@ public interface HatchResultRepository extends MongoRepository<HatchResult, Stri
 
   @Query("{ 'farmId': ?0, 'resultDate': { $gte: ?1, $lte: ?2 } }")
   List<HatchResult> findInRange(String farmId, LocalDate from, LocalDate to);
+
+  void deleteByFarmId(String farmId);
 }

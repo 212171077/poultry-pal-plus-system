@@ -15,4 +15,6 @@ public interface BirdPlacementRepository extends MongoRepository<BirdPlacement, 
   List<BirdPlacement> findByFarmIdAndSourceCycleId(String farmId, String sourceCycleId);
 
   long countByFarmId(String farmId);
+
+  void deleteByFarmId(String farmId);
 }

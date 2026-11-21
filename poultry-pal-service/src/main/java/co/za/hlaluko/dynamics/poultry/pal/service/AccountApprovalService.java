@@ -66,6 +66,24 @@ public class AccountApprovalService {
     return found;
   }
 
+  /** Grants or withdraws a user's access on the administrator's decision and notifies them. */
+  public void applyAccess(User user, boolean granted) {
+    user.setApprovalStatus(granted ? ApprovalStatus.APPROVED : ApprovalStatus.REJECTED);
+    user.setActive(granted);
+    user.setApprovalTokenHash(null);
+    userRepository.save(user);
+    if (granted) {
+      sendDecision(user, true);
+    } else {
+      queue(
+          user.getEmail(),
+          "Your Poultry Pal Plus access was disabled",
+          "<p>Dear " + esc(user.getName()) + ",</p><p>Your access to Poultry Pal Plus has been "
+              + "disabled by the administrator. Please contact support if you think this is a "
+              + "mistake.</p>");
+    }
+  }
+
   private void sendAdminRequest(User user, String farmName, String token) {
     String link = config.appBaseUrl() + "/api/auth/approval?token=" + token;
     String body =

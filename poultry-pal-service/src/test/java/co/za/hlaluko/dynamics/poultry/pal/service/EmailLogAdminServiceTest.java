@@ -36,8 +36,8 @@ class EmailLogAdminServiceTest {
 
   @Test
   void nonAdminIsForbidden() {
-    assertThrows(ApiException.class, () -> service.latest(actor("ROLE_FARM_MANAGER"), null));
-    assertThrows(ApiException.class, () -> service.latest(null, null));
+    assertThrows(ApiException.class, () -> service.latest(actor("ROLE_FARM_MANAGER"), null, null));
+    assertThrows(ApiException.class, () -> service.latest(null, null, null));
   }
 
   @Test
@@ -47,7 +47,7 @@ class EmailLogAdminServiceTest {
     Page<EmailLog> page = new PageImpl<>(List.of(ok, failed));
     when(repository.findAll(any(Pageable.class))).thenReturn(page);
 
-    var result = service.latest(actor("ROLE_ADMIN"), null);
+    var result = service.latest(actor("ROLE_ADMIN"), null, null);
 
     assertTrue(result.get(0).isSuccess());
     assertNull(result.get(0).getErrorMessage());
@@ -58,7 +58,7 @@ class EmailLogAdminServiceTest {
   @Test
   void limitIsClamped() {
     when(repository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(List.of()));
-    service.latest(actor("ROLE_ADMIN"), 5000);
+    service.latest(actor("ROLE_ADMIN"), 5000, null);
     ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
     verify(repository).findAll(captor.capture());
     assertEquals(EmailLogAdminService.MAX_LIMIT, captor.getValue().getPageSize());
