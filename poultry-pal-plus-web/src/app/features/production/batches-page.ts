@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Toast } from '../../shared/ui/toast/toast.service';
 import { ConnectivityService } from '../../core/network/connectivity.service';
 import { ProductionRepository } from '../../data/repositories/production-repository';
 import { DateField } from '../../shared/ui/date-field/date-field';
@@ -71,7 +71,7 @@ export function todayIso(): string {
 export default class BatchesPage {
   protected readonly repo = inject(ProductionRepository);
   private readonly fb = inject(FormBuilder);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(Toast);
   protected readonly connectivity = inject(ConnectivityService);
   protected readonly statusLabels = BATCH_STATUS_LABELS;
   protected readonly cycleLabels = CYCLE_STATUS_LABELS;

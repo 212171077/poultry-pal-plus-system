@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Toast } from '../../shared/ui/toast/toast.service';
 import { format } from 'date-fns';
 import { liveSignal } from '../../data/db/live-signal';
 import { APP_DB } from '../../data/db/app-db';
@@ -68,7 +68,7 @@ const EMPTY_MESSAGES: Readonly<Record<Tab, { heading: string; message: string }>
 export default class RemindersPage {
   private readonly db = inject(APP_DB);
   private readonly dialog = inject(MatDialog);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(Toast);
   protected readonly notifications = inject(ReminderNotifications);
 
   private readonly now = new Date();

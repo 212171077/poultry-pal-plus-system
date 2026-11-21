@@ -136,3 +136,13 @@ thead th {
     padding: var(--pp-space-xs) 0;
   }
 }
+
+.exports {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--pp-space-sm);
+
+  button {
+    min-height: 48px;
+  }
+}

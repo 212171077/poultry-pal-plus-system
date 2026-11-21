@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Toast } from '../../shared/ui/toast/toast.service';
 import { ApiError } from '../../core/http/api-error';
 import { ConnectivityService } from '../../core/network/connectivity.service';
 import { PageHeader } from '../../shared/ui/page-header/page-header';
@@ -53,7 +53,7 @@ export function describeError(error: unknown, fallback: string): string {
 export default class ProductionSettingsPage {
   private readonly api = inject(ProductionApi);
   private readonly fb = inject(FormBuilder);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(Toast);
   protected readonly connectivity = inject(ConnectivityService);
   protected readonly labels = EQUIPMENT_LABELS;
   protected readonly settings = signal<ProductionSettings | null>(null);

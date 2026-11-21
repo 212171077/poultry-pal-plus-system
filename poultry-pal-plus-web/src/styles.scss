@@ -209,34 +209,122 @@ a {
   outline-offset: -3px;
 }
 
-// Toast notifications (MatSnackBar): a raised card with a brand accent bar.
-.mat-mdc-snack-bar-container {
+// Toast notifications: a rounded card with a tinted icon badge, title, message and actions.
+.pp-toast {
+  --mdc-snackbar-container-color: var(--mat-sys-surface-container-high);
   --mdc-snackbar-container-shape: var(--pp-radius-lg);
-  --mdc-snackbar-container-color: var(--mat-sys-inverse-surface);
-  --mdc-snackbar-supporting-text-color: var(--mat-sys-inverse-on-surface);
-  --mat-snack-bar-button-color: var(--mat-sys-inverse-primary);
+  --mat-snack-bar-container-color: var(--mat-sys-surface-container-high);
   --mat-snack-bar-container-shape: var(--pp-radius-lg);
-  --mat-snack-bar-container-color: var(--mat-sys-inverse-surface);
-  --mat-snack-bar-supporting-text-color: var(--mat-sys-inverse-on-surface);
+  --pp-toast-accent: var(--pp-brand);
+  --pp-toast-tint: color-mix(in srgb, var(--pp-toast-accent) 16%, var(--mat-sys-surface));
+
+  &.pp-toast-error {
+    --pp-toast-accent: var(--mat-sys-error);
+  }
+
+  &.pp-toast-info {
+    --pp-toast-accent: var(--mat-sys-tertiary);
+  }
 
   .mdc-snackbar__surface {
-    min-width: min(344px, calc(100vw - 32px));
-    border-left: 6px solid var(--pp-brand);
+    min-width: min(380px, calc(100vw - 32px));
+    max-width: min(520px, calc(100vw - 32px));
+    padding: 0;
+    background-color: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface);
+    border: 1px solid color-mix(in srgb, var(--pp-toast-accent) 35%, transparent);
+    border-top: 4px solid var(--pp-toast-accent);
     border-radius: var(--pp-radius-lg);
-    box-shadow: var(--pp-shadow-lg);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.22);
     overflow: hidden;
   }
 
-  .mdc-snackbar__label {
-    padding: 14px 8px 14px 16px;
+  .mat-mdc-snack-bar-label {
+    padding: 0;
+    color: var(--mat-sys-on-surface);
+  }
+
+  .toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 8px 12px 14px;
+    animation: pp-toast-in 0.25s ease-out;
+  }
+
+  .toast-badge {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: var(--pp-toast-accent);
+    background: var(--pp-toast-tint);
+  }
+
+  .toast-text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .toast-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pp-toast-accent);
+  }
+
+  .toast-message {
     font-size: 0.95rem;
     font-weight: 500;
     line-height: 1.35;
+    overflow-wrap: anywhere;
   }
 
-  .mdc-snackbar__actions .mat-mdc-button {
+  .toast-action,
+  .toast-close {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    min-width: 48px;
     min-height: 48px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--mat-sys-on-surface-variant);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--pp-toast-tint);
+    }
+
+    &:focus-visible {
+      outline: 3px solid var(--pp-focus-ring);
+    }
+  }
+
+  .toast-action {
+    padding: 0 14px;
+    font: inherit;
     font-weight: 700;
-    letter-spacing: 0.02em;
+    color: var(--pp-toast-accent);
+  }
+}
+
+@keyframes pp-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-toast .toast {
+    animation: none;
   }
 }

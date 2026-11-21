@@ -1,14 +1,5 @@
 <div class="pp-page">
-  <app-page-header heading="Reports" [subtitle]="period()">
-    <button mat-stroked-button type="button" (click)="exportCsv()">
-      <mat-icon>download</mat-icon>
-      CSV
-    </button>
-    <button mat-stroked-button type="button" (click)="exportExcel()">
-      <mat-icon>table_view</mat-icon>
-      Excel
-    </button>
-  </app-page-header>
+  <app-page-header heading="Reports" [subtitle]="period()" />
 
   <app-range-filter class="range" [(value)]="rangeKey" label="Report period" />
 
@@ -160,4 +151,15 @@
       }
     </section>
   }
+
+  <div class="exports">
+    <button mat-stroked-button type="button" [disabled]="loading()" (click)="exportCsv()">
+      <mat-icon>download</mat-icon>
+      CSV
+    </button>
+    <button mat-stroked-button type="button" [disabled]="loading()" (click)="exportExcel()">
+      <mat-icon>table_view</mat-icon>
+      Excel
+    </button>
+  </div>
 </div>

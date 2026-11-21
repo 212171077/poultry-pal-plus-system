@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Toast } from '../../shared/ui/toast/toast.service';
 import { ProductionRepository } from '../../data/repositories/production-repository';
 import { DateField } from '../../shared/ui/date-field/date-field';
 import { OfflineDataNote } from '../../shared/ui/offline-data-note/offline-data-note';
@@ -55,7 +55,7 @@ export function occupancyPercent(house: Pick<HouseOccupancy, 'capacity' | 'occup
 })
 export default class PlacementsPage {
   protected readonly repo = inject(ProductionRepository);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(Toast);
   protected readonly houses = signal<readonly HouseOccupancy[]>([]);
   protected readonly placements = signal<readonly BirdPlacement[]>([]);
   protected readonly cycles = signal<readonly HatcherCycle[]>([]);

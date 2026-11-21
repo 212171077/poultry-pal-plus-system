@@ -103,17 +103,13 @@ export default class DashboardPage {
   private readonly range = computed(() =>
     rangeFor(this.rangeKey(), this.now, this.data()?.farm ?? EMPTY),
   );
-  private readonly summary = computed(() =>
-    summarize(this.data()?.farm ?? EMPTY, this.range()),
-  );
+  private readonly summary = computed(() => summarize(this.data()?.farm ?? EMPTY, this.range()));
   protected readonly summaryLabel = computed(() => rangeSummaryLabel(this.rangeKey()));
   protected readonly currency = computed(() => this.data()?.settings?.currency);
 
   /** Coops that hold (or held) birds, with figures for the selected period. */
   protected readonly coopCards = computed(() =>
-    summarizeByCoop(this.data()?.farm ?? EMPTY, this.range()).filter(
-      (coop) => coop.totalBirds > 0,
-    ),
+    summarizeByCoop(this.data()?.farm ?? EMPTY, this.range()).filter((coop) => coop.totalBirds > 0),
   );
 
   protected readonly eggs = computed(() => {

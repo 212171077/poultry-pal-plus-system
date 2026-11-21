@@ -28,6 +28,25 @@ async function fillDate(page: Page, label: string, daysFromToday: number): Promi
 }
 
 test.describe('production', () => {
+  test('the section menu shows scroll cues and dots when it overflows', async ({
+    sharedFarm,
+    signInAs,
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await signInAs(sharedFarm.productionManager, '/production/dashboard');
+    const dots = page.getByTestId('production-dots');
+    await expect(dots).toBeVisible();
+    await expect(dots.locator('.dot')).toHaveCount(TABS.length);
+    await expect(dots.locator('.dot.on')).toHaveCount(1);
+    await expect(dots.locator('.dot').first()).toHaveClass(/on/);
+    await page.locator('.production-nav').evaluate((el) => (el.scrollLeft = el.scrollWidth));
+    await expect(dots.locator('.dot').last()).toHaveClass(/on/);
+
+    await page.setViewportSize({ width: 1600, height: 900 });
+    await expect(dots).toHaveCount(0);
+  });
+
   test('a production manager gets the production area and every section opens', async ({
     sharedFarm,
     signInAs,

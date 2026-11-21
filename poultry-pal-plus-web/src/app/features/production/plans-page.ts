@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Toast } from '../../shared/ui/toast/toast.service';
 import { ConnectivityService } from '../../core/network/connectivity.service';
 import { ProductionRepository } from '../../data/repositories/production-repository';
 import { OfflineDataNote } from '../../shared/ui/offline-data-note/offline-data-note';
@@ -53,7 +53,7 @@ export function describeCalculation(calc: PlanCalculation): string {
 export default class PlansPage {
   private readonly api = inject(ProductionApi);
   protected readonly repo = inject(ProductionRepository);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(Toast);
   protected readonly connectivity = inject(ConnectivityService);
   protected readonly plans = signal<readonly ProductionPlan[]>([]);
   protected readonly preview = signal<PlanCalculation | null>(null);

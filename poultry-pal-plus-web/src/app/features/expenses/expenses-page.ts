@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Toast } from '../../shared/ui/toast/toast.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { format } from 'date-fns';
 import { filter, switchMap } from 'rxjs';
@@ -63,7 +63,7 @@ export default class ExpensesPage {
   private readonly context = inject(FarmContextRepository);
   private readonly auth = inject(AuthService);
   private readonly dialog = inject(MatDialog);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(Toast);
   private readonly confirm = inject(ConfirmDialogService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);

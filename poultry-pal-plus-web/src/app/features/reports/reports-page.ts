@@ -3,7 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Toast } from '../../shared/ui/toast/toast.service';
 import { format } from 'date-fns';
 import { ConnectivityService } from '../../core/network/connectivity.service';
 import { ApiError } from '../../core/http/api-error';
@@ -57,11 +57,11 @@ export default class ReportsPage {
   private readonly context = inject(FarmContextRepository);
   private readonly api = inject(ReportsApi);
   private readonly queue = inject(ReportQueue);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(Toast);
   protected readonly connectivity = inject(ConnectivityService);
 
   private readonly now = new Date();
-  protected readonly rangeKey = signal<RangeKey>('month');
+  protected readonly rangeKey = signal<RangeKey>('all');
   protected readonly scheduleCoopId = signal<string | null>(null);
   protected readonly busy = signal(false);
 

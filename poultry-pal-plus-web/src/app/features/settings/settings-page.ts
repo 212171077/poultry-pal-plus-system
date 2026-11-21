@@ -15,7 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Toast } from '../../shared/ui/toast/toast.service';
 import { SwUpdate } from '@angular/service-worker';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
@@ -62,7 +62,7 @@ export default class SettingsPage {
   private readonly connectivity = inject(ConnectivityService);
   private readonly confirm = inject(ConfirmDialogService);
   private readonly dialog = inject(MatDialog);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(Toast);
   private readonly theme = inject(ThemeService);
   private readonly installPrompt = inject(InstallPromptService);
   private readonly updates = inject(AppUpdateService);
@@ -135,7 +135,9 @@ export default class SettingsPage {
   protected readonly addresses = computed<readonly AddressDto[]>(() => {
     const farm = this.farmRow();
     if (farm?.addresses?.length) return farm.addresses;
-    return farm?.address?.addressLine1 ? [{ ...farm.address, id: farm.address.id ?? 'primary' }] : [];
+    return farm?.address?.addressLine1
+      ? [{ ...farm.address, id: farm.address.id ?? 'primary' }]
+      : [];
   });
 
   constructor() {
@@ -243,7 +245,8 @@ export default class SettingsPage {
       })
       .afterClosed()
       .subscribe((saved) => {
-        if (saved) void this.refreshAfterAddressChange(address ? 'Address updated.' : 'Address added.');
+        if (saved)
+          void this.refreshAfterAddressChange(address ? 'Address updated.' : 'Address added.');
       });
   }
 

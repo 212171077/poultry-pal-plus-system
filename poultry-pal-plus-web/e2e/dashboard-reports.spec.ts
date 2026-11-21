@@ -47,8 +47,18 @@ test('the dashboard, reminders and reports work without a network connection', a
 
   await page.goto('/reports');
   await expect(page.getByTestId('coop-report').getByText('Layer House A')).toBeVisible();
+  await expect(page.getByRole('radio', { name: /^All/ })).toBeChecked();
+  const csv = page.getByRole('button', { name: 'CSV' });
+  const excel = page.getByRole('button', { name: 'Excel' });
+  const [csvBox, excelBox, emailBox] = await Promise.all([
+    csv.boundingBox(),
+    excel.boundingBox(),
+    page.getByRole('button', { name: 'Email report' }).boundingBox(),
+  ]);
+  expect(csvBox!.y).toBe(excelBox!.y);
+  expect(csvBox!.y).toBeGreaterThan(emailBox!.y);
   const download = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'CSV' }).click();
+  await csv.click();
   expect((await download).suggestedFilename()).toMatch(/\.csv$/);
 
   await expect(page.getByRole('button', { name: 'Report PDF' })).toBeDisabled();

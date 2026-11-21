@@ -1,6 +1,6 @@
 import { DOCUMENT, Injectable, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Toast } from '../../shared/ui/toast/toast.service';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { filter, fromEvent, merge, throttleTime } from 'rxjs';
 
@@ -10,7 +10,7 @@ const MIN_CHECK_GAP_MS = 15 * 60 * 1000;
 @Injectable({ providedIn: 'root' })
 export class AppUpdateService {
   private readonly swUpdate = inject(SwUpdate);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(Toast);
   private readonly document = inject(DOCUMENT);
   private readonly updateState = signal<
     'checking' | 'current' | 'available' | 'unsupported' | 'error'

@@ -1,7 +1,7 @@
 import { DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Toast } from '../ui/toast/toast.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { filter, switchMap } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
@@ -28,7 +28,7 @@ export abstract class RecordListPage<T> {
   protected readonly context = inject(FarmContextRepository);
   protected readonly auth = inject(AuthService);
   protected readonly dialog = inject(MatDialog);
-  protected readonly snackBar = inject(MatSnackBar);
+  protected readonly snackBar = inject(Toast);
   private readonly confirmDialog = inject(ConfirmDialogService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);

@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Toast } from '../../../shared/ui/toast/toast.service';
 import { firstValueFrom } from 'rxjs';
 import { ApiError } from '../../../core/http/api-error';
 import { ConnectivityService } from '../../../core/network/connectivity.service';
@@ -31,7 +31,7 @@ import { AppConfigApi, AppConfigEntry } from './app-config-api';
 export default class AppConfigPage {
   private readonly api = inject(AppConfigApi);
   private readonly confirm = inject(ConfirmDialogService);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(Toast);
   private readonly fb = inject(FormBuilder);
   protected readonly connectivity = inject(ConnectivityService);
 

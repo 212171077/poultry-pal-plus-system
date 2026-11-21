@@ -10,7 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Toast } from '../../shared/ui/toast/toast.service';
 import { formatDistanceToNow } from 'date-fns';
 import { filter } from 'rxjs';
 import { ConnectivityService } from '../../core/network/connectivity.service';
@@ -91,7 +91,7 @@ export default class SyncCenterPage {
   private readonly dialog = inject(MatDialog);
   private readonly injector = inject(Injector);
   private readonly confirmDialog = inject(ConfirmDialogService);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(Toast);
 
   protected readonly online = inject(ConnectivityService).online;
   protected readonly syncing = this.engine.syncing;

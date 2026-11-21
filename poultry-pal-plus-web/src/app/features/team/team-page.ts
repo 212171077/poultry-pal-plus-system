@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Toast } from '../../shared/ui/toast/toast.service';
 import { firstValueFrom } from 'rxjs';
 import { liveSignal } from '../../data/db/live-signal';
 import { APP_DB } from '../../data/db/app-db';
@@ -40,7 +40,7 @@ export default class TeamPage {
   private readonly auth = inject(AuthService);
   private readonly api = inject(TeamApi);
   private readonly confirm = inject(ConfirmDialogService);
-  private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(Toast);
   private readonly connectivity = inject(ConnectivityService);
   private readonly fb = inject(FormBuilder);
   protected readonly user = this.auth.user;
